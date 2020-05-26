@@ -17,6 +17,21 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/test', function () {
+    $game = \App\Game::first();
+    broadcast(new \App\Events\UpdateGameEvent($game));
+});
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/lobby', 'GamesController@index');
+    Route::get('/games/{game}', 'GamesController@show');
+    Route::post('/games', 'GamesController@store');
+    Route::post('/start/games/{game}', 'GamesController@start');
+    Route::post('/call/games/{game}', 'GamesController@call');
+    Route::post('/card/games/{game}', 'GamesController@card');
+    Route::post('/trump/games/{game}', 'GamesController@trump');
+});
