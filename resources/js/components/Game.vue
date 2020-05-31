@@ -61,7 +61,7 @@
                 </div>
                 <div class="d-flex justify-content-center">
                     <div id="player0" class="my-3">
-
+                        <div id="taken" v-show="this.game.state === 'card'"><strong v-text="taken()"></strong></div>
                         <cards :player-id="this.game.players[this.players[0]].id"
                                :state="this.game.state"
                                :game-id="this.game.id"
@@ -208,6 +208,16 @@
 
             getKeyByValue(object, value) {
                 return Object.keys(object).find(key => object[key] === value);
+            },
+
+            taken() {
+                let player = this.game.players[this.players[0]];
+                let last = player.scores.length - 1;
+                if (last >= 0) {
+                    return player.scores[last].call + ' / ' + player.scores[last].take;
+                } else {
+                    return '';
+                }
             }
         },
 
@@ -240,5 +250,9 @@
     #p3-card {
         left: 360px;
         top: 200px;
+    }
+    #taken {
+        position: absolute;
+        bottom: 110px;
     }
 </style>

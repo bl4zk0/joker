@@ -40,10 +40,17 @@
             </tr>
             <tr>
                 <th scope="row">&Sigma;</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td v-text="showResult(0, 4)"></td>
+                <td v-text="showResult(1, 4)"></td>
+                <td v-text="showResult(2, 4)"></td>
+                <td v-text="showResult(3, 4)"></td>
+            </tr>
+            <tr>
+                <th scope="row">1</th>
+                <td v-text="showScores(0, 5)"></td>
+                <td v-text="showScores(1, 5)"></td>
+                <td v-text="showScores(2, 5)"></td>
+                <td v-text="showScores(3, 5)"></td>
             </tr>
         </tbody>
     </table>
@@ -66,6 +73,16 @@
                     let result = this.players[p].scores[n].result ? this.players[p].scores[n].result : '';
                     result = result < 0 ? 'I--I' : result;
                     return call + ' ' + result;
+                } else {
+                    return '';
+                }
+            },
+
+            showResult(p, n) {
+                if (this.players[p] && this.players[p].scores[n]) {
+                    let result = this.players[p].scores[n].result;
+                    result = (result / 100).toFixed(1);
+                    return result;
                 } else {
                     return '';
                 }

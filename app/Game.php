@@ -102,14 +102,18 @@ class Game extends Model
         // pulkebis bolo darigebebi
         if (($this->type == 9 && $this->hand_count == 4) || ($this->quarter == 2 && $this->hand_count == 4) || $this->hand_count == 8) {
             $this->calcScoresAfterQuarter();
-            $this->update(['quarter' => $this->quarter + 1, 'hand_count' => 1]);
-            $this->refresh();
+            $this->update(['quarter' => $this->quarter + 1, 'hand_count' => 1, 'turn' => 0]);
+            broadcast(new UpdateGameEvent($this));
             $this->deal();
             return;
         }
 
-        $this->update(['hand_count' => $this->hand_count + 1, 'state' => 'call', 'trump' => null]);
-        $this->refresh();
+        $this->update([
+            'hand_count' => $this->hand_count + 1,
+            'turn' => $this->turnPosition(),
+            'state' => 'call',
+            'trump' => null]);
+        broadcast(new UpdateGameEvent($this));
         $this->deal();
     }
 
@@ -131,7 +135,7 @@ class Game extends Model
         });
     }
 
-    protected function calcScoresAfterQuarter()
+    public function calcScoresAfterQuarter()
     {
         $perfectNum = $this->numPerfectInScores();
 
@@ -175,16 +179,18 @@ class Game extends Model
                     }
                 }
                 break;
-            case 3:
+            default:
                 foreach($this->players as $player)
                 {
                     $result = $player->scores()->where('quarter', $this->quarter)->sum('result');
 
                     $player->scores()->create([
                         'quarter' => $this->quarter,
+                        'call' => 0,
                         'result' => $result
                     ]);
                 }
+                break;
         }
     }
 
@@ -245,7 +251,7 @@ class Game extends Model
 
     protected function turnPosition()
     {
-        return $this->hand_count > 4 ? $this->hand_count - 5 : $this->hand_count - 1;
+        return $this->hand_count > 4 ? $this->hand_count - 4 : $this->hand_count;
     }
 
     public function numCardsToDeal()

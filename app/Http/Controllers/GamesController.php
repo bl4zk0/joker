@@ -64,7 +64,7 @@ class GamesController extends Controller
 
         $player = auth()->user()->player;
         $playerCards = $player->cards;
-        $playerCard = array_search($playerCards, $card);
+        $playerCard = array_search($card, $playerCards);
         array_splice($playerCards, $playerCard, 1);
         if (empty($playerCards)) {
             $player->cards = null;
@@ -75,6 +75,9 @@ class GamesController extends Controller
 
         if ($request->has('action')) {
             $card['action'] = $request->action;
+            if ($request->has('actionsuit')) {
+                $card['actionsuit'] = $request->actionsuit;
+            }
         }
 
         broadcast (new CardPlayEvent($game->id, auth()->user()->player->position, $card));

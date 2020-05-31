@@ -19,7 +19,7 @@ Route::get('/', function () {
 
 Route::get('/test', function () {
     $game = \App\Game::first();
-    broadcast(new \App\Events\UpdateGameEvent($game));
+
 });
 
 Auth::routes();

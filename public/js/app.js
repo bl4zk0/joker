@@ -2279,6 +2279,16 @@ __webpack_require__.r(__webpack_exports__);
       return Object.keys(object).find(function (key) {
         return object[key] === value;
       });
+    },
+    taken: function taken() {
+      var player = this.game.players[this.players[0]];
+      var last = player.scores.length - 1;
+
+      if (last >= 0) {
+        return player.scores[last].call + ' / ' + player.scores[last].take;
+      } else {
+        return '';
+      }
     }
   },
   mounted: function mounted() {//console.log(this.game);
@@ -2412,6 +2422,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['initialPlayers'],
   computed: {
@@ -2426,6 +2443,15 @@ __webpack_require__.r(__webpack_exports__);
         var result = this.players[p].scores[n].result ? this.players[p].scores[n].result : '';
         result = result < 0 ? 'I--I' : result;
         return call + ' ' + result;
+      } else {
+        return '';
+      }
+    },
+    showResult: function showResult(p, n) {
+      if (this.players[p] && this.players[p].scores[n]) {
+        var result = this.players[p].scores[n].result;
+        result = (result / 100).toFixed(1);
+        return result;
       } else {
         return '';
       }
@@ -6980,7 +7006,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.avatar {\n    width: 70px;\n    height: 70px;\n}\n.t-cards > div {\n    position: absolute;\n}\n#p0-card {\n    left: 320px;\n    top: 240px;\n}\n#p1-card {\n    left: 280px;\n    top: 200px;\n}\n#p2-card {\n    left: 320px;\n    top: 150px;\n}\n#p3-card {\n    left: 360px;\n    top: 200px;\n}\n", ""]);
+exports.push([module.i, "\n.avatar {\n    width: 70px;\n    height: 70px;\n}\n.t-cards > div {\n    position: absolute;\n}\n#p0-card {\n    left: 320px;\n    top: 240px;\n}\n#p1-card {\n    left: 280px;\n    top: 200px;\n}\n#p2-card {\n    left: 320px;\n    top: 150px;\n}\n#p3-card {\n    left: 360px;\n    top: 200px;\n}\n#taken {\n    position: absolute;\n    bottom: 110px;\n}\n", ""]);
 
 // exports
 
@@ -44257,6 +44283,26 @@ var render = function() {
               "div",
               { staticClass: "my-3", attrs: { id: "player0" } },
               [
+                _c(
+                  "div",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: this.game.state === "card",
+                        expression: "this.game.state === 'card'"
+                      }
+                    ],
+                    attrs: { id: "taken" }
+                  },
+                  [
+                    _c("strong", {
+                      domProps: { textContent: _vm._s(_vm.taken()) }
+                    })
+                  ]
+                ),
+                _vm._v(" "),
                 _c("cards", {
                   attrs: {
                     "player-id": this.game.players[this.players[0]].id,
@@ -44571,28 +44617,33 @@ var render = function() {
         _c("td", { domProps: { textContent: _vm._s(_vm.showScores(3, 3)) } })
       ]),
       _vm._v(" "),
-      _vm._m(0)
+      _c("tr", [
+        _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
+        _vm._v(" "),
+        _c("td", { domProps: { textContent: _vm._s(_vm.showResult(0, 4)) } }),
+        _vm._v(" "),
+        _c("td", { domProps: { textContent: _vm._s(_vm.showResult(1, 4)) } }),
+        _vm._v(" "),
+        _c("td", { domProps: { textContent: _vm._s(_vm.showResult(2, 4)) } }),
+        _vm._v(" "),
+        _c("td", { domProps: { textContent: _vm._s(_vm.showResult(3, 4)) } })
+      ]),
+      _vm._v(" "),
+      _c("tr", [
+        _c("th", { attrs: { scope: "row" } }, [_vm._v("1")]),
+        _vm._v(" "),
+        _c("td", { domProps: { textContent: _vm._s(_vm.showScores(0, 5)) } }),
+        _vm._v(" "),
+        _c("td", { domProps: { textContent: _vm._s(_vm.showScores(1, 5)) } }),
+        _vm._v(" "),
+        _c("td", { domProps: { textContent: _vm._s(_vm.showScores(2, 5)) } }),
+        _vm._v(" "),
+        _c("td", { domProps: { textContent: _vm._s(_vm.showScores(3, 5)) } })
+      ])
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
