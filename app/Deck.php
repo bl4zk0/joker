@@ -33,19 +33,29 @@ class Deck
         shuffle($this->cards);
     }
 
+    /**
+     * @param $num
+     * @return array[]
+     */
     public function deal($num)
     {
         return array_slice($this->cards, 0, $num);
     }
 
+    /**
+     * [pos] = bolo motamashes pozicia (0 aris bolo anu 3 pozicia)
+     *
+     * [cards] = asatuzi kartebi
+     *
+     * @return array
+     */
     public function lastPlayer()
     {
         $deck = [];
         for ($i = 0; $i < 36; $i++) {
-            if ($this->cards[$i]['strength'] == 14) {
+            if ($this->cards[$i]['strength'] === 14) {
                 $deck['cards'] = array_slice($this->cards, 0, $i + 1);
-                $pos = ($i + 1) % 4;
-                $deck['pos'] = $pos == 0 ? 4 : $pos;
+                $deck['pos'] = ($i + 1) % 4;
                 return $deck;
             }
         }

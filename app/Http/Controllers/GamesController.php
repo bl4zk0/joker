@@ -5,106 +5,129 @@ namespace App\Http\Controllers;
 use App\Events\CardPlayEvent;
 use App\Events\CardsEvent;
 use App\Events\UpdateGameEvent;
-use App\Events\UpdateGamesEvent;
+use App\Events\UpdateLobbyEvent;
 use App\Game;
+use App\Rules\CardRule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GamesController extends Controller
 {
+    /**
+     * @param Game $game
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function start(Game $game)
     {
-        //$this->authorize('update', $game);
-        if(! $game->creator->id == auth()->id()) return abort(403, 'not allowed');
+        $this->authorize('start', $game);
+
+        if (! ($game->players()->count() === 4)) {
+            abort(406, 'Not enough players');
+        }
+
         $game->start();
     }
 
+    /**
+     * @param Request $request
+     * @param Game $game
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function trump(Request $request, Game $game)
     {
         $this->authorize('trump', $game);
-        $card = [
-            'strength' => $request->strength,
-            'suit' => $request->suit,
-        ];
+
+        $request->validate([
+            'trump' => ['required', 'in:hearts,clubs,diamonds,spades,bez']
+        ]);
 
         $game->update([
             'state' => 'call',
-            'trump' => $card
+            'trump' => $request->trump
         ]);
 
-        $game->players->each(function ($player, $pos) {
+        $game->players->each(function ($player) {
             broadcast(new CardsEvent($player->id, $player->cards));
         });
 
         broadcast(new UpdateGameEvent($game));
     }
 
+    /**
+     * @param Request $request
+     * @param Game $game
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function call(Request $request, Game $game)
     {
         $this->authorize('call', $game);
-        // TODO: validate call here...
+
+        $max = $game->numCardsToDeal();
+        $except = $game->exceptCall();
+
+        $request->validate([
+            'call' => ['required', 'integer', 'min:0', "max:$max", "not_in:$except"]
+        ]);
+
         auth()->user()->player->scores()->create([
             'quarter' => $game->quarter,
             'call' => $request->call
         ]);
-        // TODO: check for duplicate database queries get rid of unnecessary queries
+
         $game->updateTurn();
         $game->updateCallCount();
+
         broadcast(new UpdateGameEvent($game));
     }
 
+    /**
+     * @param Request $request
+     * @param Game $game
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function card(Request $request, Game $game)
     {
-        // aq aseve unda shevamocmot tu sheudzlia am kartis tamashi;;; validacia da ase shemdeg////
         $this->authorize('card', $game);
-        // check if it is valid card validate request ar dagvavicydes jokeris validacia es mnishvnelovania;;
-        $card = [
-            'strength' => $request->strength,
-            'suit' => $request->suit,
-        ];
 
-        $player = auth()->user()->player;
-        $playerCards = $player->cards;
-        $playerCard = array_search($card, $playerCards);
-        array_splice($playerCards, $playerCard, 1);
-        if (empty($playerCards)) {
-            $player->cards = null;
-        } else {
-            $player->cards = $playerCards;
-        }
-        $player->save();
+        $request->validate([
+            'card' => ['required', 'array', new CardRule],
+            'action' => ['required_if:card.strength,16', 'in:magali,caigos,mojokra,nije'],
+            'actionsuit' => ['required_if:action,magali,caigos', 'in:hearts,clubs,diamonds,spades']
+        ]);
+
+        $card = $request->card;
 
         if ($request->has('action')) {
             $card['action'] = $request->action;
-            if ($request->has('actionsuit')) {
+            if ($request->action === 'magali' || $request->action === 'caigos') {
                 $card['actionsuit'] = $request->actionsuit;
             }
         }
 
-        broadcast (new CardPlayEvent($game->id, auth()->user()->player->position, $card));
-        $game->addCard($card);
+        $player = auth()->user()->player;
 
+        if (! $player->canPlay($card, $game->cards, $game->trump)) {
+            abort(422, "Don't bother, fool!");
+        }
+
+        $player->removeCard($request->card);
+
+        broadcast (new CardPlayEvent($game->id, auth()->user()->player->position, $card));
+
+        $game->addCard($card);
+        $game->checkTake();
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
         $games = Game::latest()->where('state', '0')->get();
 
         return view('lobby', compact('games'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -115,9 +138,18 @@ class GamesController extends Controller
      */
     public function store(Request $request)
     {
-        $game = Game::create(['user_id' => auth()->id()]);
+        $request->validate([
+            'type' => ['required', 'in:1,9'],
+            'penalty' => ['required', 'in:-200,-300,-400,-500,-900,-1000']
+        ]);
 
-        broadcast(new UpdateGamesEvent());
+        $game = Game::create([
+            'type' => $request->type,
+            'penalty' => $request->penalty,
+            'user_id' => auth()->id()
+        ]);
+
+        broadcast(new UpdateLobbyEvent());
 
         return redirect($game->path());
     }
@@ -132,13 +164,14 @@ class GamesController extends Controller
     {
         // this whole thing has to be changed...
         if ($game->state == 0 && $game->players()->count() < 4) {
-            if (! $game->players()->pluck('user_id')->contains(auth()->id())) {
+            if (! $game->players->contains(auth()->user()->player)) {
 
-                $game->addPlayer(auth()->user());
+                $game->addPlayer(Auth::user());
 
                 $game->refresh();
 
                 broadcast(new UpdateGameEvent($game));
+                broadcast(new UpdateLobbyEvent());
 
                 return view('game', compact('game'));
             } else {
@@ -154,45 +187,5 @@ class GamesController extends Controller
             return view('game', compact('game'));
             return redirect('/lobby');
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param Game $game
-     * @return void
-     */
-    public function update(Request $request, Game $game)
-    {
-        $this->authorize('update', $game);
-        $card = ['strength' => $request->strength, 'suit' => $request->suit];
-        //update $game->cards.push
-        //player remove card. update player->card
-        // check if last calc vin caigo da tu bolo chamosvlaa gamovtvalot xeli da davarigot shemdegi
-        //da aq vaaapdeitebt turns.... vnaxulobt merammdene darigebaa da is poziciaa pirveli -1 bolo
-
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

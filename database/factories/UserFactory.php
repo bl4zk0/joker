@@ -27,9 +27,3 @@ $factory->define(User::class, function (Faker $faker) {
         'remember_token' => Str::random(10),
     ];
 });
-
-$factory->define(Game::class, function (Faker $faker) {
-    return [
-        'user_id' => factory('App\User')
-    ];
-});

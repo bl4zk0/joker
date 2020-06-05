@@ -14,7 +14,6 @@ class Game extends Model
     protected $appends = [];
     protected $casts = [
         'cards' => 'array',
-        'trump' => 'array',
     ];
 
     protected static function boot()
@@ -35,6 +34,13 @@ class Game extends Model
         broadcast(new StartGameEvent($this, $cards));
     }
 
+    /**
+     * tu chamosul kartebshi jokeria da chamosuli kartma mojokra
+     * kartis strength gavzardot 17-ze rom cagebisas gamoitvalos
+     * tu nije gaaketa strength shevamcirot 1-ze rom ar caigos
+     * danarchen shemtxvevashi davamatot karti rogorc aris
+     * @param $card
+     */
     public function addCard($card)
     {
         if ($this->jokInCards() && isset($card['action']) && $card['action'] == 'mojokra') {
@@ -42,16 +48,32 @@ class Game extends Model
         } elseif (isset($card['action']) && $card['action'] == 'nije') {
             $card['strength'] = 1;
         }
+
         $cards = $this->cards;
         array_push($cards, $card);
         $this->cards = $cards;
         $this->save();
+
         auth()->user()->player()->update(['card' => $card]);
-        $this->refresh();
-        if (count($this->cards) === 4) {
+        //$this->refresh();
+    }
+
+    /**
+     * tu 4 ive motamashe chamovida eseigi unda gavigot vin caigo
+     * shevadarot motamasheebis bolo chamosuli kartebi yvelaze magal karts
+     * vinc caigebs bazashi davafiksirot da chamosvlis poziciashi davamatot
+     *
+     * tu yvela karti chamosuli shevamocmot bazashi motamasheebis kartebi unda iyos null
+     * mashin gamovtvalot scores da shevamocmot tu morcha pulka an tamashi
+     *
+     * sxva shemtxvevashi ubralod chamomsvlelis pozicia ganvaaxlot
+     */
+    public function checkTake()
+    {
+        if (count($this->cards) == 4) {
             $highestCard = $this->highestCard();
             foreach ($this->players as $player) {
-                if ($player->card == $highestCard) {
+                if ($player->card === $highestCard) {
                     $player->scores()->increment('take');
                     $this->update(['turn' => $player->position]);
                     broadcast(new UpdateGameEvent($this));
@@ -60,26 +82,36 @@ class Game extends Model
                         $this->checkEnd();
                     }
                 }
+                $player->update(['card' => null]);
             }
         } else {
             $this->updateTurn();
         }
     }
 
+    /**
+     * tu piveli karti jokeria anu acxada magali an caigos am shemtxvevashi
+     * tu kartebshi koziria da magali koziri ar ucxadebia jokeri amovigot kartebidan radgan ver caigebs jokeri
+     * shemdeg tu caigos acxada da es cveti aris kartebshi amovigot jokeri kartebidan
+     *
+     * tu bezia araa da koziria kartebshi mashin vfiltravt kozirze tu ara mashin pirveli kartis cvetze
+     * valagebt kartebs sididis mixedvit da pirveli kartia yvelaze magali romelmac caigo
+     * @return mixed
+     */
     public function highestCard()
     {
         $suit = null;
         $cards = $this->cards;
         if (isset($cards[0]['action'])) {
-            if ($this->trumpInCards() && $cards[0]['actionsuit'] != $this->trump['suit']) {
+            if ($this->trumpInCards() && $cards[0]['actionsuit'] != $this->trump) {
                 array_shift($cards);
             } elseif ($cards[0]['action'] == 'caigos' && $this->suitInCards($cards[0]['actionsuit'])) {
                 array_shift($cards);
             }
         }
 
-        if ($this->trump['strength'] != 16 && $this->trumpInCards()) {
-            $suit = $this->trump['suit'];
+        if ($this->trump != 'bez' && $this->trumpInCards()) {
+            $suit = $this->trump;
         } else {
             $suit = $cards[0]['suit'];
         }
@@ -90,14 +122,24 @@ class Game extends Model
 
         $cards = collect($cards)->sortByDesc('strength');
         $this->update(['cards' => []]);
+
         return $cards->values()->all()[0];
     }
 
+    /**
+     * tu bolo pulkaa da bolo darigeba gamovtvalot da davamtavrot tamashi
+     *
+     * tu 9-ianebia da bolo darigebaa an tu meore pulkaa da bolo darigebaa an tu 8 darigebaa eseigi pulkis boloa
+     * gamovtvalot da gavagrdzelot tamashi
+     *
+     * sxva shemtxvevashi shemdegi darigeba davarigot
+     * @return bool
+     */
     public function checkEnd()
     {
         if ($this->quarter == 4 && $this->hand_count == 4) {
             $this->calcScoresAfterQuarter();
-            return;
+            return true;
         }
         // pulkebis bolo darigebebi
         if (($this->type == 9 && $this->hand_count == 4) || ($this->quarter == 2 && $this->hand_count == 4) || $this->hand_count == 8) {
@@ -105,29 +147,30 @@ class Game extends Model
             $this->update(['quarter' => $this->quarter + 1, 'hand_count' => 1, 'turn' => 0]);
             broadcast(new UpdateGameEvent($this));
             $this->deal();
-            return;
+            return false;
         }
 
         $this->update([
             'hand_count' => $this->hand_count + 1,
             'turn' => $this->turnPosition(),
-            'state' => 'call',
-            'trump' => null]);
+        ]);
+
         broadcast(new UpdateGameEvent($this));
         $this->deal();
+        return false;
     }
 
-    protected function calcScoresAfterHand()
+    public function calcScoresAfterHand()
     {
         $all = $this->numCardsToDeal();
         $penalty = $this->penalty;
-        $this->players->each(function ($player, $key) use($all, $penalty) {
+        $this->players->each(function ($player) use($all, $penalty) {
             $score = $player->scores()->latest()->first();
-            if ($score->call === $score->take && $score->call === $all) {
+            if ($score->call == $score->take && $score->call == $all) {
                 $score->update(['result' => $score->call * 100]);
-            } elseif ($score->call === $score->take) {
+            } elseif ($score->call == $score->take) {
                 $score->update(['result' => $score->call * 50 + 50]);
-            } elseif ($score->call > 0 && $score->take === 0) {
+            } elseif ($score->take == 0) {
                 $score->update(['result' => $penalty]);
             } else {
                 $score->update(['result' => $score->take * 10]);
@@ -143,7 +186,7 @@ class Game extends Model
             case 1:
                 foreach($this->players as $player)
                 {
-                    if ($player->scores()->where('quarter', $this->quarter)->whereColumn('call', 'take')->count() === $this->hand_count) {
+                    if ($player->scores()->where('quarter', $this->quarter)->whereColumn('call', 'take')->count() == $this->hand_count) {
                         $result = $player->scores()->where('quarter', $this->quarter)->sum('result') +
                             $player->scores()->where('quarter', $this->quarter)->max('result');
                         $player->scores()->create([
@@ -163,7 +206,7 @@ class Game extends Model
             case 2:
                 foreach($this->players as $player)
                 {
-                    if ($player->scores()->where('quarter', $this->quarter)->whereColumn('call', 'take')->count() === $this->hand_count) {
+                    if ($player->scores()->where('quarter', $this->quarter)->whereColumn('call', 'take')->count() == $this->hand_count) {
                         $result = $player->scores()->where('quarter', $this->quarter)->sum('result') +
                             $player->scores()->where('quarter', $this->quarter)->max('result');
                         $player->scores()->create([
@@ -231,14 +274,14 @@ class Game extends Model
     private function setTrump($num, $card)
     {
         if ($num != 9) {
-            $this->trump = $card;
-            $this->update(['state' => 'call']);
-            $this->players->each(function ($player, $pos) {
+            $trump = $card['strength'] === 16 ? 'bez' : $card['suit'];
+            $this->update(['state' => 'call', 'trump' => $trump]);
+            $this->players->each(function ($player) {
                 broadcast(new CardsEvent($player->id, $player->cards));
             });
         } else {
             $this->update(['state' => 'trump']);
-            $this->players->each(function ($player, $pos) {
+            $this->players->each(function ($player) {
                 if ($this->turn == $player->position) {
                     broadcast(new CardsEvent($player->id, array_slice($player->cards, 0, 3), true));
                 } else {
@@ -246,7 +289,6 @@ class Game extends Model
                 }
             });
         }
-
     }
 
     protected function turnPosition()
@@ -288,7 +330,6 @@ class Game extends Model
 
     public function suitInCards($suit)
     {
-        if (! $this->cards) return false;
         foreach ($this->cards as $card) {
             if ($card['suit'] == $suit) {
                 return true;
@@ -310,7 +351,7 @@ class Game extends Model
 
     public function addPlayer(User $user, $pos = null)
     {
-        $pos = $pos ?? $this->pos();
+        $pos = $pos ?? $this->determinePosition();
 
         $this->players()->create([
             'user_id' => $user->id,
@@ -353,31 +394,28 @@ class Game extends Model
 
     protected function trumpInCards()
     {
-        if ($this->trump['strength'] == 16 || ! $this->cards) return false;
+        if ($this->trump === 'bez') return false;
         foreach ($this->cards as $card) {
-            if(in_array($this->trump['suit'], $card)) return true;
+            if($card['suit'] === $this->trump) return true;
         }
 
         return false;
     }
 
-    protected function pos()
+    public function determinePosition()
     {
         $positions = $this->players()->pluck('position')->toArray();
 
-        for ($i = 1; $i < 4; $i++) {
-            if (! in_array($i, $positions)) return $i;
+        for ($position = 1; $position < 4; $position++) {
+            if (! in_array($position, $positions)) return $position;
         }
     }
 
     public function updateTurn()
     {
-        if ($this->turn == 3) {
-            $this->update(['turn' => 0]);
+        $turn = $this->turn === 3 ? 0 : $this->turn + 1;
 
-        } else {
-            $this->increment('turn');
-        }
+        $this->update(['turn' => $turn]);
     }
 
     public function updateCallCount()
@@ -387,5 +425,20 @@ class Game extends Model
         } else {
             $this->increment('call_count');
         }
+    }
+
+    public function scores()
+    {
+        return $this->hasManyThrough(Score::class, Player::class);
+    }
+
+    public function exceptCall()
+    {
+        if ($this->call_count != 3) return -1;
+
+        $sum = $this->scores()->latest()->limit(3)->get()->sum('call');
+        $max = $this->numCardsToDeal();
+
+        return $max - $sum;
     }
 }

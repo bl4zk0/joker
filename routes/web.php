@@ -1,6 +1,8 @@
 <?php
 
+use App\Deck;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\Rule;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,9 +19,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/test', function () {
-    $game = \App\Game::first();
+Route::post('/test', function () {
 
+    request()->validate([
+        'card' => ['required', 'array', new \App\Rules\CardRule()],
+        'action' => ['required_if:card.strength,16', 'in:magali,caigos,mojokra,nije'],
+        'suit' => ['required_if:action,magali,caigos', 'in:hearts,clubs,diamonds,spades']
+    ]);
+
+    dd('here');
 });
 
 Auth::routes();

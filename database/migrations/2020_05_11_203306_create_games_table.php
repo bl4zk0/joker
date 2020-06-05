@@ -15,11 +15,11 @@ class CreateGamesTable extends Migration
     {
         Schema::create('games', function (Blueprint $table) {
             $table->id();
-            $table->unsignedTinyInteger('type')->default(9);
-            $table->smallInteger('penalty')->default(-500);
+            $table->unsignedTinyInteger('type');
+            $table->smallInteger('penalty');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('turn')->default(0);
-            $table->string('trump')->nullable();
+            $table->string('trump', 10)->nullable();
             $table->string('cards')->default('[]');
             $table->string('state', 10)->default(0);
             $table->unsignedTinyInteger('call_count')->default(0);

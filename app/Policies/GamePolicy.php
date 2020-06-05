@@ -11,50 +11,57 @@ class GamePolicy
     use HandlesAuthorization;
 
     /**
-     * Determine whether the user can view any models.
+     * Determine whether the user can start a game.
      *
-     * @param  \App\User  $user
+     * @param User $user
+     * @param Game $game
      * @return mixed
      */
-    public function viewAny(User $user)
+    public function start(User $user, Game $game)
     {
-        //
+        return $user->is($game->creator) && $game->state === '0';
     }
 
     /**
-     * Determine whether the user can view the model.
+     * Determine whether the user can set trump.
      *
-     * @param  \App\User  $user
-     * @param  \App\Game  $game
+     * @param  User  $user
+     * @param  Game  $game
      * @return mixed
      */
     public function trump(User $user, Game $game)
     {
-        //mgoni aq ragac bugia sxva auth playermac sheidzleba igive requesti gaaketos es gavascorort ....
-        return $user->player->position === $game->turn && $game->state === 'trump';
+        return $game->players->contains($user->player) &&
+            $user->player->position === $game->turn &&
+            $game->state === 'trump';
     }
 
     /**
-     * Determine whether the user can create models.
+     * Determine whether the user can play a card.
      *
-     * @param  \App\User  $user
+     * @param User $user
+     * @param Game $game
      * @return mixed
      */
     public function card(User $user, Game $game)
     {
-        return $user->player->position === $game->turn && $game->state === 'card';
+        return $game->players->contains($user->player) &&
+            $user->player->position === $game->turn &&
+            $game->state === 'card';
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Determine whether the user can call.
      *
-     * @param  \App\User  $user
-     * @param  \App\Game  $game
+     * @param  User  $user
+     * @param  Game  $game
      * @return mixed
      */
     public function call(User $user, Game $game)
     {
-        return $user->player->position === $game->turn && $game->state === 'call';
+        return $game->players->contains($user->player) &&
+            $user->player->position === $game->turn &&
+            $game->state === 'call';
     }
 
     /**

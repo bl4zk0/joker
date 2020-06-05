@@ -1,12 +1,32 @@
 <template>
     <div class="row">
         <div class="col-lg-3 mb-3">
-
-            <form action="/games" method="POST">
-                <input type="hidden" name="_token" :value="csrf">
-                <button class="btn btn-primary">New Game</button>
-            </form>
-
+        <div class="card"><div class="card-header">ახალი მაგიდა</div>
+            <div class="card-body">
+                <form action="/games" method="POST">
+                    <input type="hidden" name="_token" :value="csrf">
+                    <div class="form-group">
+                        <label for="type">ტიპი</label>
+                        <select id="type" class="form-control" name="type">
+                            <option value="1" selected>სტანდარტული</option>
+                            <option value="9">9-იანები</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="penalty">ხიშტი</label>
+                        <select id="penalty" class="form-control" name="penalty">
+                            <option value="-200" selected>-200</option>
+                            <option value="-300">-300</option>
+                            <option value="-400">-400</option>
+                            <option value="-500">-500</option>
+                            <option value="-900">-900</option>
+                            <option value="-1000">-1000</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary btn-block">მაგიდის შექმნა</button>
+                </form>
+            </div>
+        </div>
         </div>
 
         <div class="col-lg-3 mb-3"
@@ -40,7 +60,7 @@
 
         created() {
             window.Echo.private('lobby')
-                .listen('UpdateGamesEvent', event => {
+                .listen('UpdateLobbyEvent', event => {
                     this.games = event.games;
                 });
         },

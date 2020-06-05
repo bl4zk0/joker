@@ -2335,6 +2335,26 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['initialGames'],
   data: function data() {
@@ -2346,7 +2366,7 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     var _this = this;
 
-    window.Echo["private"]('lobby').listen('UpdateGamesEvent', function (event) {
+    window.Echo["private"]('lobby').listen('UpdateLobbyEvent', function (event) {
       _this.games = event.games;
     });
   },
@@ -44448,13 +44468,25 @@ var render = function() {
     { staticClass: "row" },
     [
       _c("div", { staticClass: "col-lg-3 mb-3" }, [
-        _c("form", { attrs: { action: "/games", method: "POST" } }, [
-          _c("input", {
-            attrs: { type: "hidden", name: "_token" },
-            domProps: { value: _vm.csrf }
-          }),
+        _c("div", { staticClass: "card" }, [
+          _c("div", { staticClass: "card-header" }, [_vm._v("ახალი მაგიდა")]),
           _vm._v(" "),
-          _c("button", { staticClass: "btn btn-primary" }, [_vm._v("New Game")])
+          _c("div", { staticClass: "card-body" }, [
+            _c("form", { attrs: { action: "/games", method: "POST" } }, [
+              _c("input", {
+                attrs: { type: "hidden", name: "_token" },
+                domProps: { value: _vm.csrf }
+              }),
+              _vm._v(" "),
+              _vm._m(0),
+              _vm._v(" "),
+              _vm._m(1),
+              _vm._v(" "),
+              _c("button", { staticClass: "btn btn-primary btn-block" }, [
+                _vm._v("მაგიდის შექმნა")
+              ])
+            ])
+          ])
         ])
       ]),
       _vm._v(" "),
@@ -44513,7 +44545,59 @@ var render = function() {
     2
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group" }, [
+      _c("label", { attrs: { for: "type" } }, [_vm._v("ტიპი")]),
+      _vm._v(" "),
+      _c(
+        "select",
+        { staticClass: "form-control", attrs: { id: "type", name: "type" } },
+        [
+          _c("option", { attrs: { value: "1", selected: "" } }, [
+            _vm._v("სტანდარტული")
+          ]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "9" } }, [_vm._v("9-იანები")])
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group" }, [
+      _c("label", { attrs: { for: "penalty" } }, [_vm._v("ხიშტი")]),
+      _vm._v(" "),
+      _c(
+        "select",
+        {
+          staticClass: "form-control",
+          attrs: { id: "penalty", name: "penalty" }
+        },
+        [
+          _c("option", { attrs: { value: "-200", selected: "" } }, [
+            _vm._v("-200")
+          ]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "-300" } }, [_vm._v("-300")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "-400" } }, [_vm._v("-400")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "-500" } }, [_vm._v("-500")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "-900" } }, [_vm._v("-900")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "-1000" } }, [_vm._v("-1000")])
+        ]
+      )
+    ])
+  }
+]
 render._withStripped = true
 
 
