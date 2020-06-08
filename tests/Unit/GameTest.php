@@ -18,12 +18,12 @@ class GameTest extends TestCase
     }
 
     /** @test */
-    public function it_can_validate_game_type_and_penalty()
+    public function it_can_validate_rank_game_type_and_penalty()
     {
         $this->signIn();
 
-        $this->post('/games', ['type' => 3, 'penalty' => '-100'])
-            ->assertSessionHasErrors(['type', 'penalty']);
+        $this->post('/games', ['rank' => 3, 'type' => 3, 'penalty' => '-100'])
+            ->assertSessionHasErrors(['rank', 'type', 'penalty']);
     }
 
 

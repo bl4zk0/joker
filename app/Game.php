@@ -9,9 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Game extends Model
 {
+    /*
+     * TODO: check broadcasted game properties
+     * throttle join game request
+     */
     protected $guarded = [];
     protected $with = ['creator', 'players'];
-    protected $appends = [];
+    protected $hidden = ['password'];
     protected $casts = [
         'cards' => 'array',
     ];
@@ -153,9 +157,12 @@ class Game extends Model
         $this->update([
             'hand_count' => $this->hand_count + 1,
             'turn' => $this->turnPosition(),
+            'state' => 'deal',
+            'trump' => null
         ]);
 
         broadcast(new UpdateGameEvent($this));
+        // aq dasaxvecia es eventi rodis unda gavushvat
         $this->deal();
         return false;
     }
@@ -353,10 +360,7 @@ class Game extends Model
     {
         $pos = $pos ?? $this->determinePosition();
 
-        $this->players()->create([
-            'user_id' => $user->id,
-            'position' => $pos
-        ]);
+        $user->player->update(['game_id' => $this->id, 'position' => $pos]);
     }
 
     public function path()

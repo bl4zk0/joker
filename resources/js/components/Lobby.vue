@@ -3,8 +3,20 @@
         <div class="col-lg-3 mb-3">
         <div class="card"><div class="card-header">ახალი მაგიდა</div>
             <div class="card-body">
-                <form action="/games" method="POST">
+                <form action="/test" method="POST">
                     <input type="hidden" name="_token" :value="csrf">
+                    <div class="form-group">
+                        <label for="rank">რანკი</label>
+                        <select id="rank" class="form-control" name="rank">
+                            <option value="1">ბრინჯაო</option>
+                            <option value="2">ვერცხლი</option>
+                            <option value="3">ოქრო</option>
+                            <option value="4">პლატინა</option>
+                            <option value="5">მასტერი</option>
+                            <option value="6">გრანდმასტერი</option>
+                            <option value="7">ჯოკერი</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="type">ტიპი</label>
                         <select id="type" class="form-control" name="type">
@@ -22,6 +34,11 @@
                             <option value="-900">-900</option>
                             <option value="-1000">-1000</option>
                         </select>
+                    </div>
+
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="pwd" name="password">
+                        <label class="form-check-label" for="pwd">პაროლიანი მაგიდა</label>
                     </div>
                     <button class="btn btn-primary btn-block">მაგიდის შექმნა</button>
                 </form>
@@ -59,6 +76,7 @@
         },
 
         created() {
+            console.log(App.user);
             window.Echo.private('lobby')
                 .listen('UpdateLobbyEvent', event => {
                     this.games = event.games;

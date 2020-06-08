@@ -22,12 +22,14 @@ Route::get('/', function () {
 Route::post('/test', function () {
 
     request()->validate([
-        'card' => ['required', 'array', new \App\Rules\CardRule()],
-        'action' => ['required_if:card.strength,16', 'in:magali,caigos,mojokra,nije'],
-        'suit' => ['required_if:action,magali,caigos', 'in:hearts,clubs,diamonds,spades']
+        'rank' => ['required', 'integer', 'min:0', "max:7"],
+        'type' => ['required', 'in:1,9'],
+        'penalty' => ['required', 'in:-200,-300,-400,-500,-900,-1000'],
+        'password' => ['sometimes', 'accepted']
     ]);
+    $password = request()->has('password') ? sprintf("%04d", rand(0, 9999)) : null;
 
-    dd('here');
+    dd($password);
 });
 
 Auth::routes();

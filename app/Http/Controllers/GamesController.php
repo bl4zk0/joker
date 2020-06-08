@@ -138,15 +138,23 @@ class GamesController extends Controller
      */
     public function store(Request $request)
     {
+        $max = auth()->user()->player->rank;
+
         $request->validate([
+            'rank' => ['required', 'integer', 'min:0', "max:$max"],
             'type' => ['required', 'in:1,9'],
-            'penalty' => ['required', 'in:-200,-300,-400,-500,-900,-1000']
+            'penalty' => ['required', 'in:-200,-300,-400,-500,-900,-1000'],
+            'password' => ['sometimes', 'accepted']
         ]);
 
+        $password = $request->has('password') ? sprintf("%04d", rand(0, 9999)) : null;
+
         $game = Game::create([
+            'rank' => $request->rank,
             'type' => $request->type,
             'penalty' => $request->penalty,
-            'user_id' => auth()->id()
+            'user_id' => auth()->id(),
+            'password' => $password
         ]);
 
         broadcast(new UpdateLobbyEvent());

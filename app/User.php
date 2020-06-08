@@ -10,6 +10,15 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function($user) {
+            Player::create(['user_id' => $user->id]);
+        });
+    }
+
     /**
      * The attributes that are mass assignable.
      *

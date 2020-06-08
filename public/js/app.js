@@ -2355,6 +2355,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['initialGames'],
   data: function data() {
@@ -2366,6 +2383,7 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     var _this = this;
 
+    console.log(App.user);
     window.Echo["private"]('lobby').listen('UpdateLobbyEvent', function (event) {
       _this.games = event.games;
     });
@@ -44472,7 +44490,7 @@ var render = function() {
           _c("div", { staticClass: "card-header" }, [_vm._v("ახალი მაგიდა")]),
           _vm._v(" "),
           _c("div", { staticClass: "card-body" }, [
-            _c("form", { attrs: { action: "/games", method: "POST" } }, [
+            _c("form", { attrs: { action: "/test", method: "POST" } }, [
               _c("input", {
                 attrs: { type: "hidden", name: "_token" },
                 domProps: { value: _vm.csrf }
@@ -44481,6 +44499,10 @@ var render = function() {
               _vm._m(0),
               _vm._v(" "),
               _vm._m(1),
+              _vm._v(" "),
+              _vm._m(2),
+              _vm._v(" "),
+              _vm._m(3),
               _vm._v(" "),
               _c("button", { staticClass: "btn btn-primary btn-block" }, [
                 _vm._v("მაგიდის შექმნა")
@@ -44551,6 +44573,34 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "form-group" }, [
+      _c("label", { attrs: { for: "rank" } }, [_vm._v("რანკი")]),
+      _vm._v(" "),
+      _c(
+        "select",
+        { staticClass: "form-control", attrs: { id: "rank", name: "rank" } },
+        [
+          _c("option", { attrs: { value: "1" } }, [_vm._v("ბრინჯაო")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "2" } }, [_vm._v("ვერცხლი")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "3" } }, [_vm._v("ოქრო")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "4" } }, [_vm._v("პლატინა")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "5" } }, [_vm._v("მასტერი")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "6" } }, [_vm._v("გრანდმასტერი")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "7" } }, [_vm._v("ჯოკერი")])
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group" }, [
       _c("label", { attrs: { for: "type" } }, [_vm._v("ტიპი")]),
       _vm._v(" "),
       _c(
@@ -44595,6 +44645,21 @@ var staticRenderFns = [
           _c("option", { attrs: { value: "-1000" } }, [_vm._v("-1000")])
         ]
       )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group form-check" }, [
+      _c("input", {
+        staticClass: "form-check-input",
+        attrs: { type: "checkbox", id: "pwd", name: "password" }
+      }),
+      _vm._v(" "),
+      _c("label", { staticClass: "form-check-label", attrs: { for: "pwd" } }, [
+        _vm._v("პაროლიანი მაგიდა")
+      ])
     ])
   }
 ]

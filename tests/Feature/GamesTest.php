@@ -30,11 +30,13 @@ class GamesTest extends TestCase
     /** @test */
     public function authenticated_users_can_create_games_and_the_creator_is_added_as_a_player_0()
     {
+        $this->withoutExceptionHandling();
         $this->signIn();
 
-        $response = $this->post('/games', ['type' => 1, 'penalty' => '-200']);
+        $response = $this->post('/games', ['rank' => 0, 'type' => 1, 'penalty' => '-200']);
 
         $games = Game::all();
+        //dd($games);
 
         $response->assertRedirect($games[0]->path());
 
@@ -83,11 +85,13 @@ class GamesTest extends TestCase
     /** @test */
     public function when_a_game_is_created_lobby_is_updated()
     {
-        Event::fake();
+        $this->withoutExceptionHandling();
 
         $this->signIn();
 
-        $this->post('/games', ['type' => 1, 'penalty' => '-200']);
+        Event::fake();
+
+        $this->post('/games', ['rank' => 0, 'type' => 1, 'penalty' => '-200']);
 
         Event::assertDispatched(UpdateLobbyEvent::class);
     }
