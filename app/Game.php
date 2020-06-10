@@ -18,6 +18,7 @@ class Game extends Model
     protected $hidden = ['password'];
     protected $casts = [
         'cards' => 'array',
+        'kicked_users' => 'array'
     ];
 
     protected static function boot()
@@ -358,7 +359,7 @@ class Game extends Model
 
     public function addPlayer(User $user, $pos = null)
     {
-        $pos = $pos ?? $this->determinePosition();
+        $pos = $pos === 0 ? $pos : $this->players()->count();
 
         $user->player->update(['game_id' => $this->id, 'position' => $pos]);
     }
@@ -444,5 +445,12 @@ class Game extends Model
         $max = $this->numCardsToDeal();
 
         return $max - $sum;
+    }
+
+    public function reposition()
+    {
+        $this->players->each(function ($player, $key) {
+            $player->setPosition($key);
+        });
     }
 }

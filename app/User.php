@@ -6,7 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
 
@@ -25,7 +25,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'username', 'email', 'password', 'email_verified_at', 'socialite_account',
     ];
 
     /**
@@ -44,10 +44,21 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'socialite_account' => 'boolean'
     ];
 
     public function player()
     {
         return $this->hasOne(Player::class);
+    }
+
+    public function socialite()
+    {
+        return $this->hasOne(Socialite::class);
+    }
+
+    public function getUsernameAttribute($username)
+    {
+        return $this->socialite_account ? $this->socialite->name : $username;
     }
 }

@@ -1,9 +1,7 @@
 <?php
 
-use App\Deck;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Validation\Rule;
-
+use Faker\Generator as Faker;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,22 +17,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/test', function () {
-
-    request()->validate([
-        'rank' => ['required', 'integer', 'min:0', "max:7"],
-        'type' => ['required', 'in:1,9'],
-        'penalty' => ['required', 'in:-200,-300,-400,-500,-900,-1000'],
-        'password' => ['sometimes', 'accepted']
-    ]);
-    $password = request()->has('password') ? sprintf("%04d", rand(0, 9999)) : null;
-
-    dd($password);
+Route::get('/test', function (Faker $faker) {
+    dd(date((now())));
 });
 
-Auth::routes();
+Auth::routes(['verify' => true]);
+
+Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider')->where('provider','facebook|google');
+Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback')->where('provider','facebook|google');
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/user/{user}', 'ProfilesController@show');
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/lobby', 'GamesController@index');
@@ -44,4 +37,5 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/call/games/{game}', 'GamesController@call');
     Route::post('/card/games/{game}', 'GamesController@card');
     Route::post('/trump/games/{game}', 'GamesController@trump');
+    Route::post('/leave/games/{game}', 'GamesController@leave');
 });

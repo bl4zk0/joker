@@ -28,10 +28,6 @@ class ExampleTest extends TestCase
 //            ->assertStatus(422);
         //$this->get('/')->assertStatus(200);
 
-        $cards = [];
-
-        $cards = empty($cards) ? null : $cards;
-
-        dd(! [1]);
+        $this->assertTrue(true);
     }
 }

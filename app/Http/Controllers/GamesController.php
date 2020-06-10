@@ -158,7 +158,6 @@ class GamesController extends Controller
         ]);
 
         broadcast(new UpdateLobbyEvent());
-
         return redirect($game->path());
     }
 
@@ -170,30 +169,52 @@ class GamesController extends Controller
      */
     public function show(Game $game)
     {
-        // this whole thing has to be changed...
+        // es gasascorebelia creator ro shemodis pozicia ecvela
         if ($game->state == 0 && $game->players()->count() < 4) {
-            if (! $game->players->contains(auth()->user()->player)) {
 
-                $game->addPlayer(Auth::user());
+            $game->addPlayer(Auth::user());
 
-                $game->refresh();
+            $game->refresh();
 
-                broadcast(new UpdateGameEvent($game));
-                broadcast(new UpdateLobbyEvent());
+            broadcast(new UpdateGameEvent($game));
+            broadcast(new UpdateLobbyEvent());
 
-                return view('game', compact('game'));
-            } else {
-                // this is for development only. it should be removed
-                //dd($game->players()->count());
+            return view('game', compact('game'));
 
-                return view('game', compact('game'));
-            }
-        } elseif ($game->state != 0 && $game->players()->pluck('user_id')->contains(auth()->id())) {
+        } elseif ($game->state != 0 && $game->players->contains(Auth::user()->player)) {
             // probably also update disconnected state
-            return view('game', compact('game'));
+            $cards = Auth::user()->player->cards;
+            return view('game', compact('game', 'cards'));
         } else {
-            return view('game', compact('game'));
             return redirect('/lobby');
+        }
+    }
+
+    public function leave(Game $game)
+    {
+        $this->authorize('leave', $game);
+
+        if ($game->state == '0') {
+            auth()->user()->player->update(['game_id' => null, 'position' => null]);
+            $game->refresh();
+            if (auth()->user()->is($game->creator) && $game->players()->count() > 0) {
+                $game->update(['user_id' => $game->players[0]->user->id]);
+                $game->reposition();
+                broadcast(new UpdateGameEvent($game));
+            } elseif ($game->players()->count() == 0) {
+                $game->delete();
+            } else {
+                $game->reposition();
+                broadcast(new UpdateGameEvent($game));
+            }
+            broadcast(new UpdateLobbyEvent());
+            return;
+        }
+
+        if ($game->state != '0') {
+            auth()->user()->player->update(['disconnected' => true]);
+            return;
+            // if all players leave subtract points delete game
         }
     }
 }

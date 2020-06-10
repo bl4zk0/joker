@@ -12,22 +12,22 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         factory('App\User')->create([
-            'name' => 'Ako',
+            'username' => 'Ako',
             'email' => 'ako@example.com'
         ]);
 
         factory('App\User')->create([
-            'name' => 'Sally',
+            'username' => 'Sally',
             'email' => 'sally@example.com'
         ]);
 
         factory('App\User')->create([
-            'name' => 'John',
+            'username' => 'John',
             'email' => 'john@example.com'
         ]);
 
         factory('App\User')->create([
-            'name' => 'Jane',
+            'username' => 'Jane',
             'email' => 'jane@example.com'
         ]);
     }

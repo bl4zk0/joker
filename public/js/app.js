@@ -2135,6 +2135,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2147,14 +2155,19 @@ __webpack_require__.r(__webpack_exports__);
     return {
       game: this.initialGame,
       players: {},
-      cardCount: 0
+      cardCount: 0,
+      msg: ''
     };
   },
   created: function created() {
     var _this = this;
 
     this.authUserIndex();
-    window.Echo["private"]('game.' + this.game.id).listen('UpdateGameEvent', function (event) {
+    window.addEventListener("beforeunload", function (event) {
+      console.log('event fired');
+      axios.post('/leave/games/' + _this.game.id);
+    });
+    Echo["private"]('game.' + this.game.id).listen('UpdateGameEvent', function (event) {
       _this.game = event.game;
     }).listen('PlayersEvent', function (event) {
       _this.game.players = event.players;
@@ -2211,6 +2224,11 @@ __webpack_require__.r(__webpack_exports__);
       };
 
       var tuz = setInterval(atuzva, 1000);
+    }).listenForWhisper('message', function (e) {
+      var node = document.createElement("P");
+      var textnode = document.createTextNode("".concat(e.name, ": ").concat(e.msg));
+      node.appendChild(textnode);
+      document.querySelector('#chat .card-body').appendChild(node);
     });
   },
   methods: {
@@ -2288,6 +2306,19 @@ __webpack_require__.r(__webpack_exports__);
         return player.scores[last].call + ' / ' + player.scores[last].take;
       } else {
         return '';
+      }
+    },
+    sendMsg: function sendMsg(event) {
+      if (event.key === "Enter") {
+        var node = document.createElement("P");
+        var textnode = document.createTextNode("".concat(App.user.username, ": ").concat(this.msg));
+        node.appendChild(textnode);
+        document.querySelector('#chat .card-body').appendChild(node);
+        Echo["private"]('game.' + this.game.id).whisper('message', {
+          name: App.user.username,
+          msg: this.msg
+        });
+        this.msg = '';
       }
     }
   },
@@ -2383,7 +2414,6 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     var _this = this;
 
-    console.log(App.user);
     window.Echo["private"]('lobby').listen('UpdateLobbyEvent', function (event) {
       _this.games = event.games;
     });
@@ -44218,6 +44248,43 @@ var render = function() {
               _vm._v(" "),
               _c("button", { staticClass: "btn btn-primary" }, [_vm._v("send")])
             ]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "card",
+              staticStyle: { position: "fixed", bottom: "10px" },
+              attrs: { id: "chat" }
+            },
+            [
+              _c("div", { staticClass: "card-body" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "card-footer" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.msg,
+                      expression: "msg"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { type: "text" },
+                  domProps: { value: _vm.msg },
+                  on: {
+                    keypress: _vm.sendMsg,
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.msg = $event.target.value
+                    }
+                  }
+                })
+              ])
+            ]
           )
         ]),
         _vm._v(" "),
@@ -44237,17 +44304,11 @@ var render = function() {
               attrs: { id: "trump" }
             },
             [
-              _c("img", {
-                staticStyle: { height: "70px" },
-                attrs: {
-                  src: this.game.trump
-                    ? "/storage/cards/" +
-                      this.game.trump.suit +
-                      this.game.trump.strength +
-                      ".png"
-                    : ""
-                }
-              })
+              _vm._v(
+                "\n                " +
+                  _vm._s(this.game.trump) +
+                  "\n            "
+              )
             ]
           ),
           _vm._v(" "),
@@ -44262,7 +44323,7 @@ var render = function() {
                 _vm._v(
                   _vm._s(
                     this.game.players[this.players[2]]
-                      ? this.game.players[this.players[2]].user.name
+                      ? this.game.players[this.players[2]].user.username
                       : "player3"
                   )
                 )
@@ -44284,7 +44345,7 @@ var render = function() {
                   _vm._v(
                     _vm._s(
                       this.game.players[this.players[1]]
-                        ? this.game.players[this.players[1]].user.name
+                        ? this.game.players[this.players[1]].user.username
                         : "player2"
                     )
                   )
@@ -44307,7 +44368,7 @@ var render = function() {
                   _vm._v(
                     _vm._s(
                       this.game.players[this.players[3]]
-                        ? this.game.players[this.players[3]].user.name
+                        ? this.game.players[this.players[3]].user.username
                         : "player4"
                     )
                   )
@@ -44360,7 +44421,7 @@ var render = function() {
                   _vm._v(
                     _vm._s(
                       this.game.players[this.players[0]]
-                        ? this.game.players[this.players[0]].user.name
+                        ? this.game.players[this.players[0]].user.username
                         : "player1"
                     )
                   )
@@ -44490,7 +44551,7 @@ var render = function() {
           _c("div", { staticClass: "card-header" }, [_vm._v("ახალი მაგიდა")]),
           _vm._v(" "),
           _c("div", { staticClass: "card-body" }, [
-            _c("form", { attrs: { action: "/test", method: "POST" } }, [
+            _c("form", { attrs: { action: "/games", method: "POST" } }, [
               _c("input", {
                 attrs: { type: "hidden", name: "_token" },
                 domProps: { value: _vm.csrf }
@@ -44516,35 +44577,43 @@ var render = function() {
         return _c("div", { key: game.id, staticClass: "col-lg-3 mb-3" }, [
           _c("div", { staticClass: "card" }, [
             _c("div", { staticClass: "card-header" }, [
-              _vm._v(_vm._s(game.creator.name + "`s game"))
+              _vm._v(_vm._s(game.creator.username + "`s game"))
             ]),
             _vm._v(" "),
             _c("ul", { staticClass: "list-group list-group-flush" }, [
               _c("li", { staticClass: "list-group-item" }, [
                 _vm._v(
                   "1: " +
-                    _vm._s(game.players[0] ? game.players[0].user.name : " ")
+                    _vm._s(
+                      game.players[0] ? game.players[0].user.username : " "
+                    )
                 )
               ]),
               _vm._v(" "),
               _c("li", { staticClass: "list-group-item" }, [
                 _vm._v(
                   "2: " +
-                    _vm._s(game.players[1] ? game.players[1].user.name : " ")
+                    _vm._s(
+                      game.players[1] ? game.players[1].user.username : " "
+                    )
                 )
               ]),
               _vm._v(" "),
               _c("li", { staticClass: "list-group-item" }, [
                 _vm._v(
                   "3: " +
-                    _vm._s(game.players[2] ? game.players[2].user.name : " ")
+                    _vm._s(
+                      game.players[2] ? game.players[2].user.username : " "
+                    )
                 )
               ]),
               _vm._v(" "),
               _c("li", { staticClass: "list-group-item" }, [
                 _vm._v(
                   "4: " +
-                    _vm._s(game.players[3] ? game.players[3].user.name : " ")
+                    _vm._s(
+                      game.players[3] ? game.players[3].user.username : " "
+                    )
                 )
               ]),
               _vm._v(" "),
@@ -44579,19 +44648,19 @@ var staticRenderFns = [
         "select",
         { staticClass: "form-control", attrs: { id: "rank", name: "rank" } },
         [
-          _c("option", { attrs: { value: "1" } }, [_vm._v("ბრინჯაო")]),
+          _c("option", { attrs: { value: "0" } }, [_vm._v("ბრინჯაო")]),
           _vm._v(" "),
-          _c("option", { attrs: { value: "2" } }, [_vm._v("ვერცხლი")]),
+          _c("option", { attrs: { value: "1" } }, [_vm._v("ვერცხლი")]),
           _vm._v(" "),
-          _c("option", { attrs: { value: "3" } }, [_vm._v("ოქრო")]),
+          _c("option", { attrs: { value: "2" } }, [_vm._v("ოქრო")]),
           _vm._v(" "),
-          _c("option", { attrs: { value: "4" } }, [_vm._v("პლატინა")]),
+          _c("option", { attrs: { value: "3" } }, [_vm._v("პლატინა")]),
           _vm._v(" "),
-          _c("option", { attrs: { value: "5" } }, [_vm._v("მასტერი")]),
+          _c("option", { attrs: { value: "4" } }, [_vm._v("მასტერი")]),
           _vm._v(" "),
-          _c("option", { attrs: { value: "6" } }, [_vm._v("გრანდმასტერი")]),
+          _c("option", { attrs: { value: "5" } }, [_vm._v("გრანდმასტერი")]),
           _vm._v(" "),
-          _c("option", { attrs: { value: "7" } }, [_vm._v("ჯოკერი")])
+          _c("option", { attrs: { value: "6" } }, [_vm._v("ჯოკერი")])
         ]
       )
     ])
@@ -44690,18 +44759,22 @@ var render = function() {
         _c("th", { attrs: { scope: "col" } }, [_vm._v("#")]),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [
-          _vm._v(_vm._s(this.players[0] ? this.players[0].user.name : "..."))
+          _vm._v(
+            _vm._s(this.players[0] ? this.players[0].user.username : "...")
+          )
         ]),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [
-          _vm._v(_vm._s(this.players[1] ? this.players[1].user.name : "..."))
+          _vm._v(
+            _vm._s(this.players[1] ? this.players[1].user.username : "...")
+          )
         ]),
         _vm._v(" "),
         _c("th", {
           attrs: { scope: "col" },
           domProps: {
             textContent: _vm._s(
-              this.players[2] ? this.players[2].user.name : "..."
+              this.players[2] ? this.players[2].user.username : "..."
             )
           }
         }),
@@ -44710,7 +44783,7 @@ var render = function() {
           attrs: { scope: "col" },
           domProps: {
             textContent: _vm._s(
-              this.players[3] ? this.players[3].user.name : "..."
+              this.players[3] ? this.players[3].user.username : "..."
             )
           }
         })

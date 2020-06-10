@@ -190,6 +190,33 @@ class GameTest extends TestCase
     }
 
     /** @test */
+    public function when_creator_leaves_it_sets_other_player_as_creator()
+    {
+        $user = $this->signIn();
+
+        $game = factory('App\Game')->create(['user_id' => $user->id]);
+        $user2 = factory('App\User')->create();
+
+        $game->addPlayer($user2);
+
+        $this->postJson('/leave' . $game->path());
+
+        $this->assertEquals($user2->id, $game->fresh()->user_id);
+    }
+
+    /** @test */
+    public function when_creator_leaves_and_no_other_players_left_game_is_deleted()
+    {
+        $user = $this->signIn();
+
+        $game = factory('App\Game')->create(['user_id' => $user->id]);
+
+        $this->postJson('/leave' . $game->path());
+
+        $this->assertDatabaseMissing('games', ['id' => $game->id]);
+    }
+
+    /** @test */
     public function it_authorizes_start()
     {
         $user = $this->signIn();

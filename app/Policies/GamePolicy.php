@@ -67,13 +67,13 @@ class GamePolicy
     /**
      * Determine whether the user can delete the model.
      *
-     * @param  \App\User  $user
-     * @param  \App\Game  $game
+     * @param  User  $user
+     * @param  Game  $game
      * @return mixed
      */
-    public function delete(User $user, Game $game)
+    public function leave(User $user, Game $game)
     {
-        //
+        return $game->players->contains($user->player);
     }
 
     /**

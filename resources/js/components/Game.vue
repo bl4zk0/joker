@@ -19,21 +19,29 @@
                     </div>
                     <button class="btn btn-primary">send</button>
                 </form>
+                <div id="chat" class="card" style="position: fixed; bottom: 10px">
+                    <div class="card-body">
+
+                    </div>
+                    <div class="card-footer">
+                        <input type="text" class="form-control" @keypress="sendMsg" v-model="msg">
+                    </div>
+                </div>
             </div>
             <div class="col-md-7 bg-success rounded">
                 <div id="trump" style="position: absolute; right: 10px; top: 10px;" v-show="this.game.trump">
-                    <img :src="this.game.trump ? '/storage/cards/' + this.game.trump.suit + this.game.trump.strength + '.png': ''" style="height: 70px">
+                    {{ this.game.trump }}
                 </div>
                 <div class="d-flex justify-content-center">
                     <div id="player2" class="my-3">
                         <div class="avatar border border-warning rounded-circle mx-auto mb-1"></div>
-                        <div class="text-center">{{ this.game.players[this.players[2]] ? this.game.players[this.players[2]].user.name : 'player3'}}</div>
+                        <div class="text-center">{{ this.game.players[this.players[2]] ? this.game.players[this.players[2]].user.username : 'player3'}}</div>
                     </div>
                 </div>
                 <div class="d-flex">
                     <div id="player1" class="align-self-center">
                         <div class="avatar border border-warning rounded-circle mb-1"></div>
-                        <div class="mb-3 text-center">{{ this.game.players[this.players[1]] ? this.game.players[this.players[1]].user.name : 'player2'}}</div>
+                        <div class="mb-3 text-center">{{ this.game.players[this.players[1]] ? this.game.players[this.players[1]].user.username : 'player2'}}</div>
                     </div>
 
                     <div class="text-center flex-grow-1 mx-5"
@@ -56,7 +64,7 @@
 
                     <div id="player3" class="align-self-center">
                         <div class="avatar border border-warning rounded-circle mb-1"></div>
-                        <div class="mb-3 text-center">{{ this.game.players[this.players[3]] ? this.game.players[this.players[3]].user.name : 'player4'}}</div>
+                        <div class="mb-3 text-center">{{ this.game.players[this.players[3]] ? this.game.players[this.players[3]].user.username : 'player4'}}</div>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center">
@@ -69,7 +77,7 @@
                                :pos="this.game.players[this.players[0]].position"></cards>
 
                         <div class="avatar border border-warning rounded-circle mb-1"></div>
-                        <div class="text-center">{{ this.game.players[this.players[0]] ? this.game.players[this.players[0]].user.name : 'player1'}}</div>
+                        <div class="text-center">{{ this.game.players[this.players[0]] ? this.game.players[this.players[0]].user.username : 'player1'}}</div>
                     </div>
                 </div>
                 <div style="position: absolute; right: 5px; bottom: 5px">
@@ -99,13 +107,20 @@
             return {
                 game: this.initialGame,
                 players: {},
-                cardCount: 0
+                cardCount: 0,
+                msg: ''
             }
         },
 
         created() {
             this.authUserIndex();
-            window.Echo.private('game.' + this.game.id)
+
+            window.addEventListener("beforeunload", event => {
+                console.log('event fired');
+                axios.post('/leave/games/' + this.game.id);
+            });
+
+            Echo.private('game.' + this.game.id)
                 .listen('UpdateGameEvent', event => {
                     this.game = event.game;
                 })
@@ -160,6 +175,12 @@
 
                     let tuz = setInterval(atuzva, 1000);
 
+                })
+                .listenForWhisper('message', (e) => {
+                    let node = document.createElement("P");
+                    let textnode = document.createTextNode(`${e.name}: ${e.msg}`);
+                    node.appendChild(textnode);
+                    document.querySelector('#chat .card-body').appendChild(node);
                 });
         },
 
@@ -217,6 +238,21 @@
                     return player.scores[last].call + ' / ' + player.scores[last].take;
                 } else {
                     return '';
+                }
+            },
+
+            sendMsg(event) {
+                if (event.key === "Enter") {
+                    let node = document.createElement("P");
+                    let textnode = document.createTextNode(`${App.user.username}: ${this.msg}`);
+                    node.appendChild(textnode);
+                    document.querySelector('#chat .card-body').appendChild(node);
+                    Echo.private('game.' + this.game.id)
+                        .whisper('message', {
+                            name: App.user.username,
+                            msg: this.msg
+                        });
+                    this.msg = '';
                 }
             }
         },

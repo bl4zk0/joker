@@ -27,6 +27,7 @@ class CreateGamesTable extends Migration
             $table->unsignedTinyInteger('quarter')->default(1);
             $table->unsignedTinyInteger('rank');
             $table->unsignedSmallInteger('password')->nullable();
+            $table->string('kicked_users')->default('[]');
             $table->timestamps();
         });
     }

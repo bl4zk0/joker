@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Player extends Model
 {
     protected $guarded = [];
-    protected $with = ['user:id,name', 'scores'];
+    protected $with = ['user:id,username', 'scores'];
     protected $hidden = ['cards'];
     protected $casts = [
         'cards' => 'array',
-        'card' => 'array'
+        'card' => 'array',
+        'disconnected' => 'boolean'
     ];
 
     /**

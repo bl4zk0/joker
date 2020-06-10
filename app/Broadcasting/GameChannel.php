@@ -25,6 +25,6 @@ class GameChannel
      */
     public function join(User $user, Game $game)
     {
-        return $game->players()->pluck('user_id')->contains($user->id);
+        return $game->players->contains($user->player);
     }
 }
