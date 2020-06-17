@@ -2015,13 +2015,10 @@ __webpack_require__.r(__webpack_exports__);
       this.hideS();
     },
     trump: function trump(event) {
-      var str = event.target.getAttribute('data-strength');
-      var s = event.target.getAttribute('data-suit');
-      this.card = {
-        strength: str,
-        suit: s
+      var suit = {
+        trump: event.target.getAttribute('data-suit')
       };
-      axios.post('/trump/games/' + this.gameId, this.card);
+      axios.post('/trump/games/' + this.gameId, suit);
       document.getElementById('setTrump').style.display = 'none';
     },
     hideS: function hideS() {
@@ -44194,11 +44191,7 @@ var render = function() {
             "button",
             {
               staticClass: "btn btn-outline-danger",
-              attrs: {
-                type: "button",
-                "data-strength": "14",
-                "data-suit": "hearts"
-              },
+              attrs: { type: "button", "data-suit": "hearts" },
               on: { click: _vm.trump }
             },
             [_vm._v("გული")]
@@ -44208,11 +44201,7 @@ var render = function() {
             "button",
             {
               staticClass: "btn btn-outline-dark",
-              attrs: {
-                type: "button",
-                "data-strength": "14",
-                "data-suit": "clubs"
-              },
+              attrs: { type: "button", "data-suit": "clubs" },
               on: { click: _vm.trump }
             },
             [_vm._v("ჯვარი")]
@@ -44222,11 +44211,7 @@ var render = function() {
             "button",
             {
               staticClass: "btn btn-outline-danger",
-              attrs: {
-                type: "button",
-                "data-strength": "14",
-                "data-suit": "diamonds"
-              },
+              attrs: { type: "button", "data-suit": "diamonds" },
               on: { click: _vm.trump }
             },
             [_vm._v("აგური")]
@@ -44236,11 +44221,7 @@ var render = function() {
             "button",
             {
               staticClass: "btn btn-outline-dark",
-              attrs: {
-                type: "button",
-                "data-strength": "14",
-                "data-suit": "spades"
-              },
+              attrs: { type: "button", "data-suit": "spades" },
               on: { click: _vm.trump }
             },
             [_vm._v("ყვავი")]
@@ -44250,11 +44231,7 @@ var render = function() {
             "button",
             {
               staticClass: "btn btn-outline-secondary",
-              attrs: {
-                type: "button",
-                "data-strength": "16",
-                "data-suit": "black_joker"
-              },
+              attrs: { type: "button", "data-suit": "bez" },
               on: { click: _vm.trump }
             },
             [_vm._v("ბეზი")]

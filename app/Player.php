@@ -58,19 +58,19 @@ class Player extends Model
      */
     public function canPlay($card, $gameCards, $trump)
     {
-        if ((empty($gameCards) && $card['strength'] !== 16) || (empty($gameCards) &&
+        if ((empty($gameCards) && $card['strength'] != 16) || (empty($gameCards) &&
                 isset($card['action']) && in_array($card['action'], ['magali', 'caigos']))) {
             return true;
         } else {
             $suit = isset($gameCards[0]['actionsuit']) ? $gameCards[0]['actionsuit'] : $gameCards[0]['suit'];
 
-            if (isset($gameCards[0]['action']) && ($gameCards[0]['action'] === 'magali')) {
+            if (isset($gameCards[0]['action']) && ($gameCards[0]['action'] == 'magali')) {
                 if ($this->isHighestSuitInCards($card, $suit)) return true;
-            } else if ($card['suit'] === $suit) return true;
+            } else if ($card['suit'] == $suit) return true;
 
             if (isset($card['action']) && in_array($card['action'], ['mojokra', 'nije'])) return true;
 
-            if ($this->suitNotInCards($suit) && ($card['suit'] === $trump)) return true;
+            if ($this->suitNotInCards($suit) && ($card['suit'] == $trump)) return true;
 
             if ($this->suitNotInCards($suit) && $this->suitNotInCards($trump)) return true;
         }
@@ -88,7 +88,7 @@ class Player extends Model
     public function isHighestSuitInCards($card, $suit)
     {
         $cards = array_filter($this->cards, function($card) use ($suit) {
-            return $card['suit'] === $suit;
+            return $card['suit'] == $suit;
         });
 
         if (empty($cards)) return false;
@@ -96,7 +96,8 @@ class Player extends Model
         $cards = collect($cards)->sortByDesc('strength');
 
         $highestCard = $cards->values()->all()[0];
-        if (($highestCard['strength'] === $card['strength']) && ($highestCard['suit'] === $card['suit'])) return true;
+
+        if (($highestCard['strength'] == $card['strength']) && ($highestCard['suit'] == $card['suit'])) return true;
 
         return false;
     }

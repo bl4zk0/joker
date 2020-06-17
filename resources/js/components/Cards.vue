@@ -24,11 +24,11 @@
             <button type="button" class="btn btn-light" @click="hideJ">x</button>
         </div>
         <div id="setTrump" style="position: absolute; display: none; left: 80px; bottom: 140px;">
-            <button type="button" class="btn btn-outline-danger" data-strength="14" data-suit="hearts" @click="trump">გული</button>
-            <button type="button" class="btn btn-outline-dark" data-strength="14" data-suit="clubs" @click="trump">ჯვარი</button>
-            <button type="button" class="btn btn-outline-danger" data-strength="14" data-suit="diamonds" @click="trump">აგური</button>
-            <button type="button" class="btn btn-outline-dark" data-strength="14" data-suit="spades" @click="trump">ყვავი</button>
-            <button type="button" class="btn btn-outline-secondary" data-strength="16" data-suit="black_joker" @click="trump">ბეზი</button>
+            <button type="button" class="btn btn-outline-danger" data-suit="hearts" @click="trump">გული</button>
+            <button type="button" class="btn btn-outline-dark" data-suit="clubs" @click="trump">ჯვარი</button>
+            <button type="button" class="btn btn-outline-danger" data-suit="diamonds" @click="trump">აგური</button>
+            <button type="button" class="btn btn-outline-dark" data-suit="spades" @click="trump">ყვავი</button>
+            <button type="button" class="btn btn-outline-secondary" data-suit="bez" @click="trump">ბეზი</button>
         </div>
     </div>
 </template>
@@ -105,14 +105,10 @@
             },
 
             trump(event) {
-                let str = event.target.getAttribute('data-strength');
-                let s = event.target.getAttribute('data-suit');
-                this.card = {
-                    strength: str,
-                    suit: s
-                }
-
-                axios.post('/trump/games/' + this.gameId, this.card);
+                let suit = {
+                    trump: event.target.getAttribute('data-suit')
+                };
+                axios.post('/trump/games/' + this.gameId, suit);
                 document.getElementById('setTrump').style.display = 'none';
             },
 
