@@ -19,7 +19,7 @@
                     </div>
                     <button class="btn btn-primary">send</button>
                 </form>
-                <div id="chat" class="card" style="position: fixed; bottom: 10px">
+                <div id="chat" class="card mt-3">
                     <div class="card-body">
 
                     </div>
@@ -29,8 +29,7 @@
                 </div>
             </div>
             <div class="col-md-7 bg-success rounded">
-                <div id="trump" style="position: absolute; right: 10px; top: 10px;" v-show="this.game.trump">
-                    {{ this.game.trump }}
+                <div id="trump" :class="this.game.trump" style="position: absolute; right: 10px; top: 10px;" v-show="this.game.trump">
                 </div>
                 <div class="d-flex justify-content-center">
                     <div id="player2" class="my-3">
@@ -48,16 +47,16 @@
                          style="height: 350px">
                         <div class="t-cards">
                             <div id="p0-card">
-                                <img src="" style="height: 100px">
+
                             </div>
                             <div id="p1-card">
-                                <img src="" style="height: 100px">
+
                             </div>
                             <div id="p2-card">
-                                <img src="" style="height: 100px">
+
                             </div>
                             <div id="p3-card">
-                                <img src="" style="height: 100px">
+
                             </div>
                         </div>
                     </div>
@@ -80,9 +79,11 @@
                         <div class="text-center">{{ this.game.players[this.players[0]] ? this.game.players[this.players[0]].user.username : 'player1'}}</div>
                     </div>
                 </div>
-                <div style="position: absolute; right: 5px; bottom: 5px">
+                <div v-show="creator" style="position: absolute; right: 5px; bottom: 5px">
 
-                    <button type="button" class="btn btn-warning" @click="start">Start</button>
+                    <button type="button"
+                            class="btn btn-warning"
+                            @click="start">Start</button>
 
                 </div>
             </div>
@@ -112,13 +113,20 @@
             }
         },
 
+        computed: {
+            creator() {
+                if (window.App.user.id === this.game.user_id && this.game.state == '0') return true;
+                return false;
+            },
+        },
+
         created() {
             this.authUserIndex();
 
-            window.addEventListener("beforeunload", event => {
-                console.log('event fired');
-                axios.post('/leave/games/' + this.game.id);
-            });
+            // window.addEventListener("beforeunload", event => {
+            //     console.log('event fired');
+            //     axios.post('/leave/games/' + this.game.id);
+            // });
 
             Echo.private('game.' + this.game.id)
                 .listen('UpdateGameEvent', event => {
@@ -133,14 +141,14 @@
                     let zindex = this.cardCount;
                     let card = event.card;
                     let p = Number(this.getKeyByValue(this.players, event.position));
-                    let el = document.querySelector('#p' + p + '-card');
+                    let el = document.getElementById('p' + p + '-card');
                     el.style.zIndex = zindex;
-                    el.firstChild.setAttribute('src', '/storage/cards/' + card.suit + card.strength + '.png');
+                    el.className = 'p-card ' + (card.suit + card.strength);
                     if (this.cardCount === 4) {
                         setTimeout(() => {
                             let els = document.querySelector('.t-cards').children;
                             for (let i = 0; i < 4; i++) {
-                                els[i].firstChild.setAttribute('src', '');
+                                els[i].className = '';
                             }
                             this.cardCount = 0;
                         }, 1000);
@@ -154,9 +162,9 @@
                     p = Number(this.getKeyByValue(this.players, p));
 
                     let atuzva = () => {
-                        let el = document.querySelector('#p' + p + '-card');
+                        let el = document.getElementById('p' + p + '-card');
                         el.style.zIndex = i;
-                        el.firstChild.setAttribute('src', '/storage/cards/' + cards[i].suit + cards[i].strength + '.png');
+                        el.className = 'p-card ' + (cards[i].suit + cards[i].strength);
                         p = p === 3 ? 0 : p + 1;
                         i++;
                         if (i === cards.length) {
@@ -164,7 +172,7 @@
                             setTimeout(() => {
                                 let els = document.querySelector('.t-cards').children;
                                 for (let i = 0; i < 4; i++) {
-                                        els[i].firstChild.setAttribute('src', '');
+                                        els[i].className = '';
                                     }
                                 this.game = event.game;
                                 this.authUserIndex();
@@ -186,7 +194,10 @@
 
         methods: {
             call() {
-                if (this.game.turn !== this.game.players[this.players[0]].position) return;
+                if (this.game.turn !== this.game.players[this.players[0]].position) {
+                    console.log('wrong turn');
+                    return;
+                }
                 let el = document.querySelector('select[name="call"]');
                 let data = {
                     call: el.options[el.options.selectedIndex].value
@@ -271,6 +282,18 @@
     .t-cards > div {
         position: absolute;
     }
+    #trump {
+        width: 60px;
+        height: 60px;
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    .p-card {
+        width: 69px;
+        height: 100px;
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
     #p0-card {
         left: 320px;
         top: 240px;
@@ -290,5 +313,10 @@
     #taken {
         position: absolute;
         bottom: 110px;
+    }
+    #chat {
+        min-height: 82%;
+        max-height: 82%;
+        overflow: auto;
     }
 </style>

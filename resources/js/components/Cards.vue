@@ -1,12 +1,13 @@
 <template>
-    <div class="p1-cards mb-1" v-show="state != '0'">
+    <div class="mb-1" v-show="state != '0'">
         <div v-for="(card, index ) in this.cards"
-             :style="'position: absolute; left:' + (50 + index * 25) + 'px' " :key="index">
+             class="p-card"
+             :style="'position: absolute; left:' + (50 + index * 25) + 'px' "
+             :key="index"
+             :class="card.suit + card.strength"
+             :data-suit="card.suit"
+             :data-strength="card.strength" @click="sendCard" :id="index">
 
-            <img :src="'/storage/cards/' + card.suit + card.strength + '.png'"
-                 style="height: 100px"
-                 :data-suit="card.suit"
-                 :data-strength="card.strength" @click="sendCard" :id="index">
         </div>
         <div id="suits" style="position: absolute; display: none; left: 80px; bottom: 180px;">
             <button type="button" class="btn btn-outline-danger" data-suit="hearts" @click="jokSuit">გული</button>
@@ -62,12 +63,17 @@
 
         methods: {
             sendCard(event) {
-                if (this.turn !== this.pos) return;
+                if (this.turn !== this.pos)  {
+                    console.log("wrong turn");
+                    return;
+                }
                 let str = event.target.getAttribute('data-strength');
                 let s = event.target.getAttribute('data-suit');
                 this.card = {
-                    strength: str,
-                    suit: s,
+                    card: {
+                        strength: str,
+                        suit: s,
+                    }
                 };
                 if (/joker$/.test(event.target.getAttribute('data-suit'))) {
                     document.getElementById('jok').style.display = 'block';
@@ -131,3 +137,7 @@
         }
     }
 </script>
+
+<style>
+
+</style>

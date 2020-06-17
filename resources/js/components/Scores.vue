@@ -94,3 +94,9 @@
         }
     }
 </script>
+
+<style>
+    .table th, .table td {
+        padding: 0.25rem !important;
+    }
+</style>

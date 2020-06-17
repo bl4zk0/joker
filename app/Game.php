@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class Game extends Model
 {
     /*
-     * TODO: check broadcasted game properties
+     * TODO: check broadcasted game properties use model resources??
      * throttle join game request
      */
     protected $guarded = [];
@@ -36,6 +36,9 @@ class Game extends Model
 
         $this->deal();
 
+        $this->refresh();
+
+        //es event shevcvalot $this->broadcast();
         broadcast(new StartGameEvent($this, $cards));
     }
 
@@ -60,7 +63,8 @@ class Game extends Model
         $this->save();
 
         auth()->user()->player()->update(['card' => $card]);
-        //$this->refresh();
+
+        $this->refresh();
     }
 
     /**
@@ -78,12 +82,14 @@ class Game extends Model
         if (count($this->cards) == 4) {
             $highestCard = $this->highestCard();
             foreach ($this->players as $player) {
-                if ($player->card === $highestCard) {
+                if ($player->card == $highestCard) {
                     $player->scores()->increment('take');
                     $this->update(['turn' => $player->position]);
                     broadcast(new UpdateGameEvent($this));
                     if (empty($this->players()->pluck('cards')->whereNotNull()->toArray())) {
                         $this->calcScoresAfterHand();
+                        // check end of the game;
+                        // tu tamashi damtavrda true gvaqvs return-shi da unda davamtavrot tamashi...
                         $this->checkEnd();
                     }
                 }
@@ -162,9 +168,9 @@ class Game extends Model
             'trump' => null
         ]);
 
-        broadcast(new UpdateGameEvent($this));
-        // aq dasaxvecia es eventi rodis unda gavushvat
         $this->deal();
+        // aq dasaxvecia es eventi rodis unda gavushvat
+        broadcast(new UpdateGameEvent($this));
         return false;
     }
 
@@ -172,8 +178,10 @@ class Game extends Model
     {
         $all = $this->numCardsToDeal();
         $penalty = $this->penalty;
-        $this->players->each(function ($player) use($all, $penalty) {
+
+        $this->players->each(function ($player, $key) use($all, $penalty) {
             $score = $player->scores()->latest()->first();
+            //dd($score);
             if ($score->call == $score->take && $score->call == $all) {
                 $score->update(['result' => $score->call * 100]);
             } elseif ($score->call == $score->take) {

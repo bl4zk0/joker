@@ -50,6 +50,7 @@ class GamesController extends Controller
             broadcast(new CardsEvent($player->id, $player->cards));
         });
 
+        // ese shesacvlelia $game->broadcast();
         broadcast(new UpdateGameEvent($game));
     }
 
@@ -169,7 +170,12 @@ class GamesController extends Controller
      */
     public function show(Game $game)
     {
-        // es gasascorebelia creator ro shemodis pozicia ecvela
+        // aq dasaxveci gvaqvs rodesac vinme gava tamashis dros
+        // aseve rodis vamatebt creator-s motamasheebshi
+        if ($game->players->contains(Auth::user()->player)) {
+            return view('game', compact('game'));
+        }
+
         if ($game->state == 0 && $game->players()->count() < 4) {
 
             $game->addPlayer(Auth::user());

@@ -265,7 +265,7 @@ class GameTest extends TestCase
     }
 
     /** @test */
-    public function it_can_determine_highest_card()
+    public function it_can_determines_highest_card()
     {
         $game = factory('App\Game')->create();
 

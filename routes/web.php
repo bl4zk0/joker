@@ -18,7 +18,7 @@ Route::get('/', function () {
 });
 
 Route::get('/test', function (Faker $faker) {
-    dd(date((now())));
+
 });
 
 Auth::routes(['verify' => true]);

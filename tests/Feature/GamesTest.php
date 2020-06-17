@@ -132,6 +132,19 @@ class GamesTest extends TestCase
     }
 
     /** @test */
+    public function a_player_can_play_a_card()
+    {
+        $this->withoutExceptionHandling();
+        $user = $this->signIn();
+
+        $game = factory('App\Game')->create(['user_id' => $user->id, 'state' => 'card']);
+
+        $game->fresh()->players[0]->update(['cards' => [['strength' => 9, 'suit' => 'hearts']]]);
+
+        $this->postJson('/card' . $game->path(), ['card' => ['strength' => 9, 'suit' => 'hearts']])->assertOk();
+    }
+
+    /** @test */
     public function check_take_updates_turn_if_not_4_cards()
     {
         $game = factory('App\Game')->create(['cards' => [['strength' => 14, 'suit' => 'hearts']]]);
@@ -147,7 +160,6 @@ class GamesTest extends TestCase
     /** @test */
     public function calculates_scores_after_each_hand()
     {
-        $this->withoutExceptionHandling();
         $game = factory('App\Game')->create(['type' => 9]);
         $game->addPlayer(factory('App\User')->create());
         $game->addPlayer(factory('App\User')->create());
@@ -179,6 +191,8 @@ class GamesTest extends TestCase
         ]);
 
         $game->calcScoresAfterHand();
+
+        //dd(\App\Score::all()->toArray());
 
         $this->assertEquals(900, $game->fresh()->players[0]->scores[0]->result);
         $this->assertEquals(50, $game->fresh()->players[1]->scores[0]->result);

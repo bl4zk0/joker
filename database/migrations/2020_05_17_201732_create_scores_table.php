@@ -14,12 +14,13 @@ class CreateScoresTable extends Migration
     public function up()
     {
         Schema::create('scores', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('player_id');
             $table->unsignedTinyInteger('quarter');
             $table->unsignedTinyInteger('call')->nullable();
             $table->unsignedTinyInteger('take')->default(0);
             $table->smallInteger('result')->nullable();
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 
