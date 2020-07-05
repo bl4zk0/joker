@@ -2,19 +2,17 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class CardsEvent implements ShouldBroadcast
+class CardDealEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private $playerId;
+    private $user_id;
     public $cards;
     public $trump;
 
@@ -25,10 +23,10 @@ class CardsEvent implements ShouldBroadcast
      * @param $cards
      * @param bool $trump
      */
-    public function __construct($playerId, $cards, $trump = false)
+    public function __construct($user_id, $cards, $trump = false)
     {
+        $this->user_id = $user_id;
         $this->cards = $cards;
-        $this->playerId = $playerId;
         $this->trump = $trump;
     }
 
@@ -39,6 +37,6 @@ class CardsEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('player.' . $this->playerId);
+        return new PrivateChannel('user.' . $this->user_id);
     }
 }

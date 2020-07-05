@@ -1,0 +1,371 @@
+#player0card, #player1card,
+#player2card, #player3card,
+.p-card {
+    position: absolute;
+    width: 69px;
+    height: 94px;
+}
+
+#player0card {
+    left: 50%;
+    top: 50%;
+    margin-left: -34.5px;
+    margin-top: -5px;
+}
+
+#player1card {
+    right: 50%;
+    top: 50%;
+    margin-top: -47px;
+}
+
+#player2card {
+    left: 50%;
+    bottom: 50%;
+    margin-left: -34.5px;
+    margin-bottom: -5px;
+}
+
+#player3card {
+    left: 50%;
+    top: 50%;
+    margin-top: -47px;
+}
+
+#player2, #player1,
+#player3, #player0 {
+    height: 70px;
+    position: absolute;
+    text-align: center;
+    color: white;
+}
+
+#player2, #player0 {
+    left: 50%;
+    margin-left: -25px;
+}
+
+#player1, #player3 {
+    top: 50%;
+    margin-top: -35px;
+}
+
+#player2 {
+    top: 8px;
+}
+
+#player1 {
+    left: 8px;
+}
+
+#player3 {
+    right: 8px;
+}
+
+#player0 {
+    bottom: 8px;
+}
+
+#trump-wrapper {
+    position: absolute;
+    right: 4px;
+    top: 1px;
+    text-align: center;
+    font-size: .9rem;
+    color: whitesmoke;
+}
+
+#trump-wrapper #trump {
+    width: 69px;
+    height: 94px;
+}
+
+#start-btn {
+    position: absolute;
+    width: 100px;
+    left: 50%;
+    bottom: 50%;
+    margin-left: -50px;
+    z-index: 1000;
+}
+
+#suits, #callboard,
+#jokhigh, #jokjoker {
+    position: absolute;
+    bottom: 210px;
+    left: 50%;
+    z-index: 1000;
+}
+
+#suits {
+    width: 111px;
+    margin-left: -55.5px;
+}
+
+#suits button:not(.btn-block) {
+    font-size: 32px;
+}
+
+#suits .btn-block {
+    font-weight: 700;
+}
+
+#callboard {
+    width: 123px;
+    margin-left: -62px;
+    max-height: 1080px;
+}
+
+#callboard button {
+    width: 35px;
+}
+
+#callboard button[data-value='9'] {
+    width: 113px;
+}
+
+#ready {
+    position: absolute;
+    bottom: 35%;
+    left: 50%;
+    width: 310px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-left: -155px;
+    z-index: 1000;
+}
+
+#ready th {
+    width: 75px;
+    max-width: 75px;
+    padding: 12px 4px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#jokhigh {
+    width: 179px;
+    margin-left: -89.5px;
+}
+
+#jokjoker {
+    width: 202px;
+    margin-left: -101px;
+}
+
+#jokhigh button, #jokjoker button, .u-name {
+    font-size: 12.8px !important;
+    font-weight: 700 !important;
+}
+
+#chat-wrapper {
+    border-left: 2px solid #dee2e6 !important;
+}
+
+#chat {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-height: 1080px;
+    min-width: 309px;
+    max-width: 309px;
+}
+
+#messages-wrapper {
+    position: relative;
+    flex-grow: 1;
+}
+
+#messages {
+    position: absolute;
+    font-size: 14px;
+    color: white;
+    overflow: auto;
+    width: 100%;
+    max-height: 100%;
+    bottom: 0;
+    padding-top: 4px;
+}
+
+#messages p {
+    padding-bottom: 4px;
+    margin: 0;
+}
+
+#chat-input-wrapper {
+    position: relative;
+    padding-bottom: 5px;
+    width: 100%;
+}
+
+#chat-input-wrapper .btn-primary {
+    border-radius: 0 .25rem .25rem 0 !important;
+}
+
+#emojis {
+    position: absolute;
+    top: -233px;
+    z-index: 100;
+}
+#emojis:after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    right: 56px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent;
+}
+
+#emojis span {
+    display: inline-block;
+    margin:0;
+    padding: 0;
+    width: 26px;
+    height: 26px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#emojis span:hover {
+    cursor: pointer;
+}
+
+#play-table {
+    position: relative;
+    max-width: 900px;
+    height: 100vh;
+    max-height: 1080px;
+    flex-grow: 1;
+}
+
+#scoreboard {
+    height: 100vh;
+    max-height: 1080px;
+    max-width: 350px;
+    padding-top: 10px;
+    overflow: auto;
+}
+
+#scoreboard .table td,
+#scoreboard .table th {
+    font-size: .75rem;
+    line-height: .5;
+    padding: .45rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 81px;
+}
+
+#scoreboard .table td {
+    min-width: 60px;
+}
+
+.kick {
+    position: absolute;
+    display: none;
+    top: -7px;
+    right: 5px;
+}
+
+#player1:hover .kick,
+#player2:hover .kick,
+#player3:hover .kick, {
+    display: block;
+}
+
+.kick:hover {
+    color: $danger !important;
+    cursor: pointer;
+}
+
+.btn:disabled {
+    cursor: not-allowed;
+}
+
+.u-name {
+    text-overflow: ellipsis;
+    max-width: 50px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.taken-card, #trump-wrapper #trump,
+#player0card, #player1card, .p-card,
+#player2card, #player3card {
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.card_back_size {
+    width: 33px !important;
+    height: 45px !important;
+}
+
+.taken-card {
+    position: absolute;
+    width: 33px;
+    height: 45px;
+}
+
+.p0-card {
+    bottom: 85px;
+    left: 50%;
+    cursor: pointer;
+}
+
+.p1-card {
+    left: 70px;
+    top: 50%;
+    transform: rotate(90deg);
+}
+
+.p2-card {
+    top: 83px;
+    left: 50%;
+}
+
+.p3-card {
+    right: 70px;
+    top: 50%;
+    transform: rotate(90deg);
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+}
+
+@media (min-width: 576px) {
+    #player1card {
+        margin-right: 5px;
+    }
+
+    #player3card {
+        margin-left: 5px;
+    }
+    .card_back_size {
+        width: 69px !important;
+        height: 94px !important;
+    }
+
+    .p1-card {
+        left: 80px;
+    }
+
+    .p3-card {
+        right: 80px;
+    }
+}
+
+@media (min-width: 768px) {
+    #play-table{
+        min-width: 500px;
+    }
+
+}

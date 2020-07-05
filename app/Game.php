@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Events\CardsEvent;
+use App\Events\CardDealEvent;
 use App\Events\StartGameEvent;
 use App\Events\UpdateGameEvent;
 use Illuminate\Database\Eloquent\Model;
@@ -16,9 +16,12 @@ class Game extends Model
     protected $guarded = [];
     protected $with = ['creator', 'players'];
     protected $hidden = ['password'];
+    protected $appends = ['except'];
     protected $casts = [
         'cards' => 'array',
-        'kicked_users' => 'array'
+        'kicked_users' => 'array',
+        'trump' => 'array',
+        'ready' => 'array'
     ];
 
     protected static function boot()
@@ -53,7 +56,7 @@ class Game extends Model
     {
         if ($this->jokInCards() && isset($card['action']) && $card['action'] == 'mojokra') {
             $card['strength'] = 17;
-        } elseif (isset($card['action']) && $card['action'] == 'nije') {
+        } elseif (isset($card['action']) && $card['action'] == 'kvevidan') {
             $card['strength'] = 1;
         }
 
@@ -114,15 +117,15 @@ class Game extends Model
         $suit = null;
         $cards = $this->cards;
         if (isset($cards[0]['action'])) {
-            if ($this->trumpInCards() && $cards[0]['actionsuit'] != $this->trump) {
+            if ($this->trumpInCards() && $cards[0]['actionsuit'] != $this->trump['suit']) {
                 array_shift($cards);
             } elseif ($cards[0]['action'] == 'caigos' && $this->suitInCards($cards[0]['actionsuit'])) {
                 array_shift($cards);
             }
         }
 
-        if ($this->trump != 'bez' && $this->trumpInCards()) {
-            $suit = $this->trump;
+        if ($this->trump['strength'] != 16 && $this->trumpInCards()) {
+            $suit = $this->trump['suit'];
         } else {
             $suit = $cards[0]['suit'];
         }
@@ -290,18 +293,17 @@ class Game extends Model
     private function setTrump($num, $card)
     {
         if ($num != 9) {
-            $trump = $card['strength'] === 16 ? 'bez' : $card['suit'];
-            $this->update(['state' => 'call', 'trump' => $trump]);
+            $this->update(['state' => 'call', 'trump' => $card]);
             $this->players->each(function ($player) {
-                broadcast(new CardsEvent($player->id, $player->cards));
+                broadcast(new CardDealEvent($player->user->id, $player->cards));
             });
         } else {
             $this->update(['state' => 'trump']);
             $this->players->each(function ($player) {
                 if ($this->turn == $player->position) {
-                    broadcast(new CardsEvent($player->id, array_slice($player->cards, 0, 3), true));
+                    broadcast(new CardDealEvent($player->user->id, array_slice($player->cards, 0, 3), true));
                 } else {
-                    broadcast(new CardsEvent($player->id, array_slice($player->cards, 0, 3)));
+                    broadcast(new CardDealEvent($player->user->id, array_slice($player->cards, 0, 3)));
                 }
             });
         }
@@ -407,9 +409,9 @@ class Game extends Model
 
     protected function trumpInCards()
     {
-        if ($this->trump === 'bez') return false;
+        if ($this->trump['strength'] == 16) return false;
         foreach ($this->cards as $card) {
-            if($card['suit'] === $this->trump) return true;
+            if($card['suit'] == $this->trump['suit']) return true;
         }
 
         return false;
@@ -426,7 +428,7 @@ class Game extends Model
 
     public function updateTurn()
     {
-        $turn = $this->turn === 3 ? 0 : $this->turn + 1;
+        $turn = $this->turn == 3 ? 0 : $this->turn + 1;
 
         $this->update(['turn' => $turn]);
     }
@@ -455,10 +457,29 @@ class Game extends Model
         return $max - $sum;
     }
 
+    public function getExceptAttribute()
+    {
+        return $this->exceptCall();
+    }
+
     public function reposition()
     {
         $this->players->each(function ($player, $key) {
             $player->setPosition($key);
         });
+    }
+
+    public function addReadyPlayer($id, $ready)
+    {
+        $gameready = $this->ready;
+
+        if ($ready == 1) {
+            $gameready['count']++;
+        }
+
+        array_push($gameready['players'], $id);
+
+        $this->ready = $gameready;
+        $this->save();
     }
 }

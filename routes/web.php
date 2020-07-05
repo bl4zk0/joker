@@ -20,6 +20,9 @@ Route::get('/', function () {
 Route::get('/test', function (Faker $faker) {
 
 });
+Route::get('/gamedev', function () {
+    return view('gamedev');
+});
 
 Auth::routes(['verify' => true]);
 
@@ -29,11 +32,12 @@ Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCall
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/user/{user}', 'ProfilesController@show');
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/lobby', 'GamesController@index');
     Route::get('/games/{game}', 'GamesController@show');
     Route::post('/games', 'GamesController@store');
     Route::post('/start/games/{game}', 'GamesController@start');
+    Route::post('/ready/games/{game}', 'GamesController@ready');
     Route::post('/call/games/{game}', 'GamesController@call');
     Route::post('/card/games/{game}', 'GamesController@card');
     Route::post('/trump/games/{game}', 'GamesController@trump');

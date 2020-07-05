@@ -1,322 +1,312 @@
 <template>
-    <div class="container-fluid" style="font-size: 10px">
-        <div class="row">
-            <div class="col-md-2">
-                <form @submit.prevent="call">
-                    <div class="form-group">
-                        <select class="form-control" name="call">
-                            <option value="0">0</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary">send</button>
-                </form>
-                <div id="chat" class="card mt-3">
-                    <div class="card-body">
+    <div class="d-flex justify-content-center">
+        <component :is="scoreboard" :initial-players="game.players"></component>
 
-                    </div>
-                    <div class="card-footer">
-                        <input type="text" class="form-control" @keypress="sendMsg" v-model="msg">
-                    </div>
-                </div>
+        <div id="play-table">
+            <div id="trump-wrapper" v-show="game.trump !== null">
+                <div><strong>კოზირი</strong></div>
+                <div id="trump" :class="this.game.trump ? game.trump.suit + game.trump.strength : ''"></div>
             </div>
-            <div class="col-md-7 bg-success rounded">
-                <div id="trump" :class="this.game.trump" style="position: absolute; right: 10px; top: 10px;" v-show="this.game.trump">
-                </div>
-                <div class="d-flex justify-content-center">
-                    <div id="player2" class="my-3">
-                        <div class="avatar border border-warning rounded-circle mx-auto mb-1"></div>
-                        <div class="text-center">{{ this.game.players[this.players[2]] ? this.game.players[this.players[2]].user.username : 'player3'}}</div>
-                    </div>
-                </div>
-                <div class="d-flex">
-                    <div id="player1" class="align-self-center">
-                        <div class="avatar border border-warning rounded-circle mb-1"></div>
-                        <div class="mb-3 text-center">{{ this.game.players[this.players[1]] ? this.game.players[this.players[1]].user.username : 'player2'}}</div>
-                    </div>
 
-                    <div class="text-center flex-grow-1 mx-5"
-                         style="height: 350px">
-                        <div class="t-cards">
-                            <div id="p0-card">
+            <!-- played cards -->
+            <div id="player0card"></div>
+            <div id="player1card"></div>
+            <div id="player2card"></div>
+            <div id="player3card"></div>
 
-                            </div>
-                            <div id="p1-card">
+            <!-- player0 cards -->
+            <div v-for="(card, index) in players[ppm[0]].cards"
+                 :class="'p-card p0-card ' + card.suit + card.strength"
+                 :style="'margin-left: ' + (getMargin(0) + index * 25) + 'px'"
+                 :id="index"
+                 :key="index"
+                 :data-suit="card.suit"
+                 :data-strength="card.strength" @click="actionCard"></div>
 
-                            </div>
-                            <div id="p2-card">
+            <!-- player1 cards -->
+            <div v-for="(index) in players[ppm[1]].cards"
+                 class="p-card p1-card card_back card_back_size"
+                 :style="'margin-top: ' + (getMargin(1) + (index * marginStep())) + 'px'"></div>
 
-                            </div>
-                            <div id="p3-card">
+            <!-- player2 cards -->
+            <div v-for="(index) in players[ppm[2]].cards"
+                 class="p-card p2-card card_back card_back_size"
+                 :style="'margin-left: ' + (getMargin(2) + (index * marginStep())) + 'px'"></div>
 
-                            </div>
-                        </div>
-                    </div>
+            <!-- player3 cards -->
+            <div v-for="(index) in players[ppm[3]].cards"
+                 class="p-card p3-card card_back card_back_size"
+                 :style="'margin-top: ' + (getMargin(1) + (index * marginStep())) + 'px'"></div>
+            <!-- players cards -->
 
-                    <div id="player3" class="align-self-center">
-                        <div class="avatar border border-warning rounded-circle mb-1"></div>
-                        <div class="mb-3 text-center">{{ this.game.players[this.players[3]] ? this.game.players[this.players[3]].user.username : 'player4'}}</div>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-center">
-                    <div id="player0" class="my-3">
-                        <div id="taken" v-show="this.game.state === 'card'"><strong v-text="taken()"></strong></div>
-                        <cards :player-id="this.game.players[this.players[0]].id"
-                               :state="this.game.state"
-                               :game-id="this.game.id"
-                               :turn="this.game.turn"
-                               :pos="this.game.players[this.players[0]].position"></cards>
+            <!-- taken cards-->
+<!--            <div class="taken-card card_back" style="bottom: 23px; left: 50%; margin-left: 35px;"></div>-->
 
-                        <div class="avatar border border-warning rounded-circle mb-1"></div>
-                        <div class="text-center">{{ this.game.players[this.players[0]] ? this.game.players[this.players[0]].user.username : 'player1'}}</div>
-                    </div>
-                </div>
-                <div v-show="creator" style="position: absolute; right: 5px; bottom: 5px">
-
-                    <button type="button"
-                            class="btn btn-warning"
-                            @click="start">Start</button>
+            <!-- players -->
+            <div id="player0">
+                <div class="avatar border rounded-circle">
 
                 </div>
+                <div class="u-name" v-text="getUsername(0)"></div>
             </div>
-            <div class="col-md-3">
-                <scores :initial-players="this.game.players"></scores>
+            <div id="player1" data-container="body" data-toggle="popover" data-placement="top" data-trigger="manual">
+                <div class="kick" title="გაგდება">
+                    <i class="fas fa-times"></i>
+                </div>
+                <div class="avatar border rounded-circle">
+
+                </div>
+                <div class="u-name" v-text="getUsername(1)"></div>
+            </div>
+            <div id="player2" data-container="body" data-toggle="popover" data-placement="right" data-trigger="manual">
+                <div class="kick" title="გაგდება">
+                    <i class="fas fa-times"></i>
+                </div>
+                <div class="avatar border rounded-circle">
+
+                </div>
+                <div class="u-name" v-text="getUsername(2)"></div>
+            </div>
+            <div id="player3" data-container="body" data-toggle="popover" data-placement="top" data-trigger="manual">
+                <div class="kick" title="გაგდება">
+                    <i class="fas fa-times"></i>
+                </div>
+                <div class="avatar border rounded-circle">
+
+                </div>
+                <div class="u-name" v-text="getUsername(3)"></div>
+            </div>
+
+            <div id="start-btn" class="shadow" v-show="showStart">
+                <button class="btn btn-danger btn-block"
+                        type="button"
+                        @click="start">
+                    <small><strong>დაწყება</strong></small>
+                </button>
+            </div>
+
+            <div id="callboard"
+                 class="bg-white border shadow pt-1 pl-1"
+                 v-show="game.state === 'call' && turn">
+
+                <button class="btn btn-light mb-1 mr-1"
+                        v-for="idx in callboard"
+                        v-text="idx === 0 ? '-' : idx"
+                        :data-value="idx"
+                        :disabled="game.except === idx"
+                        @click="call"></button>
+            </div>
+
+            <div id="ready" class="bg-white border rounded p-1 text-center" v-show="this.game.state === 'ready'">
+                <p id="ready-waiting" class="d-none ">დაელოდეთ მოთამაშეების თანხმობას</p>
+                <div id="ready-check" class="d-none mb-3">
+                    <p>მზად ხარ თამაშის დასაწყებად?</p>
+                    <div id="d-none ready-buttons">
+                        <button class="btn btn-success" data-ready="1" @click="actionReady">კი</button>
+                        <button class="btn btn-danger" data-ready="0" @click="actionReady">არა</button>
+                    </div>
+                </div>
+                <p v-text="timer"></p>
+                <table class="table table-bordered mt-3 mb-0" style="max-width: 310px;">
+                    <thead>
+                        <tr class="bg-primary text-white">
+                            <th scope="col">{{ this.game.players[0] ? this.game.players[0].user.username : '...'}}</th>
+                            <th scope="col">{{ this.game.players[1] ? this.game.players[1].user.username : '...'}}</th>
+                            <th scope="col">{{ this.game.players[2] ? this.game.players[2].user.username : '...'}}</th>
+                            <th scope="col">{{ this.game.players[3] ? this.game.players[3].user.username : '...'}}</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div id="suits" class="d-none border bg-white rounded pt-1 px-1">
+                <button class="btn btn-light text-danger mb-1" data-suit="hearts" @click="actionSuit">&hearts;</button>
+                <button class="btn btn-light text-dark mb-1" data-suit="clubs" @click="actionSuit">&clubs;</button>
+                <button class="btn btn-light text-danger mb-1" data-suit="diamonds" @click="actionSuit">&diams;</button>
+                <button class="btn btn-light text-dark mb-1" data-suit="spades" @click="actionSuit">&spades;</button>
+                <button class="btn btn-light text-dark btn-block mb-1" data-suit="bez" @click="actionSuit"
+                        v-show="game.state === 'trump'">ბეზი</button>
+            </div>
+
+            <div id="jokhigh" class="d-none border bg-white rounded shadow p-1">
+                <button class="btn btn-light" data-action="magali" @click="actionJoker">მაღალი</button>
+                <button class="btn btn-danger" data-action="caigos">წაიღოს</button>
+            </div>
+
+            <div id="jokjoker" class="d-none border bg-white rounded shadow p-1" style="width: 202px;">
+                <button class="btn btn-light" data-action="mojokra" @click="actionJoker">მოჯოკრა</button>
+                <button class="btn btn-danger" data-action="kvevidan" @click="actionJoker">ქვევიდან</button>
             </div>
         </div>
 
+        <chat :messages="messages" :game-id="this.game.id"></chat>
     </div>
 </template>
 
 <script>
-    import scores from './Scores';
-    import cards from './Cards';
+    import scoreboard1 from './Scoreboard1';
+    import scoreboard9 from './Scoreboard9';
+    import chat from './Chat';
+    import helpers from '../mixins/helpers';
+    import gamechannel from '../mixins/gamechannel';
+    import playerchannel from '../mixins/playerchannel';
 
     export default {
-        components: { scores, cards },
-
-        props: ['initialGame'],
+        components: { scoreboard1, scoreboard9, chat },
+        mixins: [helpers, gamechannel, playerchannel],
+        props: ['initialGame', 'initialCards'],
 
         data() {
             return {
                 game: this.initialGame,
-                players: {},
-                cardCount: 0,
-                msg: ''
+                players: [
+                    {cards: [], takenCards: []},
+                    {cards: [], takenCards: []},
+                    {cards: [], takenCards: []},
+                    {cards: [], takenCards: []},
+                ],
+                card: {}
             }
         },
 
         computed: {
-            creator() {
-                if (window.App.user.id === this.game.user_id && this.game.state == '0') return true;
-                return false;
+            scoreboard() {
+                return 'scoreboard' + this.game.type;
             },
-        },
 
-        created() {
-            this.authUserIndex();
+            callboard() {
+                let max;
 
-            // window.addEventListener("beforeunload", event => {
-            //     console.log('event fired');
-            //     axios.post('/leave/games/' + this.game.id);
-            // });
+                if (this.game.quarter % 2 === 0) {
+                    max = 10;
+                } else {
+                    max = this.game.hand_count + 1;
+                }
 
-            Echo.private('game.' + this.game.id)
-                .listen('UpdateGameEvent', event => {
-                    this.game = event.game;
-                })
-                .listen('PlayersEvent', event => {
-                    this.game.players = event.players;
-                })
-                .listen('CardPlayEvent', event => {
-                    //console.log(event);
-                    this.cardCount++;
-                    let zindex = this.cardCount;
-                    let card = event.card;
-                    let p = Number(this.getKeyByValue(this.players, event.position));
-                    let el = document.getElementById('p' + p + '-card');
-                    el.style.zIndex = zindex;
-                    el.className = 'p-card ' + (card.suit + card.strength);
-                    if (this.cardCount === 4) {
-                        setTimeout(() => {
-                            let els = document.querySelector('.t-cards').children;
-                            for (let i = 0; i < 4; i++) {
-                                els[i].className = '';
-                            }
-                            this.cardCount = 0;
-                        }, 1000);
-                    }
-                    this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
-                })
-                .listen('StartGameEvent', event => {
-                    let cards = event.cards;
-                    let i = 0;
-                    let p = 0;
-                    p = Number(this.getKeyByValue(this.players, p));
+                return Array.from(new Array(max).keys());
+            },
 
-                    let atuzva = () => {
-                        let el = document.getElementById('p' + p + '-card');
-                        el.style.zIndex = i;
-                        el.className = 'p-card ' + (cards[i].suit + cards[i].strength);
-                        p = p === 3 ? 0 : p + 1;
-                        i++;
-                        if (i === cards.length) {
-                            clearInterval(tuz);
-                            setTimeout(() => {
-                                let els = document.querySelector('.t-cards').children;
-                                for (let i = 0; i < 4; i++) {
-                                        els[i].className = '';
-                                    }
-                                this.game = event.game;
-                                this.authUserIndex();
+            turn() {
+                return this.game.turn === this.game.players[this.ppm[0]].position;
+            }
 
-                           }, 1000);
-                        }
-                    }
-
-                    let tuz = setInterval(atuzva, 1000);
-
-                })
-                .listenForWhisper('message', (e) => {
-                    let node = document.createElement("P");
-                    let textnode = document.createTextNode(`${e.name}: ${e.msg}`);
-                    node.appendChild(textnode);
-                    document.querySelector('#chat .card-body').appendChild(node);
-                });
         },
 
         methods: {
-            call() {
-                if (this.game.turn !== this.game.players[this.players[0]].position) {
-                    console.log('wrong turn');
+            start(event) {
+                // hide button
+                this.game.state = 'void';
+
+                // post start
+                axios.post('/start/games/' + this.game.id)
+                    .then(response => {
+                        this.game.state = 'ready';
+                        $('#ready-waiting').removeClass('d-none');
+                        $('#ready th').eq(this.ppm[0]).addClass('bg-success');
+                        this.timerFn = setInterval(() => {
+                            if (this.timer === 0) {
+                                this.game.state = 'void';
+                                clearInterval(this.timerFn);
+                                this.timer = 10;
+                                $('#ready th').removeClass();
+                            }
+                            this.timer--;
+                        }, 1000);
+                    })
+                    .catch(error => {
+                        location.reload();
+                    });
+            },
+
+            actionReady(event) {
+                let ready = event.target.getAttribute('data-ready');
+                let color  = ready === '1' ? 'bg-success' : 'bg-danger';
+
+                $('#ready-waiting').removeClass('d-none');
+                $('#ready-check').addClass('d-none');
+                $('#ready th').eq(this.ppm[0]).addClass(color);
+
+                axios.post('/ready/games/' + this.game.id, {ready});
+            },
+
+            actionCard(event) {
+                if (! this.turn || this.game.state !== 'card') {
+                    console.log('wrong turn or state');
                     return;
                 }
-                let el = document.querySelector('select[name="call"]');
-                let data = {
-                    call: el.options[el.options.selectedIndex].value
-                }
 
-                axios.post('/call/games/' + this.game.id, data).then(response => {
-                    //console.log(response.data);
-                    //to be developed
-                });
-            },
-
-            start() {
-                axios.post('/start/games/' + this.game.id);
-            },
-
-            authUserIndex() {
-                let index;
-                for (let i = 0; i < 4; i++) {
-                    if (App.user.id === this.game.players[i].user_id) {
-                        index = i;
-                        break;
+                let strength = event.target.getAttribute('data-strength');
+                let suit = event.target.getAttribute('data-suit');
+                let card = {
+                    strength,
+                    suit,
+                };
+                this.cardId = event.target.id;
+                this.card.card = card;
+                console.log(card);
+                if (strength === '16') {
+                    if (this.cardsCount === 0) {
+                        $('#jokhigh').removeClass('d-none');
+                    } else {
+                        $('#jokjoker').removeClass('d-none');
                     }
-                }
-
-                switch(index) {
-                    case 1:
-                        this.players = { 0: 1, 1: 2, 2: 3, 3: 0 };
-                        break;
-                    case 2:
-                        this.players = { 0: 2, 1: 3, 2: 0, 3: 1 };
-                        break;
-                    case 3:
-                        this.players = { 0: 3, 1: 0, 2: 1, 3: 2 };
-                        break;
-                    default:
-                        this.players = { 0: 0, 1: 1, 2: 2, 3: 3 };
-                        break;
-                }
-            },
-
-            getKeyByValue(object, value) {
-                return Object.keys(object).find(key => object[key] === value);
-            },
-
-            taken() {
-                let player = this.game.players[this.players[0]];
-                let last = player.scores.length - 1;
-                if (last >= 0) {
-                    return player.scores[last].call + ' / ' + player.scores[last].take;
                 } else {
-                    return '';
+                    this.sendCard();
                 }
             },
 
-            sendMsg(event) {
-                if (event.key === "Enter") {
-                    let node = document.createElement("P");
-                    let textnode = document.createTextNode(`${App.user.username}: ${this.msg}`);
-                    node.appendChild(textnode);
-                    document.querySelector('#chat .card-body').appendChild(node);
-                    Echo.private('game.' + this.game.id)
-                        .whisper('message', {
-                            name: App.user.username,
-                            msg: this.msg
-                        });
-                    this.msg = '';
+            actionJoker(event) {
+                let action = event.target.getAttribute('data-action');
+                this.card.action = action;
+                if (action === 'magali' || 'action' === 'caigos') {
+                    $('#jokhigh').addClass('d-none');
+                    $('#suits').removeClass('d-none');
+                } else {
+                    $('#jokjoker').addClass('d-none');
+                    this.sendCard();
                 }
-            }
-        },
+            },
 
-        mounted() {
-            //console.log(this.game);
+            actionSuit(event) {
+                let suit = event.target.getAttribute('data-suit');
+                if (this.game.state === 'trump') {
+                    axios.post('/trump/games/' + this.game.id, {trump: suit});
+                } else if (this.game.state === 'card') {
+                    this.card.actionsuit = suit;
+                    this.sendCard();
+                }
+
+                $('#suits').addClass('d-none');
+            },
+
+            sendCard() {
+                //$('#player0card').addClass(this.card.suit + this.card.strength);
+                this.players[this.ppm[0]].cards.splice(this.cardId, 1);
+                axios.post('/card/games/' + this.game.id, this.card);
+                this.card = {};
+                this.cardId = null;
+            },
+
+            call(event) {
+
+                if (! this.turn || this.game.state !== 'call') {
+                    console.log('wrong turn or state');
+                    return;
+                }
+
+                let call = {
+                    call: event.target.getAttribute('data-value')
+                }
+
+                axios.post('/call/games/' + this.game.id, call)
+                    .then(response => {
+                        this.game.players[this.ppm[0]].scores.push(response.data);
+                    })
+                    .catch(error => {
+                        location.reload();
+                    });
+                this.game.turn++;
+            }
         }
     }
 </script>
-
-<style>
-    .avatar {
-        width: 70px;
-        height: 70px;
-    }
-    .t-cards > div {
-        position: absolute;
-    }
-    #trump {
-        width: 60px;
-        height: 60px;
-        background-repeat: no-repeat;
-        background-size: contain;
-    }
-    .p-card {
-        width: 69px;
-        height: 100px;
-        background-repeat: no-repeat;
-        background-size: contain;
-    }
-    #p0-card {
-        left: 320px;
-        top: 240px;
-    }
-    #p1-card {
-        left: 280px;
-        top: 200px;
-    }
-    #p2-card {
-        left: 320px;
-        top: 150px;
-    }
-    #p3-card {
-        left: 360px;
-        top: 200px;
-    }
-    #taken {
-        position: absolute;
-        bottom: 110px;
-    }
-    #chat {
-        min-height: 82%;
-        max-height: 82%;
-        overflow: auto;
-    }
-</style>

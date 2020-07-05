@@ -19,15 +19,16 @@ class CreateGamesTable extends Migration
             $table->smallInteger('penalty');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('turn')->default(0);
-            $table->string('trump', 10)->nullable();
+            $table->string('trump')->nullable();
             $table->string('cards')->default('[]');
-            $table->string('state', 10)->default(0);
+            $table->string('state', 10)->default('start');
             $table->unsignedTinyInteger('call_count')->default(0);
             $table->unsignedTinyInteger('hand_count')->default(1);
             $table->unsignedTinyInteger('quarter')->default(1);
             $table->unsignedTinyInteger('rank');
             $table->unsignedSmallInteger('password')->nullable();
             $table->string('kicked_users')->default('[]');
+            $table->string('ready')->default('["players" => [], "count" => 0]');
             $table->timestamps();
         });
     }

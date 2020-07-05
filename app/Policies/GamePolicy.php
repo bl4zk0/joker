@@ -19,7 +19,20 @@ class GamePolicy
      */
     public function start(User $user, Game $game)
     {
-        return $user->is($game->creator) && $game->state === '0';
+        return $user->is($game->creator) && $game->state === 'start';
+    }
+
+    /**
+     * Determine whether the user can get ready.
+     *
+     * @param User $user
+     * @param Game $game
+     * @return mixed
+     */
+    public function ready(User $user, Game $game)
+    {
+        return $game->players->contains($user->player) && $user->isNot($game->creator) &&
+            $game->state == 'ready' && (! in_array($user->id, $game->ready['players']));
     }
 
     /**
@@ -31,9 +44,7 @@ class GamePolicy
      */
     public function trump(User $user, Game $game)
     {
-        return $game->players->contains($user->player) &&
-            $user->player->position === $game->turn &&
-            $game->state === 'trump';
+        return $game->players->contains($user->player) && $user->player->position === $game->turn && $game->state === 'trump';
     }
 
     /**
@@ -45,9 +56,7 @@ class GamePolicy
      */
     public function card(User $user, Game $game)
     {
-        return $game->players->contains($user->player) &&
-            $user->player->position === $game->turn &&
-            $game->state === 'card';
+        return $game->players->contains($user->player) && $user->player->position === $game->turn && $game->state === 'card';
     }
 
     /**
@@ -59,9 +68,7 @@ class GamePolicy
      */
     public function call(User $user, Game $game)
     {
-        return $game->players->contains($user->player) &&
-            $user->player->position === $game->turn &&
-            $game->state === 'call';
+        return $game->players->contains($user->player) && $user->player->position === $game->turn && $game->state === 'call';
     }
 
     /**

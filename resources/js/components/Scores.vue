@@ -95,7 +95,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     .table th, .table td {
         padding: 0.25rem !important;
     }

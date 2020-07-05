@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Events\CardPlayEvent;
-use App\Events\CardsEvent;
+use App\Events\CardDealEvent;
+use App\Events\PlayerCallEvent;
+use App\Events\GetReadyEvent;
 use App\Events\UpdateGameEvent;
 use App\Events\UpdateLobbyEvent;
+use App\Events\UpdateReadyEvent;
 use App\Game;
+use App\Jobs\ResetGameStart;
 use App\Rules\CardRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +29,31 @@ class GamesController extends Controller
             abort(406, 'Not enough players');
         }
 
-        $game->start();
+        $game->update(['state' => 'ready', 'ready' => ['players' => [Auth::id()], 'count' => 1]]);
+
+        ResetGameStart::dispatch($game)->delay(now()->addSeconds(13));
+
+        broadcast(new GetReadyEvent($game->id, Auth::user()->player->position, '1'))->toOthers();
+
+        return response([], 200);
+
+        //$game->start();
+    }
+
+    public function ready(Request $request, Game $game)
+    {
+        $this->authorize('ready', $game);
+
+        $request->validate(['ready' => ['required', 'boolean']]);
+
+        $game->addReadyPlayer(Auth::id(), $request->ready);
+
+        broadcast(new UpdateReadyEvent($game->id, Auth::user()->player->position, $request->ready))->toOthers();
+
+        if ($game->ready['count'] == 4) {
+            $game->start();
+        }
+
     }
 
     /**
@@ -41,13 +69,16 @@ class GamesController extends Controller
             'trump' => ['required', 'in:hearts,clubs,diamonds,spades,bez']
         ]);
 
+        $strength = $request->trump == 'bez' ? 16 : 14;
+        $trump = $request->trump == 'bez' ? 'black_joker' : $request->trump;
+
         $game->update([
             'state' => 'call',
-            'trump' => $request->trump
+            'trump' => ['suit' => $trump, 'strength' => $strength]
         ]);
 
         $game->players->each(function ($player) {
-            broadcast(new CardsEvent($player->id, $player->cards));
+            broadcast(new CardDealEvent($player->user->id, $player->cards));
         });
 
         // ese shesacvlelia $game->broadcast();
@@ -69,8 +100,8 @@ class GamesController extends Controller
         $request->validate([
             'call' => ['required', 'integer', 'min:0', "max:$max", "not_in:$except"]
         ]);
-
-        auth()->user()->player->scores()->create([
+        $player = Auth::user()->player;
+        $score = $player->scores()->create([
             'quarter' => $game->quarter,
             'call' => $request->call
         ]);
@@ -78,7 +109,9 @@ class GamesController extends Controller
         $game->updateTurn();
         $game->updateCallCount();
 
-        broadcast(new UpdateGameEvent($game));
+        broadcast(new PlayerCallEvent($game, $score, $player->position))->toOthers();
+
+        return $score;
     }
 
     /**
@@ -92,7 +125,7 @@ class GamesController extends Controller
 
         $request->validate([
             'card' => ['required', 'array', new CardRule],
-            'action' => ['required_if:card.strength,16', 'in:magali,caigos,mojokra,nije'],
+            'action' => ['required_if:card.strength,16', 'in:magali,caigos,mojokra,kvevidan'],
             'actionsuit' => ['required_if:action,magali,caigos', 'in:hearts,clubs,diamonds,spades']
         ]);
 
@@ -107,7 +140,7 @@ class GamesController extends Controller
 
         $player = auth()->user()->player;
 
-        if (! $player->canPlay($card, $game->cards, $game->trump)) {
+        if (! $player->canPlay($card, $game->cards, $game->trump['suit'])) {
             abort(422, "Don't bother, fool!");
         }
 
@@ -170,6 +203,10 @@ class GamesController extends Controller
      */
     public function show(Game $game)
     {
+        $cards = Auth::user()->player->cards;
+
+        return view('game', compact('game', 'cards'));
+
         // aq dasaxveci gvaqvs rodesac vinme gava tamashis dros
         // aseve rodis vamatebt creator-s motamasheebshi
         if ($game->players->contains(Auth::user()->player)) {

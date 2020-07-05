@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-lg-3 mb-3">
-        <div class="card"><div class="card-header">ახალი მაგიდა</div>
+        <div class="card bg-success text-white"><div class="card-header">ახალი მაგიდა</div>
             <div class="card-body">
                 <form action="/games" method="POST">
                     <input type="hidden" name="_token" :value="csrf">
@@ -40,7 +40,7 @@
                         <input type="checkbox" class="form-check-input" id="pwd" name="password">
                         <label class="form-check-label" for="pwd">პაროლიანი მაგიდა</label>
                     </div>
-                    <button class="btn btn-primary btn-block">მაგიდის შექმნა</button>
+                    <button class="btn btn-light btn-block">მაგიდის შექმნა</button>
                 </form>
             </div>
         </div>
@@ -48,15 +48,15 @@
 
         <div class="col-lg-3 mb-3"
              v-for="game in this.games" :key="game.id">
-            <div class="card">
+            <div class="card text-white bg-success">
                 <div class="card-header">{{ game.creator.username + '`s game' }}</div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">1: {{ game.players[0] ? game.players[0].user.username : '&nbsp' }}</li>
-                    <li class="list-group-item">2: {{ game.players[1] ? game.players[1].user.username : '&nbsp'}}</li>
-                    <li class="list-group-item">3: {{ game.players[2] ? game.players[2].user.username : '&nbsp'}}</li>
-                    <li class="list-group-item">4: {{ game.players[3] ? game.players[3].user.username : '&nbsp'}}</li>
-                    <li class="list-group-item">
-                        <a :href="path(game.id)" class="btn btn-primary" :class="kl(game.players.length)">Join</a>
+                    <li class="list-group-item list-group-item-success">1: {{ game.players[0] ? game.players[0].user.username : '&nbsp' }}</li>
+                    <li class="list-group-item list-group-item-success">2: {{ game.players[1] ? game.players[1].user.username : '&nbsp'}}</li>
+                    <li class="list-group-item list-group-item-success">3: {{ game.players[2] ? game.players[2].user.username : '&nbsp'}}</li>
+                    <li class="list-group-item list-group-item-success">4: {{ game.players[3] ? game.players[3].user.username : '&nbsp'}}</li>
+                    <li class="list-group-item list-group-item-success">
+                        <a :href="path(game.id)" class="btn btn-light" :class="kl(game.players.length)">Join</a>
                     </li>
                 </ul>
             </div>

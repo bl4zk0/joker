@@ -17,4 +17,4 @@ Broadcast::channel('lobby', function ($user) {
     return auth()->check();
 });
 Broadcast::channel('game.{game}', \App\Broadcasting\GameChannel::class);
-Broadcast::channel('player.{player}', \App\Broadcasting\PlayerChannel::class);
+Broadcast::channel('user.{user_id}', \App\Broadcasting\UserChannel::class);

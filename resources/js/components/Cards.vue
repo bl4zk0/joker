@@ -47,7 +47,7 @@
 
         created() {
             window.Echo.private('player.' + this.playerId)
-                .listen('CardsEvent', event => {
+                .listen('CardDealEvent', event => {
                     let cards = event.cards;
                     cards.sort( (a, b) => {
                         let aValue = this.cardValue(a);
@@ -134,6 +134,6 @@
     }
 </script>
 
-<style>
+<style scoped>
 
 </style>

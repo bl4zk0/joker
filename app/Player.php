@@ -8,6 +8,7 @@ class Player extends Model
 {
     protected $guarded = [];
     protected $with = ['user:id,username', 'scores'];
+    protected $appends = ['cards_count'];
     protected $hidden = ['cards'];
     protected $casts = [
         'cards' => 'array',
@@ -68,7 +69,7 @@ class Player extends Model
                 if ($this->isHighestSuitInCards($card, $suit)) return true;
             } else if ($card['suit'] == $suit) return true;
 
-            if (isset($card['action']) && in_array($card['action'], ['mojokra', 'nije'])) return true;
+            if (isset($card['action']) && in_array($card['action'], ['mojokra', 'kvevidan'])) return true;
 
             if ($this->suitNotInCards($suit) && ($card['suit'] == $trump)) return true;
 
@@ -128,5 +129,10 @@ class Player extends Model
 
         $this->cards = empty($cards) ? null : $cards;
         $this->save();
+    }
+
+    public function getCardsCountAttribute()
+    {
+        return $this->cards === null ? 0 : count($this->cards);
     }
 }

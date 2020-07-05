@@ -5,5 +5,6 @@
 @endsection
 
 @section('content')
-    <game :initial-game="{{ json_encode($game) }}"></game>
+    <game :initial-game="{{ json_encode($game) }}"
+          :initial-cards="{{ json_encode($cards) }}"></game>
 @endsection
