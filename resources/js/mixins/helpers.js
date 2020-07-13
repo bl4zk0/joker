@@ -3,7 +3,8 @@ export default {
         return {
             windowWidth: window.innerWidth,
             ppm: [],
-            timer: 10
+            timer: 10,
+            nextTurn: 4
         }
     },
 
@@ -15,7 +16,7 @@ export default {
 
     created() {
         this.playerPositionsMap();
-        this.showCards(this.initialCards);
+        this.showCards(this.initialCards, true);
     },
 
     mounted() {
@@ -82,6 +83,49 @@ export default {
 
         getUsername(p) {
             return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].user.username : '...';
+        },
+
+        playedCard(n) {
+            let player = this.game.players[this.ppm[n]];
+            if (player && player.card != null) {
+                return player.card['suit'] + player.card['strength'];
+            }
+        },
+
+        cardsZIndex(n) {
+            let player = this.game.players[this.ppm[n]];
+            if (player && player.card != null) {
+                for (let idx in this.game.cards) {
+                    if (this.game.cards[idx]['suit'] == player.card['suit'] &&
+                        this.game.cards[idx]['strength'] == player.card['strength']) {
+                        return idx;
+                    }
+                }
+            }
+        },
+
+        active(n) {
+            let state = ['trump', 'call', 'card'];
+            if (state.indexOf(this.game.state) >= 0) {
+                return this.ppm[n] === this.game.turn ? 'border-warning' : '';
+            } else {
+                return '';
+            }
+        },
+
+        playedCardAction(n) {
+            let player = this.game.players[this.ppm[n]];
+            if (player && player.card != null && player.card['action'] !== undefined) {
+                return true;
+            }
+        },
+
+        suitColor(suit) {
+            if (suit === 'hearts' || suit === 'diamonds') {
+                return 'text-danger';
+            } else {
+                return '';
+            }
         }
     }
 }

@@ -55,37 +55,37 @@ class PlayerTest extends TestCase
         $this->assertFalse($player->canPlay(
             ['strength' => 7, 'suit' => 'hearts'],
             [['strength' => 16, 'suit' => 'color_joker', 'action' => 'magali', 'actionsuit' => 'hearts']],
-            'bez'
+            ['strength' => 16, 'suit' => 'color_joker']
         ));
 
         $this->assertFalse($player->canPlay(
             ['strength' => 7, 'suit' => 'hearts'],
             [['strength' => 13, 'suit' => 'spades']],
-            'bez'
+            ['strength' => 16, 'suit' => 'color_joker']
         ));
 
         $this->assertTrue($player->canPlay(
             ['strength' => 10, 'suit' => 'spades'],
             [['strength' => 14, 'suit' => 'diamonds']],
-            'spades'
+            ['strength' => 8, 'suit' => 'spades']
         ));
 
         $this->assertFalse($player->canPlay(
             ['strength' => 7, 'suit' => 'hearts'],
             [['strength' => 14, 'suit' => 'diamonds']],
-            'spades'
+            ['strength' => 8, 'suit' => 'spades']
         ));
 
         $this->assertTrue($player->canPlay(
             ['strength' => 7, 'suit' => 'hearts'],
             [['strength' => 14, 'suit' => 'diamonds']],
-            'clubs'
+            ['strength' => 8, 'suit' => 'clubs']
         ));
 
         $this->assertTrue($player->canPlay(
             ['strength' => 16, 'suit' => 'black_joker', 'action' => 'mojokra'],
             [['strength' => 16, 'suit' => 'color_joker', 'action' => 'magali', 'actionsuit' => 'hearts']],
-            'bez'
+            ['strength' => 16, 'suit' => 'color_joker']
         ));
     }
 

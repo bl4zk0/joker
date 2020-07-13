@@ -14,17 +14,19 @@ class CardPlayEvent implements ShouldBroadcastNow
     private $gameId;
     public $position;
     public $card;
+    public $take;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($gameId, $position, $card)
+    public function __construct($gameId, $position, $card, $take = false)
     {
         $this->gameId = $gameId;
         $this->position = $position;
         $this->card = $card;
+        $this->take = $take;
     }
 
     /**

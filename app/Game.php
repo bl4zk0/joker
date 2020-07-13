@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Events\CardDealEvent;
+use App\Events\CardPlayEvent;
 use App\Events\StartGameEvent;
 use App\Events\UpdateGameEvent;
 use Illuminate\Database\Eloquent\Model;
@@ -68,6 +69,8 @@ class Game extends Model
         auth()->user()->player()->update(['card' => $card]);
 
         $this->refresh();
+
+        return $card;
     }
 
     /**
@@ -80,7 +83,7 @@ class Game extends Model
      *
      * sxva shemtxvevashi ubralod chamomsvlelis pozicia ganvaaxlot
      */
-    public function checkTake()
+    public function checkTake($card)
     {
         if (count($this->cards) == 4) {
             $highestCard = $this->highestCard();
@@ -88,18 +91,24 @@ class Game extends Model
                 if ($player->card == $highestCard) {
                     $player->scores()->increment('take');
                     $this->update(['turn' => $player->position]);
-                    broadcast(new UpdateGameEvent($this));
-                    if (empty($this->players()->pluck('cards')->whereNotNull()->toArray())) {
-                        $this->calcScoresAfterHand();
-                        // check end of the game;
-                        // tu tamashi damtavrda true gvaqvs return-shi da unda davamtavrot tamashi...
-                        $this->checkEnd();
-                    }
+                    broadcast (new CardPlayEvent(
+                        $this->id,
+                        auth()->user()->player->position,
+                        $card,
+                        $player->position))->toOthers();
                 }
                 $player->update(['card' => null]);
             }
+
+            if (empty($this->players()->pluck('cards')->whereNotNull()->toArray())) {
+                $this->calcScoresAfterHand();
+                // check end of the game;
+                // tu tamashi damtavrda true gvaqvs return-shi da unda davamtavrot tamashi...
+                $this->checkEnd();
+            }
         } else {
             $this->updateTurn();
+            broadcast (new CardPlayEvent($this->id, auth()->user()->player->position, $card))->toOthers();
         }
     }
 
@@ -119,7 +128,7 @@ class Game extends Model
         if (isset($cards[0]['action'])) {
             if ($this->trumpInCards() && $cards[0]['actionsuit'] != $this->trump['suit']) {
                 array_shift($cards);
-            } elseif ($cards[0]['action'] == 'caigos' && $this->suitInCards($cards[0]['actionsuit'])) {
+            } else if ($cards[0]['action'] == 'caigos' && $this->suitInCards($cards[0]['actionsuit'])) {
                 array_shift($cards);
             }
         }
@@ -159,8 +168,9 @@ class Game extends Model
         if (($this->type == 9 && $this->hand_count == 4) || ($this->quarter == 2 && $this->hand_count == 4) || $this->hand_count == 8) {
             $this->calcScoresAfterQuarter();
             $this->update(['quarter' => $this->quarter + 1, 'hand_count' => 1, 'turn' => 0]);
-            broadcast(new UpdateGameEvent($this));
             $this->deal();
+            $this->refresh();
+            broadcast(new UpdateGameEvent($this));
             return false;
         }
 
@@ -172,7 +182,7 @@ class Game extends Model
         ]);
 
         $this->deal();
-        // aq dasaxvecia es eventi rodis unda gavushvat
+        $this->refresh();
         broadcast(new UpdateGameEvent($this));
         return false;
     }
@@ -311,7 +321,7 @@ class Game extends Model
 
     protected function turnPosition()
     {
-        return $this->hand_count > 4 ? $this->hand_count - 4 : $this->hand_count;
+        return $this->hand_count >= 4 ? $this->hand_count - 4 : $this->hand_count;
     }
 
     public function numCardsToDeal()

@@ -1,7 +1,6 @@
 export default {
     data() {
         return {
-            cardsCount: 0,
             messages: []
         }
     },
@@ -10,9 +9,9 @@ export default {
         Echo.private('game.' + this.game.id)
             .listen('UpdateGameEvent', event => {
                 this.game = event.game;
+                this.nextTurn = event.game.turn;
             })
             .listen('PlayerCallEvent', event => {
-                console.log(event);
                 let p = this.ppm.indexOf(event.position);
                 let content = event.score.call === 0 ? '-' : event.score.call;
                 $('#player' + p).attr('data-content', content).popover('show');
@@ -25,24 +24,10 @@ export default {
                 this.game.state = event.state;
             })
             .listen('CardPlayEvent', event => {
-                this.cardsCount++;
-                let p = this.ppm.indexOf(event.position);
-
-                $('#player' + p + 'card')
-                    .css('z-index', this.cardsCount)
-                    .removeClass()
-                    .addClass(event.card.suit + event.card.strength);
-
-                if (this.cardsCount === 4) {
-                    setTimeout(() => {
-                        for (let i = 0; i < 4; i++) {
-                            $('#player' + i + 'card').removeClass();
-                        }
-                        this.cardsCount = 0;
-                    }, 1000);
-                }
-
-                this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
+                this.game.cards.push(event.card);
+                this.players[event.position].cards.pop();
+                this.game.players[event.position].card = event.card;
+                this.hideCards(event.take);
             })
             .listen('StartGameEvent', event => {
                 clearInterval(this.timerFn);
@@ -67,7 +52,7 @@ export default {
                             }
                             this.game = event.game;
                             this.playerPositionsMap();
-                            this.showCards(this.dealtCards);
+                            this.showCards(this.dealtCards, false);
                         }, 1500);
                     }
                 }

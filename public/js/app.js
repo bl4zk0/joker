@@ -2140,6 +2140,72 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2157,6 +2223,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       game: this.initialGame,
+      cardState: true,
       players: [{
         cards: [],
         takenCards: []
@@ -2170,7 +2237,19 @@ __webpack_require__.r(__webpack_exports__);
         cards: [],
         takenCards: []
       }],
-      card: {}
+      card: {},
+      actions: {
+        "magali": "მაღალი",
+        "caigos": "წაიღოს",
+        "mojokra": "მოჯოკრა",
+        "kvevidan": "ქვევიდან"
+      },
+      actionsuits: {
+        "hearts": "♥",
+        "clubs": "♣",
+        "diamonds": "♦",
+        "spades": "♠"
+      }
     };
   },
   computed: {
@@ -2180,7 +2259,7 @@ __webpack_require__.r(__webpack_exports__);
     callboard: function callboard() {
       var max;
 
-      if (this.game.quarter % 2 === 0) {
+      if (this.game.quarter % 2 === 0 || this.game.type === 9) {
         max = 10;
       } else {
         max = this.game.hand_count + 1;
@@ -2228,33 +2307,47 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     actionCard: function actionCard(event) {
-      if (!this.turn || this.game.state !== 'card') {
-        console.log('wrong turn or state');
-        return;
-      }
-
+      // es aris state roca karts daacher sxva kartebze rom vegar daachiro da itamasho sanam es karti ar gaigzavneba
+      if (!this.cardState) return;
+      this.cardState = false;
       var strength = event.target.getAttribute('data-strength');
       var suit = event.target.getAttribute('data-suit');
       var card = {
         strength: strength,
         suit: suit
       };
+
+      if (!this.turn || this.game.state !== 'card') {
+        console.log('wrong turn or state');
+        this.cardState = true;
+        return;
+      }
+
       this.cardId = event.target.id;
       this.card.card = card;
-      console.log(card);
 
       if (strength === '16') {
-        if (this.cardsCount === 0) {
+        if (this.game.cards.length === 0) {
           $('#jokhigh').removeClass('d-none');
         } else {
           $('#jokjoker').removeClass('d-none');
         }
       } else {
-        this.sendCard();
+        if (!this.canPlay(card)) {
+          console.log('you can not play this card');
+          return;
+        }
+
+        this.afterActionCard(card);
       }
     },
     actionJoker: function actionJoker(event) {
       var action = event.target.getAttribute('data-action');
+      var card = {
+        strength: this.card.card.strength,
+        suit: this.card.card.suit,
+        action: action
+      };
       this.card.action = action;
 
       if (action === 'magali' || 'action' === 'caigos') {
@@ -2262,7 +2355,13 @@ __webpack_require__.r(__webpack_exports__);
         $('#suits').removeClass('d-none');
       } else {
         $('#jokjoker').addClass('d-none');
-        this.sendCard();
+
+        if (!this.canPlay(card)) {
+          console.log('you can not play this card');
+          return;
+        }
+
+        this.afterActionCard(card);
       }
     },
     actionSuit: function actionSuit(event) {
@@ -2272,37 +2371,65 @@ __webpack_require__.r(__webpack_exports__);
         axios.post('/trump/games/' + this.game.id, {
           trump: suit
         });
+        this.setTrump = false;
       } else if (this.game.state === 'card') {
+        var card = {
+          strength: this.card.card.strength,
+          suit: this.card.card.suit,
+          action: this.card.action,
+          actionsuit: suit
+        };
         this.card.actionsuit = suit;
-        this.sendCard();
+
+        if (!this.canPlay(card)) {
+          console.log('you can not play this card');
+          return;
+        }
+
+        this.afterActionCard(card);
       }
 
       $('#suits').addClass('d-none');
     },
     sendCard: function sendCard() {
-      //$('#player0card').addClass(this.card.suit + this.card.strength);
+      var _this2 = this;
+
       this.players[this.ppm[0]].cards.splice(this.cardId, 1);
-      axios.post('/card/games/' + this.game.id, this.card);
-      this.card = {};
-      this.cardId = null;
+      axios.post('/card/games/' + this.game.id, this.card).then(function (response) {
+        _this2.nextTurn = response.data;
+        _this2.card = {};
+        _this2.cardId = null;
+        _this2.cardState = true;
+      })["catch"](function (error) {
+        location.reload();
+      });
     },
     call: function call(event) {
-      var _this2 = this;
+      var _this3 = this;
 
       if (!this.turn || this.game.state !== 'call') {
         console.log('wrong turn or state');
         return;
       }
 
+      this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
       var call = {
         call: event.target.getAttribute('data-value')
       };
       axios.post('/call/games/' + this.game.id, call).then(function (response) {
-        _this2.game.players[_this2.ppm[0]].scores.push(response.data);
+        _this3.game.players[_this3.ppm[0]].scores.push(response.data.score);
+
+        _this3.game.state = response.data.state;
+        _this3.game.turn = response.data.turn;
       })["catch"](function (error) {
         location.reload();
       });
-      this.game.turn++;
+    },
+    afterActionCard: function afterActionCard(card) {
+      this.game.cards.push(card);
+      this.game.players[this.ppm[0]].card = card;
+      this.sendCard();
+      this.hideCards(this.checkTake());
     }
   }
 });
@@ -26636,13 +26763,165 @@ var render = function() {
             ]
           ),
           _vm._v(" "),
-          _c("div", { attrs: { id: "player0card" } }),
+          _c(
+            "div",
+            {
+              class: _vm.playedCard(0),
+              style: "z-index: " + _vm.cardsZIndex(0),
+              attrs: { id: "player0card" }
+            },
+            [
+              _vm.playedCardAction(0)
+                ? _c("div", { staticClass: "card-action" }, [
+                    _c("div", [
+                      _c("span", {
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.actions[
+                              _vm.game.players[this.ppm[0]].card["action"]
+                            ]
+                          )
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("span", {
+                        class: _vm.suitColor(
+                          _vm.game.players[this.ppm[0]].card["actionsuit"]
+                        ),
+                        staticStyle: { "font-size": "20px" },
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.actionsuits[
+                              _vm.game.players[this.ppm[0]].card["actionsuit"]
+                            ]
+                          )
+                        }
+                      })
+                    ])
+                  ])
+                : _vm._e()
+            ]
+          ),
           _vm._v(" "),
-          _c("div", { attrs: { id: "player1card" } }),
+          _c(
+            "div",
+            {
+              class: _vm.playedCard(1),
+              style: "z-index: " + _vm.cardsZIndex(1),
+              attrs: { id: "player1card" }
+            },
+            [
+              _vm.playedCardAction(1)
+                ? _c("div", { staticClass: "card-action" }, [
+                    _c("div", [
+                      _c("span", {
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.actions[
+                              _vm.game.players[this.ppm[1]].card["action"]
+                            ]
+                          )
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("span", {
+                        class: _vm.suitColor(
+                          _vm.game.players[this.ppm[1]].card["actionsuit"]
+                        ),
+                        staticStyle: { "font-size": "20px" },
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.actionsuits[
+                              _vm.game.players[this.ppm[1]].card["actionsuit"]
+                            ]
+                          )
+                        }
+                      })
+                    ])
+                  ])
+                : _vm._e()
+            ]
+          ),
           _vm._v(" "),
-          _c("div", { attrs: { id: "player2card" } }),
+          _c(
+            "div",
+            {
+              class: _vm.playedCard(2),
+              style: "z-index: " + _vm.cardsZIndex(2),
+              attrs: { id: "player2card" }
+            },
+            [
+              _vm.playedCardAction(2)
+                ? _c("div", { staticClass: "card-action" }, [
+                    _c("div", [
+                      _c("span", {
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.actions[
+                              _vm.game.players[this.ppm[2]].card["action"]
+                            ]
+                          )
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("span", {
+                        class: _vm.suitColor(
+                          _vm.game.players[this.ppm[2]].card["actionsuit"]
+                        ),
+                        staticStyle: { "font-size": "20px" },
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.actionsuits[
+                              _vm.game.players[this.ppm[2]].card["actionsuit"]
+                            ]
+                          )
+                        }
+                      })
+                    ])
+                  ])
+                : _vm._e()
+            ]
+          ),
           _vm._v(" "),
-          _c("div", { attrs: { id: "player3card" } }),
+          _c(
+            "div",
+            {
+              class: _vm.playedCard(3),
+              style: "z-index: " + _vm.cardsZIndex(3),
+              attrs: { id: "player3card" }
+            },
+            [
+              _vm.playedCardAction(3)
+                ? _c("div", { staticClass: "card-action" }, [
+                    _c("div", [
+                      _c("span", {
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.actions[
+                              _vm.game.players[this.ppm[3]].card["action"]
+                            ]
+                          )
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("span", {
+                        class: _vm.suitColor(
+                          _vm.game.players[this.ppm[3]].card["actionsuit"]
+                        ),
+                        staticStyle: { "font-size": "20px" },
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.actionsuits[
+                              _vm.game.players[this.ppm[3]].card["actionsuit"]
+                            ]
+                          )
+                        }
+                      })
+                    ])
+                  ])
+                : _vm._e()
+            ]
+          ),
           _vm._v(" "),
           _vm._l(_vm.players[_vm.ppm[0]].cards, function(card, index) {
             return _c("div", {
@@ -26688,8 +26967,71 @@ var render = function() {
             })
           }),
           _vm._v(" "),
+          _vm._l(_vm.players[_vm.ppm[0]].takenCards, function(v, index) {
+            return _c("div", {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.game.state === "card",
+                  expression: "game.state === 'card'"
+                }
+              ],
+              staticClass: "p0-tc taken-card card_back",
+              style: "margin-left: " + (35 + index * 10) + "px"
+            })
+          }),
+          _vm._v(" "),
+          _vm._l(_vm.players[_vm.ppm[1]].takenCards, function(v, index) {
+            return _c("div", {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.game.state === "card",
+                  expression: "game.state === 'card'"
+                }
+              ],
+              staticClass: "p1-tc taken-card card_back",
+              style: "margin-top: " + (35 + index * 10) + "px"
+            })
+          }),
+          _vm._v(" "),
+          _vm._l(_vm.players[_vm.ppm[2]].takenCards, function(v, index) {
+            return _c("div", {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.game.state === "card",
+                  expression: "game.state === 'card'"
+                }
+              ],
+              staticClass: "p2-tc taken-card card_back",
+              style: "margin-right: " + (35 + index * 10) + "px"
+            })
+          }),
+          _vm._v(" "),
+          _vm._l(_vm.players[_vm.ppm[3]].takenCards, function(v, index) {
+            return _c("div", {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.game.state === "card",
+                  expression: "game.state === 'card'"
+                }
+              ],
+              staticClass: "p3-tc taken-card card_back",
+              style: "margin-bottom: " + (35 + index * 10) + "px"
+            })
+          }),
+          _vm._v(" "),
           _c("div", { attrs: { id: "player0" } }, [
-            _c("div", { staticClass: "avatar border rounded-circle" }),
+            _c("div", {
+              staticClass: "avatar border rounded-circle",
+              class: _vm.active(0)
+            }),
             _vm._v(" "),
             _c("div", {
               staticClass: "u-name",
@@ -26711,7 +27053,10 @@ var render = function() {
             [
               _vm._m(1),
               _vm._v(" "),
-              _c("div", { staticClass: "avatar border rounded-circle" }),
+              _c("div", {
+                staticClass: "avatar border rounded-circle",
+                class: _vm.active(1)
+              }),
               _vm._v(" "),
               _c("div", {
                 staticClass: "u-name",
@@ -26734,7 +27079,10 @@ var render = function() {
             [
               _vm._m(2),
               _vm._v(" "),
-              _c("div", { staticClass: "avatar border rounded-circle" }),
+              _c("div", {
+                staticClass: "avatar border rounded-circle",
+                class: _vm.active(2)
+              }),
               _vm._v(" "),
               _c("div", {
                 staticClass: "u-name",
@@ -26757,7 +27105,10 @@ var render = function() {
             [
               _vm._m(3),
               _vm._v(" "),
-              _c("div", { staticClass: "avatar border rounded-circle" }),
+              _c("div", {
+                staticClass: "avatar border rounded-circle",
+                class: _vm.active(3)
+              }),
               _vm._v(" "),
               _c("div", {
                 staticClass: "u-name",
@@ -26804,7 +27155,7 @@ var render = function() {
                   expression: "game.state === 'call' && turn"
                 }
               ],
-              staticClass: "bg-white border shadow pt-1 pl-1",
+              staticClass: "bg-white border rounded shadow pt-1 pl-1",
               attrs: { id: "callboard" }
             },
             _vm._l(_vm.callboard, function(idx) {
@@ -27014,7 +27365,8 @@ var render = function() {
                 "button",
                 {
                   staticClass: "btn btn-danger",
-                  attrs: { "data-action": "caigos" }
+                  attrs: { "data-action": "caigos" },
+                  on: { click: _vm.actionJoker }
                 },
                 [_vm._v("წაიღოს")]
               )
@@ -27405,6 +27757,166 @@ var render = function() {
             })
           ]),
           _vm._v(" "),
+          _c("tr", [
+            _c("th", { attrs: { scope: "row" } }, [_vm._v("2")]),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(0, 1)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(1, 1)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(2, 1)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(3, 1)) }
+            })
+          ]),
+          _vm._v(" "),
+          _c("tr", [
+            _c("th", { attrs: { scope: "row" } }, [_vm._v("3")]),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(0, 2)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(1, 2)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(2, 2)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(3, 2)) }
+            })
+          ]),
+          _vm._v(" "),
+          _c("tr", [
+            _c("th", { attrs: { scope: "row" } }, [_vm._v("4")]),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(0, 3)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(1, 3)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(2, 3)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(3, 3)) }
+            })
+          ]),
+          _vm._v(" "),
+          _c("tr", [
+            _c("th", { attrs: { scope: "row" } }, [_vm._v("5")]),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(0, 4)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(1, 4)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(2, 4)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(3, 4)) }
+            })
+          ]),
+          _vm._v(" "),
+          _c("tr", [
+            _c("th", { attrs: { scope: "row" } }, [_vm._v("6")]),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(0, 5)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(1, 5)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(2, 5)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(3, 5)) }
+            })
+          ]),
+          _vm._v(" "),
+          _c("tr", [
+            _c("th", { attrs: { scope: "row" } }, [_vm._v("7")]),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(0, 6)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(1, 6)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(2, 6)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(3, 6)) }
+            })
+          ]),
+          _vm._v(" "),
+          _c("tr", [
+            _c("th", { attrs: { scope: "row" } }, [_vm._v("8")]),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(0, 7)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(1, 7)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(2, 7)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showScores(3, 7)) }
+            })
+          ]),
+          _vm._v(" "),
+          _c("tr", { staticClass: "bg-info" }, [
+            _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showResult(0, 8)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showResult(1, 8)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showResult(2, 8)) }
+            }),
+            _vm._v(" "),
+            _c("td", {
+              domProps: { textContent: _vm._s(_vm.showResult(3, 8)) }
+            })
+          ]),
+          _vm._v(" "),
           _vm._m(0),
           _vm._v(" "),
           _vm._m(1),
@@ -27441,157 +27953,13 @@ var render = function() {
           _vm._v(" "),
           _vm._m(17),
           _vm._v(" "),
-          _vm._m(18),
-          _vm._v(" "),
-          _vm._m(19),
-          _vm._v(" "),
-          _vm._m(20),
-          _vm._v(" "),
-          _vm._m(21),
-          _vm._v(" "),
-          _vm._m(22),
-          _vm._v(" "),
-          _vm._m(23),
-          _vm._v(" "),
-          _vm._m(24),
-          _vm._v(" "),
-          _vm._m(25),
-          _vm._v(" "),
-          _vm._m(26)
+          _vm._m(18)
         ])
       ])
     ]
   )
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("2")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("3")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("4")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("5")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("6")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("7")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("8")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", { staticClass: "bg-info" }, [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -40912,7 +41280,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      cardsCount: 0,
       messages: []
     };
   },
@@ -40921,9 +41288,8 @@ __webpack_require__.r(__webpack_exports__);
 
     Echo["private"]('game.' + this.game.id).listen('UpdateGameEvent', function (event) {
       _this.game = event.game;
+      _this.nextTurn = event.game.turn;
     }).listen('PlayerCallEvent', function (event) {
-      console.log(event);
-
       var p = _this.ppm.indexOf(event.position);
 
       var content = event.score.call === 0 ? '-' : event.score.call;
@@ -40938,23 +41304,13 @@ __webpack_require__.r(__webpack_exports__);
       _this.game.turn = event.turn;
       _this.game.state = event.state;
     }).listen('CardPlayEvent', function (event) {
-      _this.cardsCount++;
+      _this.game.cards.push(event.card);
 
-      var p = _this.ppm.indexOf(event.position);
+      _this.players[event.position].cards.pop();
 
-      $('#player' + p + 'card').css('z-index', _this.cardsCount).removeClass().addClass(event.card.suit + event.card.strength);
+      _this.game.players[event.position].card = event.card;
 
-      if (_this.cardsCount === 4) {
-        setTimeout(function () {
-          for (var i = 0; i < 4; i++) {
-            $('#player' + i + 'card').removeClass();
-          }
-
-          _this.cardsCount = 0;
-        }, 1000);
-      }
-
-      _this.game.turn = _this.game.turn === 3 ? 0 : _this.game.turn + 1;
+      _this.hideCards(event.take);
     }).listen('StartGameEvent', function (event) {
       clearInterval(_this.timerFn);
       _this.game.state = 'void';
@@ -40979,7 +41335,7 @@ __webpack_require__.r(__webpack_exports__);
 
             _this.playerPositionsMap();
 
-            _this.showCards(_this.dealtCards);
+            _this.showCards(_this.dealtCards, false);
           }, 1500);
         }
       };
@@ -41029,7 +41385,8 @@ __webpack_require__.r(__webpack_exports__);
     return {
       windowWidth: window.innerWidth,
       ppm: [],
-      timer: 10
+      timer: 10,
+      nextTurn: 4
     };
   },
   computed: {
@@ -41039,7 +41396,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     this.playerPositionsMap();
-    this.showCards(this.initialCards);
+    this.showCards(this.initialCards, true);
   },
   mounted: function mounted() {
     var _this = this;
@@ -41117,6 +41474,47 @@ __webpack_require__.r(__webpack_exports__);
     },
     getUsername: function getUsername(p) {
       return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].user.username : '...';
+    },
+    playedCard: function playedCard(n) {
+      var player = this.game.players[this.ppm[n]];
+
+      if (player && player.card != null) {
+        return player.card['suit'] + player.card['strength'];
+      }
+    },
+    cardsZIndex: function cardsZIndex(n) {
+      var player = this.game.players[this.ppm[n]];
+
+      if (player && player.card != null) {
+        for (var idx in this.game.cards) {
+          if (this.game.cards[idx]['suit'] == player.card['suit'] && this.game.cards[idx]['strength'] == player.card['strength']) {
+            return idx;
+          }
+        }
+      }
+    },
+    active: function active(n) {
+      var state = ['trump', 'call', 'card'];
+
+      if (state.indexOf(this.game.state) >= 0) {
+        return this.ppm[n] === this.game.turn ? 'border-warning' : '';
+      } else {
+        return '';
+      }
+    },
+    playedCardAction: function playedCardAction(n) {
+      var player = this.game.players[this.ppm[n]];
+
+      if (player && player.card != null && player.card['action'] !== undefined) {
+        return true;
+      }
+    },
+    suitColor: function suitColor(suit) {
+      if (suit === 'hearts' || suit === 'diamonds') {
+        return 'text-danger';
+      } else {
+        return '';
+      }
     }
   }
 });
@@ -41132,6 +41530,12 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -41143,33 +41547,66 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     window.Echo["private"]('user.' + App.user.id).listen('CardDealEvent', function (event) {
-      console.log(event);
-      var cards = event.cards;
-      cards.sort(function (a, b) {
-        var aValue = _this.cardSortValue(a);
-
-        var bValue = _this.cardSortValue(b);
-
-        return aValue - bValue;
-      });
-      _this.dealtCards = cards;
+      _this.dealtCards = event.cards;
       _this.setTrump = event.trump;
-
-      _this.showCards(_this.dealtCards);
+      setTimeout(function () {
+        _this.showCards(_this.dealtCards, false);
+      }, 1000);
     });
   },
   methods: {
-    showCards: function showCards(cards) {
-      if (this.game.state === 'void' || this.game.state === 'ready' || cards === null) return; // TODO: mokled tu dadiskonektda an daarefresha mag dros state gvakvs mosaxodi
+    showCards: function showCards(cards, initial) {
+      var _this2 = this;
 
-      this.players[this.ppm[0]].cards = cards;
-      this.players[this.ppm[1]].cards = Array.from(new Array(cards.length).keys());
-      this.players[this.ppm[2]].cards = Array.from(new Array(cards.length).keys());
-      this.players[this.ppm[3]].cards = Array.from(new Array(cards.length).keys());
+      if (this.game.state === 'void' || this.game.state === 'ready' || this.game.state === 'start') return; // TODO: mokled tu dadiskonektda an daarefresha mag dros state gvakvs mosaxodi
+
+      cards = cards === null ? [] : cards;
+      cards.sort(function (a, b) {
+        var aValue = _this2.cardSortValue(a);
+
+        var bValue = _this2.cardSortValue(b);
+
+        return aValue - bValue;
+      });
+      var player = this.players[this.ppm[0]];
+      player.cards = cards;
+
+      if (initial) {
+        var scoresL = this.game.players[this.ppm[0]].scores.length - 1;
+
+        if (scoresL > 0) {
+          var take = this.game.players[this.ppm[0]].scores[scoresL].take;
+          player.takenCards = Array.from(new Array(take).keys());
+        }
+      } else {
+        player.takenCards = [];
+      }
+
+      for (var i = 1; i < 4; i++) {
+        var cardsL = void 0;
+        var scoresLL = void 0;
+
+        if (initial) {
+          cardsL = this.game.players[this.ppm[i]].cards_count;
+          scoresLL = this.game.players[this.ppm[i]].scores.length - 1;
+
+          if (scoresLL > 0) {
+            var takee = this.game.players[this.ppm[i]].scores[scoresLL].take;
+            this.players[this.ppm[i]].takenCards = Array.from(new Array(takee).keys());
+          }
+        } else {
+          cardsL = cards.length;
+          this.players[this.ppm[i]].takenCards = [];
+        }
+
+        this.players[this.ppm[i]].cards = Array.from(new Array(cardsL).keys());
+      }
 
       if (this.setTrump) {
         $('#suits').removeClass('d-none');
       }
+
+      this.dealtCards = [];
     },
     cardSortValue: function cardSortValue(card) {
       if (card['suit'] === 'hearts') return card['strength'];
@@ -41178,6 +41615,155 @@ __webpack_require__.r(__webpack_exports__);
       if (card['suit'] === 'spades') return 60 + card['strength'];
       if (card['suit'] === 'black_joker') return 80 + card['strength'];
       if (card['suit'] === 'color_joker') return 100 + card['strength'];
+    },
+    canPlay: function canPlay(card) {
+      if (this.game.cards.length == 0) {
+        if (card['strength'] != 16 || card['action'] == 'magali' || card['action'] == 'caigos') {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        var suit = this.game.cards[0]['actionsuit'] ? this.game.cards[0]['actionsuit'] : this.game.cards[0]['suit'];
+        var trump = this.game.trump['strength'] == 16 ? 'bez' : this.game.trump['suit'];
+
+        if (this.game.cards[0]['action'] == 'magali') {
+          if (this.isHighestSuitInCards(card, suit)) return true;
+        } else if (card['suit'] == suit) return true;
+
+        if (card['action'] == 'mojokra' || card['action'] == 'kvevidan') return true;
+        if (!this.suitInCards(suit) && card['suit'] == trump) return true;
+        if (!this.suitInCards(suit) && !this.suitInCards(trump)) return true;
+      }
+
+      this.cardState = true;
+      return false;
+    },
+    highestCard: function highestCard() {
+      var suit = null;
+      var cards = this.game.cards;
+      var trump = this.game.trump;
+
+      if (cards[0].hasOwnProperty('action')) {
+        if (this.suitInGameCards(trump['suit']) && cards[0]['actionsuit'] != trump['suit']) {
+          cards.shift();
+        } else if (cards[0]['action'] == 'caigos' && this.suitInGameCards(cards[0]['actionsuit'])) {
+          cards.shift();
+        }
+      }
+
+      if (trump['strength'] != 16 && this.suitInGameCards(trump['suit'])) {
+        suit = trump['suit'];
+      } else {
+        suit = cards[0]['suit'];
+      }
+
+      cards = cards.filter(function (c) {
+        return c['suit'] == suit || c['strength'] == 16 || c['strength'] == 17;
+      });
+      cards.sort(function (a, b) {
+        return b['strength'] - a['strength'];
+      });
+      return cards[0];
+    },
+    isHighestSuitInCards: function isHighestSuitInCards(card, suit) {
+      var cards = this.players[this.ppm[0]].cards.filter(function (c) {
+        return c.suit == suit;
+      });
+      if (cards.length == 0) return false;
+      cards.sort(function (a, b) {
+        return b['strength'] - a['strength'];
+      });
+      var highestCard = cards[0];
+      if (highestCard['strength'] == card['strength'] && highestCard['suit'] == card['suit']) return true;
+      return false;
+    },
+    suitInCards: function suitInCards(suit) {
+      var _iterator = _createForOfIteratorHelper(this.players[this.ppm[0]].cards),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var card = _step.value;
+          if (card['suit'] == suit) return true;
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      return false;
+    },
+    suitInGameCards: function suitInGameCards(suit) {
+      if (suit['strength'] == 16) return false;
+
+      var _iterator2 = _createForOfIteratorHelper(this.game.cards),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var card = _step2.value;
+          if (card['suit'] == suit) return true;
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+
+      return false;
+    },
+    hideCards: function hideCards(take) {
+      var _this3 = this;
+
+      if (take !== false) {
+        this.nextTurn = take;
+        setTimeout(function () {
+          var _iterator3 = _createForOfIteratorHelper(_this3.game.players),
+              _step3;
+
+          try {
+            for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+              var player = _step3.value;
+              player.card = null;
+            }
+          } catch (err) {
+            _iterator3.e(err);
+          } finally {
+            _iterator3.f();
+          }
+
+          _this3.game.turn = Number(_this3.nextTurn);
+
+          _this3.players[take].takenCards.push(1);
+
+          _this3.game.cards = [];
+        }, 1000);
+      } else {
+        this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
+      }
+    },
+    checkTake: function checkTake() {
+      if (this.game.cards.length === 4) {
+        if (this.game.cards[3]['action'] === 'mojokra') {
+          this.game.cards[3]['strength'] = 17;
+        }
+
+        if (this.game.cards[3]['action'] === 'kvevidan') {
+          this.game.cards[3]['strength'] = 1;
+        }
+
+        var highestCard = this.highestCard();
+
+        for (var idx in this.game.players) {
+          if (highestCard['suit'] == this.game.players[idx].card['suit'] && highestCard['strength'] == this.game.players[idx].card['strength']) {
+            return idx;
+          }
+        }
+      }
+
+      return false;
     }
   }
 });

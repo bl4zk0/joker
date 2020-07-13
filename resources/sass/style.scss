@@ -68,8 +68,8 @@
 
 #trump-wrapper {
     position: absolute;
-    right: 4px;
-    top: 1px;
+    right: 8px;
+    top: 3px;
     text-align: center;
     font-size: .9rem;
     color: whitesmoke;
@@ -266,6 +266,28 @@
     min-width: 60px;
 }
 
+.p0-tc {
+    bottom: 23px;
+    left: 50%;
+}
+
+.p1-tc {
+    left: 15px;
+    top: 50%;
+    transform: rotate(90deg);
+}
+
+.p2-tc {
+    top: 23px;
+    right: 50%;
+}
+
+.p3-tc {
+    right: 15px;
+    bottom: 50%;
+    transform: rotate(90deg);
+}
+
 .kick {
     position: absolute;
     display: none;
@@ -277,6 +299,15 @@
 #player2:hover .kick,
 #player3:hover .kick, {
     display: block;
+}
+
+.card-action {
+    text-align: center;
+    margin: 1px;
+    background-color: #ffffff;
+    border-radius: 10px 10px 0 0;
+    font-size: 12px;
+    font-weight: 700;
 }
 
 .kick:hover {
@@ -314,9 +345,13 @@
 }
 
 .p0-card {
-    bottom: 85px;
+    bottom: 87px;
     left: 50%;
     cursor: pointer;
+}
+
+.p0-card:hover {
+    z-index: 1000;
 }
 
 .p1-card {

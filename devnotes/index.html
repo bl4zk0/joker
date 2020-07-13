@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mojokre.ge</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="cards.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="d-none d-md-block col-md-4">
+        
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Ako</th>
+                <th scope="col">Sally</th>
+                <th scope="col">John</th>
+                <th scope="col">Jane</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>1 100</td>
+                <td>- 50</td>
+                <td>1 100</td>
+                <td>2 150</td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>1 100</td>
+                <td>3 200</td>
+                <td>4 10</td>
+                <td>9 80</td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td>- 40</td>
+                <td>1 20</td>
+                <td>2 150</td>
+                <td>5 300</td>
+              </tr>
+            </tbody>
+          </table>
+        
+      </div>
+      <div class="col-md-8 col-lg-7 p-0">
+        <div class="j-table bg-success shadow-lg">
+          <div id="trump-wrapper">
+            <div class="mb-1"><strong>კოზირი</strong></div>
+            <div id="trump" class="hearts14"></div>
+          </div>
+
+          <!-- played cards -->
+          <div class="p-card top-card clubs10" style="left: 50%; bottom: 50%; margin-left: -34.5px; margin-bottom: -10px; z-index: 1;"></div>
+          <div class="p-card left-card clubs7" style="right: 50%; top: 50%; margin-top: -47px; z-index: 0;"></div>
+          <div class="p-card right-card clubs9" style="left: 50%; top: 50%; margin-top: -47px; z-index: 2;"></div>
+          <div class="p-card bot-card clubs11" style="left: 50%; top: 50%; margin-left: -34.5px; margin-top: -10px; z-index: 3;"></div>
+
+          <!-- players cards -->
+          <div class="p-card p2-card card_back" style="left: 50%; margin-left: -34.5px;"></div>
+          <div class="p-card p1-card card_back" style="top: 50%; margin-top: -50px;"></div>
+          <div class="p-card p3-card card_back" style="top: 50%; margin-top: -50px;"></div>
+          <!-- <div class="p-card p0-card color_joker" style="left: 50%; margin-left: -34.5px;"></div> -->
+          <div class="p-card p0-card hearts6" style="left: 50%; margin-left: -72px;"></div>
+          <div class="p-card p0-card hearts7" style="left: 50%; margin-left: -47px;"></div>
+          <div class="p-card p0-card hearts10" style="left: 50%; margin-left: -22px;"></div>
+          <div class="p-card p0-card color_joker" style="left: 50%; margin-left: 3px;"></div>
+          <!-- <div class="p-card p0-card hearts10" style="left: 50%; margin-left: -84.5px;"></div>
+          <div class="p-card p0-card hearts10" style="left: 50%; margin-left: -59.5px;"></div>
+          <div class="p-card p0-card hearts10" style="left: 50%; margin-left: -34.5px;"></div>
+          <div class="p-card p0-card hearts10" style="left: 50%; margin-left: -9.5px;"></div>
+          <div class="p-card p0-card hearts10" style="left: 50%; margin-left: 15.5px;"></div> -->
+
+
+          <!-- taken cards-->
+          <div class="taken-card card_back" style="bottom: 18px; left: 50%; margin-left: 35px;"></div>
+          <div class="taken-card card_back" style="bottom: 18px; left: 50%; margin-left: 50px;"></div>
+          <div class="taken-card card_back" style="bottom: 18px; left: 50%; margin-left: 65px;"></div>
+          <div class="taken-card card_back" style="bottom: 18px; left: 50%; margin-left: 80px;"></div>
+          <div class="taken-card card_back" style="bottom: 18px; left: 50%; margin-left: 95px;"></div>
+          <div class="taken-card card_back" style="bottom: 18px; left: 50%; margin-left: 110px;"></div>
+          <div class="taken-card card_back" style="bottom: 18px; left: 50%; margin-left: 125px;"></div>
+          <div class="taken-card card_back" style="bottom: 18px; left: 50%; margin-left: 140px;"></div>
+          <div class="taken-card card_back" style="bottom: 18px; left: 50%; margin-left: 155px;"></div>
+
+          <!-- players -->
+          <div class="top-player">
+          <div class="avatar border border-warning rounded-circle">
+    
+          </div>
+            <small><strong>top</strong></small>
+          </div>
+          <div class="left-player">
+            <div class="avatar border border-warning rounded-circle">
+    
+            </div>
+              <small><strong>left</strong></small>
+          </div>
+          <div class="right-player">
+            <div class="avatar border border-warning rounded-circle">
+    
+            </div>
+              <small><strong>right</strong></small>
+          </div>
+          <div class="bottom-player">
+            <div class="avatar border border-warning rounded-circle">
+    
+            </div>
+              <small><strong>bot</strong></small>
+          </div>
+          
+        </div>
+      </div>
+      <div class="d-none d-lg-block col-lg-2">
+        
+      </div>
+    </div>
+  </div>
+</body>
+</html>

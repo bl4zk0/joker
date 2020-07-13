@@ -111,7 +111,11 @@ class GamesController extends Controller
 
         broadcast(new PlayerCallEvent($game, $score, $player->position))->toOthers();
 
-        return $score;
+        return [
+            'score' => $score,
+            'state' => $game->state,
+            'turn' => $game->turn,
+        ];
     }
 
     /**
@@ -140,16 +144,16 @@ class GamesController extends Controller
 
         $player = auth()->user()->player;
 
-        if (! $player->canPlay($card, $game->cards, $game->trump['suit'])) {
+        if (! $player->canPlay($card, $game->cards, $game->trump)) {
             abort(422, "Don't bother, fool!");
         }
 
         $player->removeCard($request->card);
 
-        broadcast (new CardPlayEvent($game->id, auth()->user()->player->position, $card));
+        $card = $game->addCard($card);
+        $game->checkTake($card);
 
-        $game->addCard($card);
-        $game->checkTake();
+        return $game->turn;
     }
 
     /**
@@ -204,9 +208,10 @@ class GamesController extends Controller
     public function show(Game $game)
     {
         $cards = Auth::user()->player->cards;
-
+        // if state trump splice cards
         return view('game', compact('game', 'cards'));
-
+        // TODO: mokled tu gaagrdzeleb aqedan daicyeeeeee
+        // magidaze ver shemovlen gazidan tu ar gaucere players game-is id
         // aq dasaxveci gvaqvs rodesac vinme gava tamashis dros
         // aseve rodis vamatebt creator-s motamasheebshi
         if ($game->players->contains(Auth::user()->player)) {

@@ -9,10 +9,58 @@
             </div>
 
             <!-- played cards -->
-            <div id="player0card"></div>
-            <div id="player1card"></div>
-            <div id="player2card"></div>
-            <div id="player3card"></div>
+            <div id="player0card"
+                 :class="playedCard(0)"
+                 :style="'z-index: ' + cardsZIndex(0)">
+                <div v-if="playedCardAction(0)"
+                     class="card-action">
+                    <div>
+                        <span v-text="actions[game.players[this.ppm[0]].card['action']]"></span>
+                        <span v-text="actionsuits[game.players[this.ppm[0]].card['actionsuit']]"
+                              style="font-size: 20px"
+                              :class="suitColor(game.players[this.ppm[0]].card['actionsuit'])"></span>
+                    </div>
+                </div>
+            </div>
+            <div id="player1card"
+                 :class="playedCard(1)"
+                 :style="'z-index: ' + cardsZIndex(1)">
+                <div v-if="playedCardAction(1)"
+                     class="card-action">
+                    <div>
+                        <span v-text="actions[game.players[this.ppm[1]].card['action']]"></span>
+                        <span v-text="actionsuits[game.players[this.ppm[1]].card['actionsuit']]"
+                              style="font-size: 20px"
+                              :class="suitColor(game.players[this.ppm[1]].card['actionsuit'])"></span>
+                    </div>
+                </div>
+            </div>
+            <div id="player2card"
+                 :class="playedCard(2)"
+                 :style="'z-index: ' + cardsZIndex(2)">
+                <div v-if="playedCardAction(2)"
+                     class="card-action">
+                    <div>
+                        <span v-text="actions[game.players[this.ppm[2]].card['action']]"></span>
+                        <span v-text="actionsuits[game.players[this.ppm[2]].card['actionsuit']]"
+                              style="font-size: 20px"
+                              :class="suitColor(game.players[this.ppm[2]].card['actionsuit'])"></span>
+                    </div>
+                </div>
+            </div>
+            <div id="player3card"
+                 :class="playedCard(3)"
+                 :style="'z-index: ' + cardsZIndex(3)">
+                <div v-if="playedCardAction(3)"
+                     class="card-action">
+                    <div>
+                        <span v-text="actions[game.players[this.ppm[3]].card['action']]"></span>
+                        <span v-text="actionsuits[game.players[this.ppm[3]].card['actionsuit']]"
+                              style="font-size: 20px"
+                              :class="suitColor(game.players[this.ppm[3]].card['actionsuit'])"></span>
+                    </div>
+                </div>
+            </div>
 
             <!-- player0 cards -->
             <div v-for="(card, index) in players[ppm[0]].cards"
@@ -40,11 +88,29 @@
             <!-- players cards -->
 
             <!-- taken cards-->
-<!--            <div class="taken-card card_back" style="bottom: 23px; left: 50%; margin-left: 35px;"></div>-->
+            <div class="p0-tc taken-card card_back"
+                 v-show="game.state === 'card'"
+                 v-for="(v, index) in players[ppm[0]].takenCards"
+                 :style="'margin-left: ' + (35 + index * 10) + 'px'"></div>
+
+            <div class="p1-tc taken-card card_back"
+                 v-show="game.state === 'card'"
+                 v-for="(v, index) in players[ppm[1]].takenCards"
+                 :style="'margin-top: ' + (35 + index * 10) + 'px'"></div>
+
+            <div class="p2-tc taken-card card_back"
+                 v-show="game.state === 'card'"
+                 v-for="(v, index) in players[ppm[2]].takenCards"
+                 :style="'margin-right: ' + (35 + index * 10) + 'px'"></div>
+
+            <div class="p3-tc taken-card card_back"
+                 v-show="game.state === 'card'"
+                 v-for="(v, index) in players[ppm[3]].takenCards"
+                 :style="'margin-bottom: ' + (35 + index * 10) + 'px'"></div>
 
             <!-- players -->
             <div id="player0">
-                <div class="avatar border rounded-circle">
+                <div class="avatar border rounded-circle" :class="active(0)">
 
                 </div>
                 <div class="u-name" v-text="getUsername(0)"></div>
@@ -53,7 +119,7 @@
                 <div class="kick" title="გაგდება">
                     <i class="fas fa-times"></i>
                 </div>
-                <div class="avatar border rounded-circle">
+                <div class="avatar border rounded-circle" :class="active(1)">
 
                 </div>
                 <div class="u-name" v-text="getUsername(1)"></div>
@@ -62,7 +128,7 @@
                 <div class="kick" title="გაგდება">
                     <i class="fas fa-times"></i>
                 </div>
-                <div class="avatar border rounded-circle">
+                <div class="avatar border rounded-circle" :class="active(2)">
 
                 </div>
                 <div class="u-name" v-text="getUsername(2)"></div>
@@ -71,7 +137,7 @@
                 <div class="kick" title="გაგდება">
                     <i class="fas fa-times"></i>
                 </div>
-                <div class="avatar border rounded-circle">
+                <div class="avatar border rounded-circle" :class="active(3)">
 
                 </div>
                 <div class="u-name" v-text="getUsername(3)"></div>
@@ -86,7 +152,7 @@
             </div>
 
             <div id="callboard"
-                 class="bg-white border shadow pt-1 pl-1"
+                 class="bg-white border rounded shadow pt-1 pl-1"
                  v-show="game.state === 'call' && turn">
 
                 <button class="btn btn-light mb-1 mr-1"
@@ -130,7 +196,7 @@
 
             <div id="jokhigh" class="d-none border bg-white rounded shadow p-1">
                 <button class="btn btn-light" data-action="magali" @click="actionJoker">მაღალი</button>
-                <button class="btn btn-danger" data-action="caigos">წაიღოს</button>
+                <button class="btn btn-danger" data-action="caigos" @click="actionJoker">წაიღოს</button>
             </div>
 
             <div id="jokjoker" class="d-none border bg-white rounded shadow p-1" style="width: 202px;">
@@ -159,13 +225,16 @@
         data() {
             return {
                 game: this.initialGame,
+                cardState: true,
                 players: [
                     {cards: [], takenCards: []},
                     {cards: [], takenCards: []},
                     {cards: [], takenCards: []},
                     {cards: [], takenCards: []},
                 ],
-                card: {}
+                card: {},
+                actions: {"magali": "მაღალი", "caigos": "წაიღოს", "mojokra": "მოჯოკრა", "kvevidan": "ქვევიდან"},
+                actionsuits: {"hearts": "♥", "clubs": "♣", "diamonds": "♦", "spades": "♠"}
             }
         },
 
@@ -177,7 +246,7 @@
             callboard() {
                 let max;
 
-                if (this.game.quarter % 2 === 0) {
+                if (this.game.quarter % 2 === 0 || this.game.type === 9) {
                     max = 10;
                 } else {
                     max = this.game.hand_count + 1;
@@ -230,40 +299,55 @@
             },
 
             actionCard(event) {
+                // es aris state roca karts daacher sxva kartebze rom vegar daachiro da itamasho sanam es karti ar gaigzavneba
+                if (! this.cardState) return;
+                this.cardState = false;
+                let strength = event.target.getAttribute('data-strength');
+                let suit = event.target.getAttribute('data-suit');
+                let card = { strength, suit };
+
                 if (! this.turn || this.game.state !== 'card') {
                     console.log('wrong turn or state');
+                    this.cardState = true;
                     return;
                 }
 
-                let strength = event.target.getAttribute('data-strength');
-                let suit = event.target.getAttribute('data-suit');
-                let card = {
-                    strength,
-                    suit,
-                };
                 this.cardId = event.target.id;
                 this.card.card = card;
-                console.log(card);
+
                 if (strength === '16') {
-                    if (this.cardsCount === 0) {
+                    if (this.game.cards.length === 0) {
                         $('#jokhigh').removeClass('d-none');
                     } else {
                         $('#jokjoker').removeClass('d-none');
                     }
                 } else {
-                    this.sendCard();
+                    if (! this.canPlay(card)) {
+                        console.log('you can not play this card');
+                        return;
+                    }
+                    this.afterActionCard(card);
                 }
             },
 
             actionJoker(event) {
                 let action = event.target.getAttribute('data-action');
+                let card = {
+                    strength: this.card.card.strength,
+                    suit: this.card.card.suit,
+                    action
+                }
                 this.card.action = action;
                 if (action === 'magali' || 'action' === 'caigos') {
                     $('#jokhigh').addClass('d-none');
                     $('#suits').removeClass('d-none');
                 } else {
                     $('#jokjoker').addClass('d-none');
-                    this.sendCard();
+                    if (! this.canPlay(card)) {
+                        console.log('you can not play this card');
+                        return;
+                    }
+                    this.afterActionCard(card);
                 }
             },
 
@@ -271,20 +355,38 @@
                 let suit = event.target.getAttribute('data-suit');
                 if (this.game.state === 'trump') {
                     axios.post('/trump/games/' + this.game.id, {trump: suit});
+                    this.setTrump = false;
                 } else if (this.game.state === 'card') {
+                    let card = {
+                        strength: this.card.card.strength,
+                        suit: this.card.card.suit,
+                        action: this.card.action,
+                        actionsuit: suit
+                    }
                     this.card.actionsuit = suit;
-                    this.sendCard();
+                    if (! this.canPlay(card)) {
+                        console.log('you can not play this card');
+                        return;
+                    }
+                    this.afterActionCard(card);
                 }
 
                 $('#suits').addClass('d-none');
             },
 
             sendCard() {
-                //$('#player0card').addClass(this.card.suit + this.card.strength);
                 this.players[this.ppm[0]].cards.splice(this.cardId, 1);
-                axios.post('/card/games/' + this.game.id, this.card);
-                this.card = {};
-                this.cardId = null;
+
+                axios.post('/card/games/' + this.game.id, this.card)
+                    .then(response => {
+                        this.nextTurn = response.data;
+                        this.card = {};
+                        this.cardId = null;
+                        this.cardState = true;
+                    })
+                    .catch(error => {
+                        location.reload();
+                    });
             },
 
             call(event) {
@@ -294,18 +396,28 @@
                     return;
                 }
 
+                this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
+
                 let call = {
                     call: event.target.getAttribute('data-value')
                 }
 
                 axios.post('/call/games/' + this.game.id, call)
                     .then(response => {
-                        this.game.players[this.ppm[0]].scores.push(response.data);
+                        this.game.players[this.ppm[0]].scores.push(response.data.score);
+                        this.game.state = response.data.state;
+                        this.game.turn = response.data.turn;
                     })
                     .catch(error => {
                         location.reload();
                     });
-                this.game.turn++;
+            },
+
+            afterActionCard(card) {
+                this.game.cards.push(card);
+                this.game.players[this.ppm[0]].card = card;
+                this.sendCard();
+                this.hideCards(this.checkTake());
             }
         }
     }
