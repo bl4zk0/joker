@@ -84,15 +84,15 @@ class GamePolicy
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can kick a player.
      *
-     * @param  \App\User  $user
-     * @param  \App\Game  $game
+     * @param User $user
+     * @param Game $game
      * @return mixed
      */
-    public function restore(User $user, Game $game)
+    public function kick(User $user, Game $game)
     {
-        //
+        return $user->is($game->creator) && $game->state === 'start';
     }
 
     /**

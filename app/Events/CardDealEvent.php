@@ -19,7 +19,7 @@ class CardDealEvent implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      *
-     * @param $playerId
+     * @param $user_id
      * @param $cards
      * @param bool $trump
      */

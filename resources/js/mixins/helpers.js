@@ -24,6 +24,9 @@ export default {
             this.windowWidth = window.innerWidth
         };
         $('body').addClass('bg-success');
+        if (this.game.state === 'trump' && this.turn) {
+            $('#suits').removeClass('d-none');
+        }
     },
 
     // es metodi acentrebs kartebs negativ marginebit viewportis mixedvit
@@ -88,7 +91,11 @@ export default {
         playedCard(n) {
             let player = this.game.players[this.ppm[n]];
             if (player && player.card != null) {
-                return player.card['suit'] + player.card['strength'];
+                if (player.card['suit'].indexOf('joker') !== -1) {
+                    return player.card['suit'] + '16';
+                } else {
+                    return player.card['suit'] + player.card['strength'];
+                }
             }
         },
 
@@ -126,6 +133,61 @@ export default {
             } else {
                 return '';
             }
+        },
+
+        canKickUser(n) {
+            if (App.user.id === this.game.user_id) {
+                if (this.game.state === 'start' && this.game.players[this.ppm[n]] !== undefined) {
+                    return true;
+                }
+            }
+
+            return false;
+        },
+
+        kick(n) {
+            axios.post('/kick/games/' + this.game.id, {position: this.ppm[n]})
+                .then(response => {
+                    this.game.players = response.data;
+                    this.playerPositionsMap();
+                });
+        },
+
+        goToLobby() {
+            window.location = '/lobby';
+        },
+
+        showChat() {
+            if (this.windowWidth < 576) {
+                $('#play-table').addClass('d-none');
+                $('#chat-wrapper').removeClass('d-none');
+                $('.close-w').removeClass('d-none');
+            } else {
+                $('#scoreboard').removeClass('d-md-block');
+                $('#chat-wrapper').removeClass('d-none');
+                $('#btn-scoreboard').removeClass('d-md-none');
+                $('#btn-chat').addClass('d-none');
+            }
+        },
+
+        showScoreboard() {
+            if (this.windowWidth < 576) {
+                $('#play-table').addClass('d-none');
+                $('#scoreboard').removeClass('d-none');
+                $('.close-w').removeClass('d-none');
+            } else {
+                $('#chat-wrapper').addClass('d-none');
+                $('#scoreboard').addClass('d-md-block');
+                $('#btn-scoreboard').addClass('d-md-none');
+                $('#btn-chat').removeClass('d-none');
+            }
+        },
+
+        closeW() {
+            $('#play-table').removeClass('d-none');
+            $('#chat-wrapper').addClass('d-none');
+            $('#scoreboard').addClass('d-none');
+            $('.close-w').addClass('d-none');
         }
     }
 }

@@ -20,8 +20,6 @@ class CreatePlayersTable extends Migration
             $table->string('card')->nullable();
             $table->mediumText('cards')->nullable();
             $table->unsignedTinyInteger('position')->nullable();
-            $table->unsignedTinyInteger('rank')->default(0);
-            $table->unsignedInteger('rank_points')->default(0);
             $table->unsignedInteger('games_played')->default(0);
             $table->boolean('disconnected')->default(false);
             $table->timestamps();

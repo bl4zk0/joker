@@ -22,7 +22,9 @@ class PlayerCallEvent implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      *
-     * @return void
+     * @param $game
+     * @param $score
+     * @param $position
      */
     public function __construct($game, $score, $position)
     {

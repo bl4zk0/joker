@@ -8,26 +8,25 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UpdateReadyEvent implements ShouldBroadcastNow
+class KickUserEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     private $gameId;
     public $position;
-    public $ready;
+    public $players;
 
     /**
      * Create a new event instance.
      *
      * @param $gameId
      * @param $position
-     * @param $ready
      */
-    public function __construct($gameId, $position, $ready)
+    public function __construct($gameId, $position, $players)
     {
         $this->gameId = $gameId;
         $this->position = $position;
-        $this->ready = $ready;
+        $this->players = $players;
     }
 
     /**

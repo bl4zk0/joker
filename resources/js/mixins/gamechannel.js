@@ -79,6 +79,17 @@ export default {
 
                 $('#ready th').eq(event.position).addClass(color);
             })
+            .listen('KickUserEvent', event => {
+                if (App.user.id === this.game.players[event.position].user_id) {
+                    $('#kicked').modal({show: true});
+                    Echo.leaveChannel('game.' + this.game.id);
+                    Echo.leaveChannel('user.' + App.user.id);
+                    return;
+                }
+
+                this.game.players = event.players;
+                this.playerPositionsMap();
+            })
             .listenForWhisper('message', message => {
                 this.messages.push(message);
                 this.$nextTick(() => {

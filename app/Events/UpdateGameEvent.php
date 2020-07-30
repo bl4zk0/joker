@@ -17,7 +17,7 @@ class UpdateGameEvent implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      *
-     * @return void
+     * @param $game
      */
     public function __construct($game)
     {

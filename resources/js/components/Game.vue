@@ -3,6 +3,19 @@
         <component :is="scoreboard" :initial-players="game.players"></component>
 
         <div id="play-table">
+            <div class="btn-table" v-show="game.state === 'start'">
+                <a href="/lobby" class="btn btn-outline-light"><i class="fas fa-arrow-circle-left"></i></a>
+            </div>
+            <div id="btn-chat" class="btn-table d-xl-none">
+                <button type="button" class="btn btn-outline-light" @click="showChat">
+                    <i class="fas fa-comment"></i>
+                </button>
+            </div>
+            <div id="btn-scoreboard" class="btn-table d-md-none">
+                <button type="button" class="btn btn-outline-light" @click="showScoreboard">
+                    <i class="fas fa-table"></i>
+                </button>
+            </div>
             <div id="trump-wrapper" v-show="game.trump !== null">
                 <div><strong>კოზირი</strong></div>
                 <div id="trump" :class="this.game.trump ? game.trump.suit + game.trump.strength : ''"></div>
@@ -17,7 +30,7 @@
                     <div>
                         <span v-text="actions[game.players[this.ppm[0]].card['action']]"></span>
                         <span v-text="actionsuits[game.players[this.ppm[0]].card['actionsuit']]"
-                              style="font-size: 20px"
+                              style="font-size: 24px"
                               :class="suitColor(game.players[this.ppm[0]].card['actionsuit'])"></span>
                     </div>
                 </div>
@@ -30,7 +43,7 @@
                     <div>
                         <span v-text="actions[game.players[this.ppm[1]].card['action']]"></span>
                         <span v-text="actionsuits[game.players[this.ppm[1]].card['actionsuit']]"
-                              style="font-size: 20px"
+                              style="font-size: 24px"
                               :class="suitColor(game.players[this.ppm[1]].card['actionsuit'])"></span>
                     </div>
                 </div>
@@ -43,7 +56,7 @@
                     <div>
                         <span v-text="actions[game.players[this.ppm[2]].card['action']]"></span>
                         <span v-text="actionsuits[game.players[this.ppm[2]].card['actionsuit']]"
-                              style="font-size: 20px"
+                              style="font-size: 24px"
                               :class="suitColor(game.players[this.ppm[2]].card['actionsuit'])"></span>
                     </div>
                 </div>
@@ -56,7 +69,7 @@
                     <div>
                         <span v-text="actions[game.players[this.ppm[3]].card['action']]"></span>
                         <span v-text="actionsuits[game.players[this.ppm[3]].card['actionsuit']]"
-                              style="font-size: 20px"
+                              style="font-size: 24px"
                               :class="suitColor(game.players[this.ppm[3]].card['actionsuit'])"></span>
                     </div>
                 </div>
@@ -116,8 +129,8 @@
                 <div class="u-name" v-text="getUsername(0)"></div>
             </div>
             <div id="player1" data-container="body" data-toggle="popover" data-placement="top" data-trigger="manual">
-                <div class="kick" title="გაგდება">
-                    <i class="fas fa-times"></i>
+                <div class="kick" title="გაგდება" v-show="canKickUser(1)">
+                    <i class="fas fa-times" @click="kick(1)"></i>
                 </div>
                 <div class="avatar border rounded-circle" :class="active(1)">
 
@@ -125,8 +138,8 @@
                 <div class="u-name" v-text="getUsername(1)"></div>
             </div>
             <div id="player2" data-container="body" data-toggle="popover" data-placement="right" data-trigger="manual">
-                <div class="kick" title="გაგდება">
-                    <i class="fas fa-times"></i>
+                <div class="kick" title="გაგდება" v-show="canKickUser(2)">
+                    <i class="fas fa-times" @click="kick(2)"></i>
                 </div>
                 <div class="avatar border rounded-circle" :class="active(2)">
 
@@ -134,8 +147,8 @@
                 <div class="u-name" v-text="getUsername(2)"></div>
             </div>
             <div id="player3" data-container="body" data-toggle="popover" data-placement="top" data-trigger="manual">
-                <div class="kick" title="გაგდება">
-                    <i class="fas fa-times"></i>
+                <div class="kick" title="გაგდება" v-show="canKickUser(3)">
+                    <i class="fas fa-times" @click="kick(3)"></i>
                 </div>
                 <div class="avatar border rounded-circle" :class="active(3)">
 
@@ -204,8 +217,24 @@
                 <button class="btn btn-danger" data-action="kvevidan" @click="actionJoker">ქვევიდან</button>
             </div>
         </div>
-
+        <div class="modal fade" id="kicked" data-backdrop="static" data-keyboard="false" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content bg-danger">
+                    <div class="modal-body text-white">
+                        <i class="fas fa-exclamation-triangle"></i> თქვენ გამოგაგდეს მაგიდიდან!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light" data-dismiss="modal" @click="goToLobby">OK!</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <chat :messages="messages" :game-id="this.game.id"></chat>
+        <div class="close-w d-none">
+            <button type="button" class="btn btn-outline-light" @click="closeW">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
     </div>
 </template>
 
@@ -338,7 +367,7 @@
                     action
                 }
                 this.card.action = action;
-                if (action === 'magali' || 'action' === 'caigos') {
+                if (action === 'magali' || action === 'caigos') {
                     $('#jokhigh').addClass('d-none');
                     $('#suits').removeClass('d-none');
                 } else {

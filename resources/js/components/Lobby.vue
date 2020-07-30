@@ -6,18 +6,6 @@
                 <form action="/games" method="POST">
                     <input type="hidden" name="_token" :value="csrf">
                     <div class="form-group">
-                        <label for="rank">რანკი</label>
-                        <select id="rank" class="form-control" name="rank">
-                            <option value="0">ბრინჯაო</option>
-                            <option value="1">ვერცხლი</option>
-                            <option value="2">ოქრო</option>
-                            <option value="3">პლატინა</option>
-                            <option value="4">მასტერი</option>
-                            <option value="5">გრანდმასტერი</option>
-                            <option value="6">ჯოკერი</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label for="type">ტიპი</label>
                         <select id="type" class="form-control" name="type">
                             <option value="1" selected>სტანდარტული</option>
@@ -38,7 +26,7 @@
 
                     <div class="form-group form-check">
                         <input type="checkbox" class="form-check-input" id="pwd" name="password">
-                        <label class="form-check-label" for="pwd">პაროლიანი მაგიდა</label>
+                        <label class="form-check-label" for="pwd">პინ-კოდი</label>
                     </div>
                     <button class="btn btn-light btn-block">მაგიდის შექმნა</button>
                 </form>

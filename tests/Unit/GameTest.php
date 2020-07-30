@@ -18,24 +18,12 @@ class GameTest extends TestCase
     }
 
     /** @test */
-    public function it_can_validate_rank_game_type_and_penalty()
+    public function it_can_validate_game_type_and_penalty()
     {
         $this->signIn();
 
-        $this->post('/games', ['rank' => 3, 'type' => 3, 'penalty' => '-100'])
-            ->assertSessionHasErrors(['rank', 'type', 'penalty']);
-    }
-
-
-    /** @test */
-    public function it_can_validate_trump()
-    {
-        $user = $this->signIn();
-
-        $game = factory('App\Game')->create(['type' => 9, 'user_id' => $user->id, 'state' => 'trump']);
-
-        $this->postJson('trump' . $game->path(), ['trump' => 'foobar'])
-            ->assertStatus(422);
+        $this->post('/games', ['type' => 3, 'penalty' => '-100'])
+            ->assertSessionHasErrors(['type', 'penalty']);
     }
 
     /** @test */
@@ -120,9 +108,9 @@ class GameTest extends TestCase
         $this->postJson('/trump' . $game->path(), ['trump' => 'foobar'])
             ->assertStatus(422);
 
-        $this->postJson('/trump' . $game->path(), ['trump' => 'bez']);
+        $this->postJson('/trump' . $game->path(), ['trump' => 'hearts']);
 
-        $this->assertEquals('bez', $game->fresh()->trump);
+        $this->assertEquals(['strength' => 14, 'suit' => 'hearts'], $game->fresh()->trump);
     }
 
     /** @test */
@@ -234,7 +222,7 @@ class GameTest extends TestCase
     {
         $user = $this->signIn();
 
-        $game = factory('App\Game')->create(['user_id' => $user->id]);
+        $game = factory('App\Game')->create(['user_id' => $user->id, 'trump' => ['strength' => 14, 'suit' => 'hearts']]);
 
         $game->refresh();
 
@@ -267,7 +255,7 @@ class GameTest extends TestCase
     /** @test */
     public function it_can_determines_highest_card()
     {
-        $game = factory('App\Game')->create();
+        $game = factory('App\Game')->create(['trump' => ['strength' => 16, 'suit' => 'black_joker']]);
 
         $game->update(['cards' =>[
             ['strength' => 14, 'suit' => 'hearts'],
@@ -283,7 +271,7 @@ class GameTest extends TestCase
             ['strength' => 8, 'suit' => 'hearts'],
             ['strength' => 9, 'suit' => 'spades'],
             ['strength' => 11, 'suit' => 'hearts'],
-        ], 'trump' => 'spades']);
+        ], 'trump' => ['strength' => 14, 'suit' => 'spades']]);
 
         $this->assertEquals(['strength' => 9, 'suit' => 'spades'], $game->highestCard());
 

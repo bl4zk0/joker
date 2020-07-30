@@ -13,7 +13,14 @@ export default {
                 let call = this.players[p].scores[n].call === 0 ? '-' : this.players[p].scores[n].call;
                 let result = this.players[p].scores[n].result ? this.players[p].scores[n].result : '';
                 result = result < 0 ? 'I--I' : result;
-                return call + ' ' + result;
+                let txt = call + ' ' + result;
+                if (this.players[p].scores[n].color === 'red') {
+                    return `<s class="text-danger">${txt}</s>`;
+                } else if (this.players[p].scores[n].color === 'yellow') {
+                    return `<span class="text-warning">${txt}</span>`;
+                } else {
+                    return txt;
+                }
             } else {
                 return '';
             }
@@ -23,7 +30,7 @@ export default {
             if (this.players[p] && this.players[p].scores[n]) {
                 let result = this.players[p].scores[n].result;
                 result = (result / 100).toFixed(1);
-                return result;
+                return `<strong>${result}</strong>`;
             } else {
                 return '';
             }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\CardPlayEvent;
 use App\Events\CardDealEvent;
+use App\Events\KickUserEvent;
 use App\Events\PlayerCallEvent;
 use App\Events\GetReadyEvent;
 use App\Events\UpdateGameEvent;
@@ -12,6 +12,8 @@ use App\Events\UpdateReadyEvent;
 use App\Game;
 use App\Jobs\ResetGameStart;
 use App\Rules\CardRule;
+use App\Rules\GamePasswordRule;
+use App\Rules\KickUserRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -103,7 +105,8 @@ class GamesController extends Controller
         $player = Auth::user()->player;
         $score = $player->scores()->create([
             'quarter' => $game->quarter,
-            'call' => $request->call
+            'call' => $request->call,
+            'color' => 'white'
         ]);
 
         $game->updateTurn();
@@ -163,7 +166,7 @@ class GamesController extends Controller
      */
     public function index()
     {
-        $games = Game::latest()->where('state', '0')->get();
+        $games = Game::latest()->where('state', 'start')->get();
 
         return view('lobby', compact('games'));
     }
@@ -176,10 +179,7 @@ class GamesController extends Controller
      */
     public function store(Request $request)
     {
-        $max = auth()->user()->player->rank;
-
         $request->validate([
-            'rank' => ['required', 'integer', 'min:0', "max:$max"],
             'type' => ['required', 'in:1,9'],
             'penalty' => ['required', 'in:-200,-300,-400,-500,-900,-1000'],
             'password' => ['sometimes', 'accepted']
@@ -188,7 +188,6 @@ class GamesController extends Controller
         $password = $request->has('password') ? sprintf("%04d", rand(0, 9999)) : null;
 
         $game = Game::create([
-            'rank' => $request->rank,
             'type' => $request->type,
             'penalty' => $request->penalty,
             'user_id' => auth()->id(),
@@ -205,20 +204,30 @@ class GamesController extends Controller
      * @param Game $game
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(Game $game)
+    public function show(Request $request, Game $game)
     {
-        $cards = Auth::user()->player->cards;
-        // if state trump splice cards
-        return view('game', compact('game', 'cards'));
-        // TODO: mokled tu gaagrdzeleb aqedan daicyeeeeee
-        // magidaze ver shemovlen gazidan tu ar gaucere players game-is id
-        // aq dasaxveci gvaqvs rodesac vinme gava tamashis dros
-        // aseve rodis vamatebt creator-s motamasheebshi
-        if ($game->players->contains(Auth::user()->player)) {
-            return view('game', compact('game'));
+        $player = Auth::user()->player;
+        $cards = $player->cards;
+        $cards = $game->state == 'trump' ? array_slice($cards, 0, 3) : $cards;
+
+        if ($game->players->contains($player)) {
+            if ($player->disconnected) {
+                $player->update(['disconnected' => false]);
+            }
+            return view('game', compact('game', 'cards'));
         }
 
-        if ($game->state == 0 && $game->players()->count() < 4) {
+        if ($game->password != null) {
+            if (! $request->has('p')) {
+                return view('enter_password');
+            } else {
+                $request->validate([
+                    'p' => ['required', new GamePasswordRule($game->password)]
+                ]);
+            }
+        }
+
+        if ($game->state == 'start' && $game->players()->count() < 4) {
 
             $game->addPlayer(Auth::user());
 
@@ -227,22 +236,32 @@ class GamesController extends Controller
             broadcast(new UpdateGameEvent($game));
             broadcast(new UpdateLobbyEvent());
 
-            return view('game', compact('game'));
-
-        } elseif ($game->state != 0 && $game->players->contains(Auth::user()->player)) {
-            // probably also update disconnected state
-            $cards = Auth::user()->player->cards;
             return view('game', compact('game', 'cards'));
+
         } else {
             return redirect('/lobby');
         }
+    }
+
+    public function kick(Request $request, Game $game) {
+        $this->authorize('kick', $game);
+
+        $request->validate([
+            'position' => ['required', new KickUserRule($game->players)]
+        ]);
+
+        $game->kick($request->position);
+
+        broadcast(new KickUserEvent($game->id, $request->position, $game->players))->toOthers();
+
+        return $game->players;
     }
 
     public function leave(Game $game)
     {
         $this->authorize('leave', $game);
 
-        if ($game->state == '0') {
+        if ($game->state == 'start') {
             auth()->user()->player->update(['game_id' => null, 'position' => null]);
             $game->refresh();
             if (auth()->user()->is($game->creator) && $game->players()->count() > 0) {

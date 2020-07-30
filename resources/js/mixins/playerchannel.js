@@ -7,7 +7,7 @@ export default {
     },
 
     created() {
-        window.Echo.private('user.' + App.user.id)
+        Echo.private('user.' + App.user.id)
             .listen('CardDealEvent', event => {
                 this.dealtCards = event.cards;
                 this.setTrump = event.trump;
@@ -45,6 +45,7 @@ export default {
                 let scoresLL;
                 if (initial) {
                     cardsL = this.game.players[this.ppm[i]].cards_count;
+                    cardsL = this.game.state === 'trump' ? 3 : cardsL;
                     scoresLL = this.game.players[this.ppm[i]].scores.length - 1;
                     if (scoresLL > 0) {
                         let takee = this.game.players[this.ppm[i]].scores[scoresLL].take;

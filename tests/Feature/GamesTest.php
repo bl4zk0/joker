@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Events\StartGameEvent;
+use App\Events\GetReadyEvent;
 use App\Events\UpdateLobbyEvent;
 use App\Game;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -48,7 +48,7 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    public function game_can_be_started_only_by_the_creator_and_game_sets_trump_if_type_is_1()
+    public function game_can_be_started_only_by_the_creator()
     {
         $creator = factory('App\User')->create();
         $game = factory('App\Game')->create(['user_id' => $creator->id]);
@@ -66,10 +66,8 @@ class GamesTest extends TestCase
         Event::fake();
 
         $this->post('/start' . $game->path());
-        $this->assertEquals('call', $game->fresh()->state);
 
-        $this->assertTrue(in_array($game->fresh()->trump, ['hearts', 'clubs', 'diamonds', 'spades', 'bez']));
-        Event::assertDispatched(StartGameEvent::class);
+        Event::assertDispatched(GetReadyEvent::class);
     }
 
     /** @test */
@@ -97,16 +95,15 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    public function a_player_can_choose_trump_and_trump_is_validated()
+    public function a_player_can_choose_trump()
     {
         $user = $this->signIn();
 
         $game = factory('App\Game')->create(['type' => 9, 'user_id' => $user->id, 'state' => 'trump']);
 
-        $this->postJson('trump' . $game->path(), ['trump' => 'foobar'])->assertStatus(422);
         $this->postJson('trump' . $game->path(), ['trump' => 'hearts']);
 
-        $this->assertEquals('hearts', $game->fresh()->trump);
+        $this->assertEquals(['strength' => 14, 'suit' => 'hearts'], $game->fresh()->trump);
     }
 
     public function when_a_player_joins_lobby_is_updated()
@@ -147,12 +144,14 @@ class GamesTest extends TestCase
     /** @test */
     public function check_take_updates_turn_if_not_4_cards()
     {
-        $game = factory('App\Game')->create(['cards' => [['strength' => 14, 'suit' => 'hearts']]]);
-        $game->refresh();
+        $user = $this->signIn();
 
+        $game = factory('App\Game')->create(['user_id' => $user->id, 'cards' => [['strength' => 14, 'suit' => 'hearts']]]);
+        $game->refresh();
+        Event::fake();
         $this->assertEquals(0, $game->turn);
 
-        $game->checkTake();
+        $game->checkTake(['strength' => 14, 'suit' => 'hearts']);
 
         $this->assertEquals(1, $game->fresh()->turn);
     }

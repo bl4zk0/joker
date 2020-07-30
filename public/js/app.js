@@ -2206,6 +2206,35 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2350,7 +2379,7 @@ __webpack_require__.r(__webpack_exports__);
       };
       this.card.action = action;
 
-      if (action === 'magali' || 'action' === 'caigos') {
+      if (action === 'magali' || action === 'caigos') {
         $('#jokhigh').addClass('d-none');
         $('#suits').removeClass('d-none');
       } else {
@@ -2445,18 +2474,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -26745,6 +26762,57 @@ var render = function() {
                 {
                   name: "show",
                   rawName: "v-show",
+                  value: _vm.game.state === "start",
+                  expression: "game.state === 'start'"
+                }
+              ],
+              staticClass: "btn-table"
+            },
+            [_vm._m(0)]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "btn-table d-xl-none", attrs: { id: "btn-chat" } },
+            [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-outline-light",
+                  attrs: { type: "button" },
+                  on: { click: _vm.showChat }
+                },
+                [_c("i", { staticClass: "fas fa-comment" })]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "btn-table d-md-none",
+              attrs: { id: "btn-scoreboard" }
+            },
+            [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-outline-light",
+                  attrs: { type: "button" },
+                  on: { click: _vm.showScoreboard }
+                },
+                [_c("i", { staticClass: "fas fa-table" })]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
                   value: _vm.game.trump !== null,
                   expression: "game.trump !== null"
                 }
@@ -26752,7 +26820,7 @@ var render = function() {
               attrs: { id: "trump-wrapper" }
             },
             [
-              _vm._m(0),
+              _vm._m(1),
               _vm._v(" "),
               _c("div", {
                 class: this.game.trump
@@ -26788,7 +26856,7 @@ var render = function() {
                         class: _vm.suitColor(
                           _vm.game.players[this.ppm[0]].card["actionsuit"]
                         ),
-                        staticStyle: { "font-size": "20px" },
+                        staticStyle: { "font-size": "24px" },
                         domProps: {
                           textContent: _vm._s(
                             _vm.actionsuits[
@@ -26828,7 +26896,7 @@ var render = function() {
                         class: _vm.suitColor(
                           _vm.game.players[this.ppm[1]].card["actionsuit"]
                         ),
-                        staticStyle: { "font-size": "20px" },
+                        staticStyle: { "font-size": "24px" },
                         domProps: {
                           textContent: _vm._s(
                             _vm.actionsuits[
@@ -26868,7 +26936,7 @@ var render = function() {
                         class: _vm.suitColor(
                           _vm.game.players[this.ppm[2]].card["actionsuit"]
                         ),
-                        staticStyle: { "font-size": "20px" },
+                        staticStyle: { "font-size": "24px" },
                         domProps: {
                           textContent: _vm._s(
                             _vm.actionsuits[
@@ -26908,7 +26976,7 @@ var render = function() {
                         class: _vm.suitColor(
                           _vm.game.players[this.ppm[3]].card["actionsuit"]
                         ),
-                        staticStyle: { "font-size": "20px" },
+                        staticStyle: { "font-size": "24px" },
                         domProps: {
                           textContent: _vm._s(
                             _vm.actionsuits[
@@ -27051,7 +27119,31 @@ var render = function() {
               }
             },
             [
-              _vm._m(1),
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.canKickUser(1),
+                      expression: "canKickUser(1)"
+                    }
+                  ],
+                  staticClass: "kick",
+                  attrs: { title: "გაგდება" }
+                },
+                [
+                  _c("i", {
+                    staticClass: "fas fa-times",
+                    on: {
+                      click: function($event) {
+                        return _vm.kick(1)
+                      }
+                    }
+                  })
+                ]
+              ),
               _vm._v(" "),
               _c("div", {
                 staticClass: "avatar border rounded-circle",
@@ -27077,7 +27169,31 @@ var render = function() {
               }
             },
             [
-              _vm._m(2),
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.canKickUser(2),
+                      expression: "canKickUser(2)"
+                    }
+                  ],
+                  staticClass: "kick",
+                  attrs: { title: "გაგდება" }
+                },
+                [
+                  _c("i", {
+                    staticClass: "fas fa-times",
+                    on: {
+                      click: function($event) {
+                        return _vm.kick(2)
+                      }
+                    }
+                  })
+                ]
+              ),
               _vm._v(" "),
               _c("div", {
                 staticClass: "avatar border rounded-circle",
@@ -27103,7 +27219,31 @@ var render = function() {
               }
             },
             [
-              _vm._m(3),
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.canKickUser(3),
+                      expression: "canKickUser(3)"
+                    }
+                  ],
+                  staticClass: "kick",
+                  attrs: { title: "გაგდება" }
+                },
+                [
+                  _c("i", {
+                    staticClass: "fas fa-times",
+                    on: {
+                      click: function($event) {
+                        return _vm.kick(3)
+                      }
+                    }
+                  })
+                ]
+              ),
               _vm._v(" "),
               _c("div", {
                 staticClass: "avatar border rounded-circle",
@@ -27139,7 +27279,7 @@ var render = function() {
                   attrs: { type: "button" },
                   on: { click: _vm.start }
                 },
-                [_vm._m(4)]
+                [_vm._m(2)]
               )
             ]
           ),
@@ -27406,12 +27546,68 @@ var render = function() {
         2
       ),
       _vm._v(" "),
-      _c("chat", { attrs: { messages: _vm.messages, "game-id": this.game.id } })
+      _c(
+        "div",
+        {
+          staticClass: "modal fade",
+          attrs: {
+            id: "kicked",
+            "data-backdrop": "static",
+            "data-keyboard": "false",
+            tabindex: "-1"
+          }
+        },
+        [
+          _c("div", { staticClass: "modal-dialog" }, [
+            _c("div", { staticClass: "modal-content bg-danger" }, [
+              _vm._m(3),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-footer" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-outline-light",
+                    attrs: { type: "button", "data-dismiss": "modal" },
+                    on: { click: _vm.goToLobby }
+                  },
+                  [_vm._v("OK!")]
+                )
+              ])
+            ])
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c("chat", {
+        attrs: { messages: _vm.messages, "game-id": this.game.id }
+      }),
+      _vm._v(" "),
+      _c("div", { staticClass: "close-w d-none" }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-outline-light",
+            attrs: { type: "button" },
+            on: { click: _vm.closeW }
+          },
+          [_c("i", { staticClass: "fas fa-times" })]
+        )
+      ])
     ],
     1
   )
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      { staticClass: "btn btn-outline-light", attrs: { href: "/lobby" } },
+      [_c("i", { staticClass: "fas fa-arrow-circle-left" })]
+    )
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -27422,31 +27618,16 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "kick", attrs: { title: "გაგდება" } }, [
-      _c("i", { staticClass: "fas fa-times" })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "kick", attrs: { title: "გაგდება" } }, [
-      _c("i", { staticClass: "fas fa-times" })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "kick", attrs: { title: "გაგდება" } }, [
-      _c("i", { staticClass: "fas fa-times" })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
     return _c("small", [_c("strong", [_vm._v("დაწყება")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-body text-white" }, [
+      _c("i", { staticClass: "fas fa-exclamation-triangle" }),
+      _vm._v(" თქვენ გამოგაგდეს მაგიდიდან!\n                ")
+    ])
   }
 ]
 render._withStripped = true
@@ -27490,8 +27671,6 @@ var render = function() {
               _vm._m(1),
               _vm._v(" "),
               _vm._m(2),
-              _vm._v(" "),
-              _vm._m(3),
               _vm._v(" "),
               _c("button", { staticClass: "btn btn-light btn-block" }, [
                 _vm._v("მაგიდის შექმნა")
@@ -27590,34 +27769,6 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "form-group" }, [
-      _c("label", { attrs: { for: "rank" } }, [_vm._v("რანკი")]),
-      _vm._v(" "),
-      _c(
-        "select",
-        { staticClass: "form-control", attrs: { id: "rank", name: "rank" } },
-        [
-          _c("option", { attrs: { value: "0" } }, [_vm._v("ბრინჯაო")]),
-          _vm._v(" "),
-          _c("option", { attrs: { value: "1" } }, [_vm._v("ვერცხლი")]),
-          _vm._v(" "),
-          _c("option", { attrs: { value: "2" } }, [_vm._v("ოქრო")]),
-          _vm._v(" "),
-          _c("option", { attrs: { value: "3" } }, [_vm._v("პლატინა")]),
-          _vm._v(" "),
-          _c("option", { attrs: { value: "4" } }, [_vm._v("მასტერი")]),
-          _vm._v(" "),
-          _c("option", { attrs: { value: "5" } }, [_vm._v("გრანდმასტერი")]),
-          _vm._v(" "),
-          _c("option", { attrs: { value: "6" } }, [_vm._v("ჯოკერი")])
-        ]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group" }, [
       _c("label", { attrs: { for: "type" } }, [_vm._v("ტიპი")]),
       _vm._v(" "),
       _c(
@@ -27675,7 +27826,7 @@ var staticRenderFns = [
       }),
       _vm._v(" "),
       _c("label", { staticClass: "form-check-label", attrs: { for: "pwd" } }, [
-        _vm._v("პაროლიანი მაგიდა")
+        _vm._v("პინ-კოდი")
       ])
     ])
   }
@@ -28325,121 +28476,73 @@ var render = function() {
           _c("tr", [
             _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 0)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(0, 0)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 0)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(1, 0)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 0)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(2, 0)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 0)) }
-            })
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(3, 0)) } })
           ]),
           _vm._v(" "),
           _c("tr", [
             _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 1)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(0, 1)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 1)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(1, 1)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 1)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(2, 1)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 1)) }
-            })
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(3, 1)) } })
           ]),
           _vm._v(" "),
           _c("tr", [
             _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 2)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(0, 2)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 2)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(1, 2)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 2)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(2, 2)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 2)) }
-            })
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(3, 2)) } })
           ]),
           _vm._v(" "),
           _c("tr", [
             _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 3)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(0, 3)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 3)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(1, 3)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 3)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(2, 3)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 3)) }
-            })
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(3, 3)) } })
           ]),
           _vm._v(" "),
           _c("tr", { staticClass: "bg-info" }, [
             _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showResult(0, 4)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showResult(0, 4)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showResult(1, 4)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showResult(1, 4)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showResult(2, 4)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showResult(2, 4)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showResult(3, 4)) }
-            })
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showResult(3, 4)) } })
           ]),
           _vm._v(" "),
           _c("tr", [
             _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 5)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(0, 5)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 5)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(1, 5)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 5)) }
-            }),
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(2, 5)) } }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 5)) }
-            })
+            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(3, 5)) } })
           ]),
           _vm._v(" "),
           _vm._m(0),
@@ -41358,6 +41461,19 @@ __webpack_require__.r(__webpack_exports__);
     }).listen('UpdateReadyEvent', function (event) {
       var color = event.ready === '1' ? 'bg-success' : 'bg-danger';
       $('#ready th').eq(event.position).addClass(color);
+    }).listen('KickUserEvent', function (event) {
+      if (App.user.id === _this.game.players[event.position].user_id) {
+        $('#kicked').modal({
+          show: true
+        });
+        Echo.leaveChannel('game.' + _this.game.id);
+        Echo.leaveChannel('user.' + App.user.id);
+        return;
+      }
+
+      _this.game.players = event.players;
+
+      _this.playerPositionsMap();
     }).listenForWhisper('message', function (message) {
       _this.messages.push(message);
 
@@ -41406,6 +41522,10 @@ __webpack_require__.r(__webpack_exports__);
     };
 
     $('body').addClass('bg-success');
+
+    if (this.game.state === 'trump' && this.turn) {
+      $('#suits').removeClass('d-none');
+    }
   },
   // es metodi acentrebs kartebs negativ marginebit viewportis mixedvit
   methods: {
@@ -41479,7 +41599,11 @@ __webpack_require__.r(__webpack_exports__);
       var player = this.game.players[this.ppm[n]];
 
       if (player && player.card != null) {
-        return player.card['suit'] + player.card['strength'];
+        if (player.card['suit'].indexOf('joker') !== -1) {
+          return player.card['suit'] + '16';
+        } else {
+          return player.card['suit'] + player.card['strength'];
+        }
       }
     },
     cardsZIndex: function cardsZIndex(n) {
@@ -41515,6 +41639,59 @@ __webpack_require__.r(__webpack_exports__);
       } else {
         return '';
       }
+    },
+    canKickUser: function canKickUser(n) {
+      if (App.user.id === this.game.user_id) {
+        if (this.game.state === 'start' && this.game.players[this.ppm[n]] !== undefined) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    kick: function kick(n) {
+      var _this2 = this;
+
+      axios.post('/kick/games/' + this.game.id, {
+        position: this.ppm[n]
+      }).then(function (response) {
+        _this2.game.players = response.data;
+
+        _this2.playerPositionsMap();
+      });
+    },
+    goToLobby: function goToLobby() {
+      window.location = '/lobby';
+    },
+    showChat: function showChat() {
+      if (this.windowWidth < 576) {
+        $('#play-table').addClass('d-none');
+        $('#chat-wrapper').removeClass('d-none');
+        $('.close-w').removeClass('d-none');
+      } else {
+        $('#scoreboard').removeClass('d-md-block');
+        $('#chat-wrapper').removeClass('d-none');
+        $('#btn-scoreboard').removeClass('d-md-none');
+        $('#btn-chat').addClass('d-none');
+      }
+    },
+    showScoreboard: function showScoreboard() {
+      if (this.windowWidth < 576) {
+        $('#play-table').addClass('d-none');
+        $('#scoreboard').removeClass('d-none');
+        $('.close-w').removeClass('d-none');
+      } else {
+        $('#chat-wrapper').addClass('d-none');
+        $('#scoreboard').addClass('d-md-block');
+        $('#btn-scoreboard').addClass('d-md-none');
+        $('#btn-chat').removeClass('d-none');
+      }
+    },
+    closeW: function closeW() {
+      $('#play-table').removeClass('d-none');
+      $('#chat-wrapper').addClass('d-none');
+      $('#scoreboard').addClass('d-none');
+      $('.close-w').addClass('d-none');
     }
   }
 });
@@ -41546,7 +41723,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   created: function created() {
     var _this = this;
 
-    window.Echo["private"]('user.' + App.user.id).listen('CardDealEvent', function (event) {
+    Echo["private"]('user.' + App.user.id).listen('CardDealEvent', function (event) {
       _this.dealtCards = event.cards;
       _this.setTrump = event.trump;
       setTimeout(function () {
@@ -41588,6 +41765,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
         if (initial) {
           cardsL = this.game.players[this.ppm[i]].cards_count;
+          cardsL = this.game.state === 'trump' ? 3 : cardsL;
           scoresLL = this.game.players[this.ppm[i]].scores.length - 1;
 
           if (scoresLL > 0) {
@@ -41792,7 +41970,15 @@ __webpack_require__.r(__webpack_exports__);
         var call = this.players[p].scores[n].call === 0 ? '-' : this.players[p].scores[n].call;
         var result = this.players[p].scores[n].result ? this.players[p].scores[n].result : '';
         result = result < 0 ? 'I--I' : result;
-        return call + ' ' + result;
+        var txt = call + ' ' + result;
+
+        if (this.players[p].scores[n].color === 'red') {
+          return "<s class=\"text-danger\">".concat(txt, "</s>");
+        } else if (this.players[p].scores[n].color === 'yellow') {
+          return "<span class=\"text-warning\">".concat(txt, "</span>");
+        } else {
+          return txt;
+        }
       } else {
         return '';
       }
@@ -41801,7 +41987,7 @@ __webpack_require__.r(__webpack_exports__);
       if (this.players[p] && this.players[p].scores[n]) {
         var result = this.players[p].scores[n].result;
         result = (result / 100).toFixed(1);
-        return result;
+        return "<strong>".concat(result, "</strong>");
       } else {
         return '';
       }

@@ -41,5 +41,6 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::post('/call/games/{game}', 'GamesController@call');
     Route::post('/card/games/{game}', 'GamesController@card');
     Route::post('/trump/games/{game}', 'GamesController@trump');
+    Route::post('/kick/games/{game}', 'GamesController@kick');
     Route::post('/leave/games/{game}', 'GamesController@leave');
 });

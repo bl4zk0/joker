@@ -13,45 +13,45 @@
             <tbody>
             <tr>
                 <th scope="row">9</th>
-                <td v-text="showScores(0, 0)"></td>
-                <td v-text="showScores(1, 0)"></td>
-                <td v-text="showScores(2, 0)"></td>
-                <td v-text="showScores(3, 0)"></td>
+                <td v-html="showScores(0, 0)"></td>
+                <td v-html="showScores(1, 0)"></td>
+                <td v-html="showScores(2, 0)"></td>
+                <td v-html="showScores(3, 0)"></td>
             </tr>
             <tr>
                 <th scope="row">9</th>
-                <td v-text="showScores(0, 1)"></td>
-                <td v-text="showScores(1, 1)"></td>
-                <td v-text="showScores(2, 1)"></td>
-                <td v-text="showScores(3, 1)"></td>
+                <td v-html="showScores(0, 1)"></td>
+                <td v-html="showScores(1, 1)"></td>
+                <td v-html="showScores(2, 1)"></td>
+                <td v-html="showScores(3, 1)"></td>
             </tr>
             <tr>
                 <th scope="row">9</th>
-                <td v-text="showScores(0, 2)"></td>
-                <td v-text="showScores(1, 2)"></td>
-                <td v-text="showScores(2, 2)"></td>
-                <td v-text="showScores(3, 2)"></td>
+                <td v-html="showScores(0, 2)"></td>
+                <td v-html="showScores(1, 2)"></td>
+                <td v-html="showScores(2, 2)"></td>
+                <td v-html="showScores(3, 2)"></td>
             </tr>
             <tr>
                 <th scope="row">9</th>
-                <td v-text="showScores(0, 3)"></td>
-                <td v-text="showScores(1, 3)"></td>
-                <td v-text="showScores(2, 3)"></td>
-                <td v-text="showScores(3, 3)"></td>
+                <td v-html="showScores(0, 3)"></td>
+                <td v-html="showScores(1, 3)"></td>
+                <td v-html="showScores(2, 3)"></td>
+                <td v-html="showScores(3, 3)"></td>
             </tr>
             <tr class="bg-info">
                 <th scope="row">&Sigma;</th>
-                <td v-text="showResult(0, 4)"></td>
-                <td v-text="showResult(1, 4)"></td>
-                <td v-text="showResult(2, 4)"></td>
-                <td v-text="showResult(3, 4)"></td>
+                <td v-html="showResult(0, 4)"></td>
+                <td v-html="showResult(1, 4)"></td>
+                <td v-html="showResult(2, 4)"></td>
+                <td v-html="showResult(3, 4)"></td>
             </tr>
             <tr>
                 <th scope="row">9</th>
-                <td v-text="showScores(0, 5)"></td>
-                <td v-text="showScores(1, 5)"></td>
-                <td v-text="showScores(2, 5)"></td>
-                <td v-text="showScores(3, 5)"></td>
+                <td v-html="showScores(0, 5)"></td>
+                <td v-html="showScores(1, 5)"></td>
+                <td v-html="showScores(2, 5)"></td>
+                <td v-html="showScores(3, 5)"></td>
             </tr>
             <tr>
                 <th scope="row">9</th>

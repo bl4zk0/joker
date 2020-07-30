@@ -19,7 +19,10 @@ class CardPlayEvent implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      *
-     * @return void
+     * @param $gameId
+     * @param $position
+     * @param $card
+     * @param bool $take
      */
     public function __construct($gameId, $position, $card, $take = false)
     {

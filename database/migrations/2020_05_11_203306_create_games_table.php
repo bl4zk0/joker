@@ -25,7 +25,6 @@ class CreateGamesTable extends Migration
             $table->unsignedTinyInteger('call_count')->default(0);
             $table->unsignedTinyInteger('hand_count')->default(1);
             $table->unsignedTinyInteger('quarter')->default(1);
-            $table->unsignedTinyInteger('rank');
             $table->unsignedSmallInteger('password')->nullable();
             $table->string('kicked_users')->default('[]');
             $table->string('ready')->default('["players" => [], "count" => 0]');
