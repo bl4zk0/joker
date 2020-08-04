@@ -30,6 +30,8 @@ Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider')->where
 Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback')->where('provider','facebook|google');
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/contact', 'ContactMeController@index');
+Route::post('/contact', 'ContactMeController@store');
 Route::get('/user/{user}', 'ProfilesController@show');
 
 Route::group(['middleware' => ['auth', 'verified']], function () {

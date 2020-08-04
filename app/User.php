@@ -61,4 +61,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->socialite_account ? $this->socialite->name : $username;
     }
+
+    public function getAvatarUrlAttribute()
+    {
+        if ($this->socialite_account) {
+            return $this->socialite->avatar_url;
+        } else {
+            return 'https://www.gravatar.com/avatar/' . md5($this->email) . '?s=60&d=retro&f=y';
+        }
+    }
 }

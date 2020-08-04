@@ -1,79 +1,80 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Login') }}</div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="card mt-3">
+                    <div class="card-header"><i class="fas fa-sign-in-alt"></i> შესვლა</div>
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
+                    <div class="card-body">
+                        <form method="POST" action="{{ route('login') }}">
+                            @csrf
 
-                        <div class="form-group row">
-                            <label for="username" class="col-md-4 col-form-label text-md-right">{{ __('@username') }}</label>
+                            <div class="form-group">
+                                <label for="username">მომხმარებელი</label>
 
-                            <div class="col-md-6">
-                                <input id="username" type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="username" autofocus>
+                                <input id="username" type="text"
+                                       class="form-control @error('username') is-invalid @enderror" name="username"
+                                       value="{{ old('username') }}" required autocomplete="username" autofocus>
 
                                 @error('username')
-                                    <span class="invalid-feedback" role="alert">
+                                <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                             </div>
-                        </div>
 
-                        <div class="form-group row">
-                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
+                            <div class="form-group">
+                                <label for="password">პაროლი</label>
 
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+                                <input id="password" type="password"
+                                       class="form-control @error('password') is-invalid @enderror" name="password"
+                                       required autocomplete="current-password">
 
                                 @error('password')
-                                    <span class="invalid-feedback" role="alert">
+                                <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                             </div>
-                        </div>
 
-                        <div class="form-group row">
-                            <div class="col-md-6 offset-md-4">
+                            <div class="form-group">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="checkbox" name="remember"
+                                           id="remember" {{ old('remember') ? 'checked' : '' }}>
 
                                     <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }}
+                                        დამიმახსოვრე
                                     </label>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="form-group row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Login') }}
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-block btn-success">
+                                    შესვლა
                                 </button>
-
-                                @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        {{ __('Forgot Your Password?') }}
-                                    </a>
-                                @endif
                             </div>
+                        </form>
+                        <div class="mb-3">
+                            <a href="/login/facebook" class="btn btn-block btn-outline-primary"><i
+                                    class="fab fa-facebook-f"></i> Facebook-ით შესვლა</a>
                         </div>
-                    </form>
-                    <div class="col-md-8 offset-md-4 mt-2 p-2">
-                        <a href="/login/facebook" class="btn btn-outline-primary">Continue with Facebook</a>
-                    </div>
-                    <div class="col-md-8 offset-md-4 p-2">
-                        <a href="/login/google" class="btn btn-outline-danger">Continue with Google</a>
+                        <div class="mb-3">
+                            <a href="/login/google" class="btn btn-block btn-outline-danger"><i
+                                    class="fab fa-google"></i> Google-ით შესვლა</a>
+                        </div>
+                        <div class="text-center">
+                            <a class="btn btn-link" href="{{ route('password.request') }}">
+                                <small>დაგავიწყდათ პაროლი?</small>
+                            </a>
+                            <a class="btn btn-link" href="{{ route('register') }}">
+                                <small>რეგისტრაცია</small>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection

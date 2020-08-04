@@ -167,12 +167,12 @@ export default {
 
         hideCards(take) {
             if (take !== false) {
-                this.nextTurn = take;
+                //this.nextTurn = take;
                 setTimeout(() => {
                     for (let player of this.game.players) {
                         player.card = null;
                     }
-                    this.game.turn = Number(this.nextTurn);
+                    this.game.turn = Number(take);
                     this.players[take].takenCards.push(1);
                     this.game.cards = [];
                 }, 1000);

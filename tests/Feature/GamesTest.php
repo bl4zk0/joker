@@ -36,7 +36,6 @@ class GamesTest extends TestCase
         $response = $this->post('/games', ['rank' => 0, 'type' => 1, 'penalty' => '-200']);
 
         $games = Game::all();
-        //dd($games);
 
         $response->assertRedirect($games[0]->path());
 

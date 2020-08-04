@@ -2423,9 +2423,10 @@ __webpack_require__.r(__webpack_exports__);
     sendCard: function sendCard() {
       var _this2 = this;
 
-      this.players[this.ppm[0]].cards.splice(this.cardId, 1);
+      this.players[this.ppm[0]].cards.splice(this.cardId, 1); //this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
+
       axios.post('/card/games/' + this.game.id, this.card).then(function (response) {
-        _this2.nextTurn = response.data;
+        //this.nextTurn = response.data;
         _this2.card = {};
         _this2.cardId = null;
         _this2.cardState = true;
@@ -2434,8 +2435,6 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     call: function call(event) {
-      var _this3 = this;
-
       if (!this.turn || this.game.state !== 'call') {
         console.log('wrong turn or state');
         return;
@@ -2445,12 +2444,12 @@ __webpack_require__.r(__webpack_exports__);
       var call = {
         call: event.target.getAttribute('data-value')
       };
-      axios.post('/call/games/' + this.game.id, call).then(function (response) {
-        _this3.game.players[_this3.ppm[0]].scores.push(response.data.score);
-
-        _this3.game.state = response.data.state;
-        _this3.game.turn = response.data.turn;
-      })["catch"](function (error) {
+      axios.post('/call/games/' + this.game.id, call) // .then(response => {
+      //     //this.game.players[this.ppm[0]].scores.push(response.data.score);
+      //     //this.game.state = response.data.state;
+      //     //this.game.turn = response.data.turn;
+      // })
+      ["catch"](function (error) {
         location.reload();
       });
     },
@@ -2474,43 +2473,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -27653,184 +27615,60 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "row" },
-    [
-      _c("div", { staticClass: "col-lg-3 mb-3" }, [
-        _c("div", { staticClass: "card bg-success text-white" }, [
-          _c("div", { staticClass: "card-header" }, [_vm._v("ახალი მაგიდა")]),
+    { staticClass: "card-body d-flex justify-content-around flex-wrap" },
+    _vm._l(this.games, function(game) {
+      return _c("div", { key: game.id, staticClass: "card card-table mb-3" }, [
+        _c("div", { staticClass: "card-header" }, [
+          _vm._v(_vm._s(game.creator.username + "`s game"))
+        ]),
+        _vm._v(" "),
+        _c("ul", { staticClass: "list-group list-group-flush" }, [
+          _c("li", { staticClass: "list-group-item" }, [
+            _vm._v(
+              "1: " +
+                _vm._s(game.players[0] ? game.players[0].user.username : " ")
+            )
+          ]),
           _vm._v(" "),
-          _c("div", { staticClass: "card-body" }, [
-            _c("form", { attrs: { action: "/games", method: "POST" } }, [
-              _c("input", {
-                attrs: { type: "hidden", name: "_token" },
-                domProps: { value: _vm.csrf }
-              }),
-              _vm._v(" "),
-              _vm._m(0),
-              _vm._v(" "),
-              _vm._m(1),
-              _vm._v(" "),
-              _vm._m(2),
-              _vm._v(" "),
-              _c("button", { staticClass: "btn btn-light btn-block" }, [
-                _vm._v("მაგიდის შექმნა")
-              ])
-            ])
+          _c("li", { staticClass: "list-group-item" }, [
+            _vm._v(
+              "2: " +
+                _vm._s(game.players[1] ? game.players[1].user.username : " ")
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { staticClass: "list-group-item" }, [
+            _vm._v(
+              "3: " +
+                _vm._s(game.players[2] ? game.players[2].user.username : " ")
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { staticClass: "list-group-item" }, [
+            _vm._v(
+              "4: " +
+                _vm._s(game.players[3] ? game.players[3].user.username : " ")
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { staticClass: "list-group-item" }, [
+            _c(
+              "a",
+              {
+                staticClass: "btn btn-light",
+                class: _vm.kl(game.players.length),
+                attrs: { href: _vm.path(game.id) }
+              },
+              [_vm._v("Join")]
+            )
           ])
         ])
-      ]),
-      _vm._v(" "),
-      _vm._l(this.games, function(game) {
-        return _c("div", { key: game.id, staticClass: "col-lg-3 mb-3" }, [
-          _c("div", { staticClass: "card text-white bg-success" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v(_vm._s(game.creator.username + "`s game"))
-            ]),
-            _vm._v(" "),
-            _c("ul", { staticClass: "list-group list-group-flush" }, [
-              _c(
-                "li",
-                { staticClass: "list-group-item list-group-item-success" },
-                [
-                  _vm._v(
-                    "1: " +
-                      _vm._s(
-                        game.players[0] ? game.players[0].user.username : " "
-                      )
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "li",
-                { staticClass: "list-group-item list-group-item-success" },
-                [
-                  _vm._v(
-                    "2: " +
-                      _vm._s(
-                        game.players[1] ? game.players[1].user.username : " "
-                      )
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "li",
-                { staticClass: "list-group-item list-group-item-success" },
-                [
-                  _vm._v(
-                    "3: " +
-                      _vm._s(
-                        game.players[2] ? game.players[2].user.username : " "
-                      )
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "li",
-                { staticClass: "list-group-item list-group-item-success" },
-                [
-                  _vm._v(
-                    "4: " +
-                      _vm._s(
-                        game.players[3] ? game.players[3].user.username : " "
-                      )
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "li",
-                { staticClass: "list-group-item list-group-item-success" },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "btn btn-light",
-                      class: _vm.kl(game.players.length),
-                      attrs: { href: _vm.path(game.id) }
-                    },
-                    [_vm._v("Join")]
-                  )
-                ]
-              )
-            ])
-          ])
-        ])
-      })
-    ],
-    2
+      ])
+    }),
+    0
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group" }, [
-      _c("label", { attrs: { for: "type" } }, [_vm._v("ტიპი")]),
-      _vm._v(" "),
-      _c(
-        "select",
-        { staticClass: "form-control", attrs: { id: "type", name: "type" } },
-        [
-          _c("option", { attrs: { value: "1", selected: "" } }, [
-            _vm._v("სტანდარტული")
-          ]),
-          _vm._v(" "),
-          _c("option", { attrs: { value: "9" } }, [_vm._v("9-იანები")])
-        ]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group" }, [
-      _c("label", { attrs: { for: "penalty" } }, [_vm._v("ხიშტი")]),
-      _vm._v(" "),
-      _c(
-        "select",
-        {
-          staticClass: "form-control",
-          attrs: { id: "penalty", name: "penalty" }
-        },
-        [
-          _c("option", { attrs: { value: "-200", selected: "" } }, [
-            _vm._v("-200")
-          ]),
-          _vm._v(" "),
-          _c("option", { attrs: { value: "-300" } }, [_vm._v("-300")]),
-          _vm._v(" "),
-          _c("option", { attrs: { value: "-400" } }, [_vm._v("-400")]),
-          _vm._v(" "),
-          _c("option", { attrs: { value: "-500" } }, [_vm._v("-500")]),
-          _vm._v(" "),
-          _c("option", { attrs: { value: "-900" } }, [_vm._v("-900")]),
-          _vm._v(" "),
-          _c("option", { attrs: { value: "-1000" } }, [_vm._v("-1000")])
-        ]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group form-check" }, [
-      _c("input", {
-        staticClass: "form-check-input",
-        attrs: { type: "checkbox", id: "pwd", name: "password" }
-      }),
-      _vm._v(" "),
-      _c("label", { staticClass: "form-check-label", attrs: { for: "pwd" } }, [
-        _vm._v("პინ-კოდი")
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -41896,7 +41734,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var _this3 = this;
 
       if (take !== false) {
-        this.nextTurn = take;
+        //this.nextTurn = take;
         setTimeout(function () {
           var _iterator3 = _createForOfIteratorHelper(_this3.game.players),
               _step3;
@@ -41912,7 +41750,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             _iterator3.f();
           }
 
-          _this3.game.turn = Number(_this3.nextTurn);
+          _this3.game.turn = Number(take);
 
           _this3.players[take].takenCards.push(1);
 

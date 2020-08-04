@@ -1,53 +1,16 @@
 <template>
-    <div class="row">
-        <div class="col-lg-3 mb-3">
-        <div class="card bg-success text-white"><div class="card-header">ახალი მაგიდა</div>
-            <div class="card-body">
-                <form action="/games" method="POST">
-                    <input type="hidden" name="_token" :value="csrf">
-                    <div class="form-group">
-                        <label for="type">ტიპი</label>
-                        <select id="type" class="form-control" name="type">
-                            <option value="1" selected>სტანდარტული</option>
-                            <option value="9">9-იანები</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="penalty">ხიშტი</label>
-                        <select id="penalty" class="form-control" name="penalty">
-                            <option value="-200" selected>-200</option>
-                            <option value="-300">-300</option>
-                            <option value="-400">-400</option>
-                            <option value="-500">-500</option>
-                            <option value="-900">-900</option>
-                            <option value="-1000">-1000</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group form-check">
-                        <input type="checkbox" class="form-check-input" id="pwd" name="password">
-                        <label class="form-check-label" for="pwd">პინ-კოდი</label>
-                    </div>
-                    <button class="btn btn-light btn-block">მაგიდის შექმნა</button>
-                </form>
-            </div>
-        </div>
-        </div>
-
-        <div class="col-lg-3 mb-3"
-             v-for="game in this.games" :key="game.id">
-            <div class="card text-white bg-success">
-                <div class="card-header">{{ game.creator.username + '`s game' }}</div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item list-group-item-success">1: {{ game.players[0] ? game.players[0].user.username : '&nbsp' }}</li>
-                    <li class="list-group-item list-group-item-success">2: {{ game.players[1] ? game.players[1].user.username : '&nbsp'}}</li>
-                    <li class="list-group-item list-group-item-success">3: {{ game.players[2] ? game.players[2].user.username : '&nbsp'}}</li>
-                    <li class="list-group-item list-group-item-success">4: {{ game.players[3] ? game.players[3].user.username : '&nbsp'}}</li>
-                    <li class="list-group-item list-group-item-success">
-                        <a :href="path(game.id)" class="btn btn-light" :class="kl(game.players.length)">Join</a>
-                    </li>
-                </ul>
-            </div>
+    <div class="card-body d-flex justify-content-around flex-wrap">
+        <div class="card card-table mb-3" v-for="game in this.games" :key="game.id">
+            <div class="card-header">{{ game.creator.username + '`s game' }}</div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">1: {{ game.players[0] ? game.players[0].user.username : '&nbsp' }}</li>
+                <li class="list-group-item">2: {{ game.players[1] ? game.players[1].user.username : '&nbsp'}}</li>
+                <li class="list-group-item">3: {{ game.players[2] ? game.players[2].user.username : '&nbsp'}}</li>
+                <li class="list-group-item">4: {{ game.players[3] ? game.players[3].user.username : '&nbsp'}}</li>
+                <li class="list-group-item">
+                    <a :href="path(game.id)" class="btn btn-light" :class="kl(game.players.length)">Join</a>
+                </li>
+            </ul>
         </div>
     </div>
 </template>

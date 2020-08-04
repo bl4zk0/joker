@@ -16964,6 +16964,25 @@ readers do not read off random characters that represent icons */
   font-weight: 900;
 }
 
+/*!
+ * Font Awesome Free 5.13.1 by @fontawesome - https://fontawesome.com
+ * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+ */
+
+@font-face {
+  font-family: "Font Awesome 5 Brands";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url(/fonts/fa-brands-400.eot?4a5d4d855d11fae79cc864bdacb2f479);
+  src: url(/fonts/fa-brands-400.eot?4a5d4d855d11fae79cc864bdacb2f479) format("embedded-opentype"), url(/fonts/fa-brands-400.woff2?91a23e8bf2b4b84c39311cb5eb23aaa0) format("woff2"), url(/fonts/fa-brands-400.woff?5734d789b25228cbafc64a58ae971aca) format("woff"), url(/fonts/fa-brands-400.ttf?4c1da237bdae0773309df93b2cd48e09) format("truetype"), url(/fonts/fa-brands-400.svg?778b1f251bea7412048da95b87bf816f) format("svg");
+}
+
+.fab {
+  font-family: "Font Awesome 5 Brands";
+  font-weight: 400;
+}
+
 #player0card,
 #player1card,
 #player2card,
@@ -17368,6 +17387,15 @@ readers do not read off random characters that represent icons */
   right: 10px;
 }
 
+.form-control:focus {
+  border-color: #3bf854;
+  box-shadow: 0 0 0 0.2rem rgba(39, 255, 0, 0.25);
+}
+
+.card-table {
+  width: 100%;
+}
+
 @media (min-width: 576px) {
   #player1card {
     margin-right: 5px;
@@ -17392,6 +17420,11 @@ readers do not read off random characters that represent icons */
 
   .p3-card {
     right: 80px;
+  }
+
+  .card-table {
+    min-width: 250px !important;
+    width: 250px !important;
   }
 }
 

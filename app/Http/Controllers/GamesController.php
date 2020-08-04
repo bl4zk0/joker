@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\CardDealEvent;
+use App\Events\CardPlayEvent;
 use App\Events\KickUserEvent;
 use App\Events\PlayerCallEvent;
 use App\Events\GetReadyEvent;
@@ -38,8 +39,6 @@ class GamesController extends Controller
         broadcast(new GetReadyEvent($game->id, Auth::user()->player->position, '1'))->toOthers();
 
         return response([], 200);
-
-        //$game->start();
     }
 
     public function ready(Request $request, Game $game)
@@ -83,7 +82,6 @@ class GamesController extends Controller
             broadcast(new CardDealEvent($player->user->id, $player->cards));
         });
 
-        // ese shesacvlelia $game->broadcast();
         broadcast(new UpdateGameEvent($game));
     }
 
@@ -112,13 +110,18 @@ class GamesController extends Controller
         $game->updateTurn();
         $game->updateCallCount();
 
-        broadcast(new PlayerCallEvent($game, $score, $player->position))->toOthers();
+        broadcast(new PlayerCallEvent($game, $score, $player->position));
 
-        return [
-            'score' => $score,
-            'state' => $game->state,
-            'turn' => $game->turn,
-        ];
+        if ($game->players[$game->turn]->disconnected) {
+            $method = $game->state;
+            $bot = new \App\PlayerBot($game->players[$game->turn], $game);
+            $bot->$method();
+        }
+//        return [
+//            'score' => $score,
+//            'state' => $game->state,
+//            'turn' => $game->turn,
+//        ];
     }
 
     /**
@@ -153,8 +156,21 @@ class GamesController extends Controller
 
         $player->removeCard($request->card);
 
-        $card = $game->addCard($card);
-        $game->checkTake($card);
+        $card = $game->addCard($card, $player);
+        $checkTake = $game->checkTake();
+        broadcast (new CardPlayEvent(
+            $game->id,
+            $player->position,
+            $card,
+            $checkTake))->toOthers();
+
+        if ($checkTake) $game->checkEndOfTheHand();
+
+        if ($game->players[$game->turn]->disconnected) {
+            $method = $game->state;
+            $bot = new \App\PlayerBot($game->players[$game->turn], $game);
+            $bot->$method();
+        }
 
         return $game->turn;
     }

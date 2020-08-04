@@ -387,6 +387,15 @@
     right: 10px;
 }
 
+.form-control:focus {
+    border-color: #3bf854;
+    box-shadow: 0 0 0 0.2rem rgb(39 255 0 / 25%);
+}
+
+.card-table {
+    width: 100%;
+}
+
 @media (min-width: 576px) {
     #player1card {
         margin-right: 5px;
@@ -411,6 +420,11 @@
 
     .p3-card {
         right: 80px;
+    }
+
+    .card-table {
+        min-width: 250px !important;
+        width: 250px !important;
     }
 }
 

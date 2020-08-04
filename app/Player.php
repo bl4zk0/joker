@@ -122,6 +122,17 @@ class Player extends Model
         return true;
     }
 
+    public function jokInCards()
+    {
+        $count = 0;
+
+        foreach($this->cards as $card) {
+            if ($card['strength'] == 16) $count++;
+        }
+
+        return $count;
+    }
+
     /**
      * @param $card
      */
