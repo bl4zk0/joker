@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Events\CardDealEvent;
+use App\Events\CardPlayEvent;
 use App\Events\StartGameEvent;
 use App\Events\UpdateGameEvent;
 use Illuminate\Database\Eloquent\Model;
@@ -41,6 +42,7 @@ class Game extends Model
 
         $this->refresh();
 
+        //es event shevcvalot $this->broadcast();
         broadcast(new StartGameEvent($this, $cards));
     }
 
@@ -51,7 +53,7 @@ class Game extends Model
      * danarchen shemtxvevashi davamatot karti rogorc aris
      * @param $card
      */
-    public function addCard($card, $player)
+    public function addCard($card)
     {
         if ($this->jokInCards() && isset($card['action']) && $card['action'] == 'mojokra') {
             $card['strength'] = 17;
@@ -64,7 +66,7 @@ class Game extends Model
         $this->cards = $cards;
         $this->save();
 
-        $player->update(['card' => $card]);
+        auth()->user()->player()->update(['card' => $card]);
 
         $this->refresh();
 
@@ -81,7 +83,7 @@ class Game extends Model
      *
      * sxva shemtxvevashi ubralod chamomsvlelis pozicia ganvaaxlot
      */
-    public function checkTake()
+    public function checkTake($card)
     {
         if (count($this->cards) == 4) {
             $highestCard = $this->highestCard();
@@ -89,22 +91,24 @@ class Game extends Model
                 if ($player->card == $highestCard) {
                     $player->scores()->increment('take');
                     $this->update(['turn' => $player->position]);
+                    broadcast (new CardPlayEvent(
+                        $this->id,
+                        auth()->user()->player->position,
+                        $card,
+                        $player->position))->toOthers();
                 }
                 $player->update(['card' => null]);
             }
-            return $this->turn;
+
+            if (empty($this->players()->pluck('cards')->whereNotNull()->toArray())) {
+                $this->calcScoresAfterHand();
+                // check end of the game;
+                // tu tamashi damtavrda true gvaqvs return-shi da unda davamtavrot tamashi...
+                $this->checkEnd();
+            }
         } else {
             $this->updateTurn();
-            return false;
-        }
-    }
-
-    public function checkEndOfTheHand() {
-        if (empty($this->players()->pluck('cards')->whereNotNull()->toArray())) {
-            $this->calcScoresAfterHand();
-            // check end of the game;
-            // tu tamashi damtavrda true gvaqvs return-shi da unda davamtavrot tamashi...
-            $this->checkEnd();
+            broadcast (new CardPlayEvent($this->id, auth()->user()->player->position, $card))->toOthers();
         }
     }
 
@@ -188,7 +192,7 @@ class Game extends Model
         $all = $this->numCardsToDeal();
         $penalty = $this->penalty;
 
-        $this->players->each(function ($player) use($all, $penalty) {
+        $this->players->each(function ($player, $key) use($all, $penalty) {
             $score = $player->scores()->latest()->first();
 
             if ($score->call == $score->take && $score->call == $all) {
@@ -316,13 +320,7 @@ class Game extends Model
             $this->update(['state' => 'trump']);
             $this->players->each(function ($player) {
                 if ($this->turn == $player->position) {
-                    if ($player->disconnected) {
-                        $bot = new PlayerBot($player, $this);
-                        $bot->trump();
-                        $bot->call();
-                    } else {
-                        broadcast(new CardDealEvent($player->user->id, array_slice($player->cards, 0, 3), true));
-                    }
+                    broadcast(new CardDealEvent($player->user->id, array_slice($player->cards, 0, 3), true));
                 } else {
                     broadcast(new CardDealEvent($player->user->id, array_slice($player->cards, 0, 3)));
                 }

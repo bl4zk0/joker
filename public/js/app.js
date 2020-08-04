@@ -2423,10 +2423,9 @@ __webpack_require__.r(__webpack_exports__);
     sendCard: function sendCard() {
       var _this2 = this;
 
-      this.players[this.ppm[0]].cards.splice(this.cardId, 1); //this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
-
+      this.players[this.ppm[0]].cards.splice(this.cardId, 1);
       axios.post('/card/games/' + this.game.id, this.card).then(function (response) {
-        //this.nextTurn = response.data;
+        _this2.nextTurn = response.data;
         _this2.card = {};
         _this2.cardId = null;
         _this2.cardState = true;
@@ -2435,6 +2434,8 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     call: function call(event) {
+      var _this3 = this;
+
       if (!this.turn || this.game.state !== 'call') {
         console.log('wrong turn or state');
         return;
@@ -2444,12 +2445,12 @@ __webpack_require__.r(__webpack_exports__);
       var call = {
         call: event.target.getAttribute('data-value')
       };
-      axios.post('/call/games/' + this.game.id, call) // .then(response => {
-      //     //this.game.players[this.ppm[0]].scores.push(response.data.score);
-      //     //this.game.state = response.data.state;
-      //     //this.game.turn = response.data.turn;
-      // })
-      ["catch"](function (error) {
+      axios.post('/call/games/' + this.game.id, call).then(function (response) {
+        _this3.game.players[_this3.ppm[0]].scores.push(response.data.score);
+
+        _this3.game.state = response.data.state;
+        _this3.game.turn = response.data.turn;
+      })["catch"](function (error) {
         location.reload();
       });
     },
@@ -41734,7 +41735,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var _this3 = this;
 
       if (take !== false) {
-        //this.nextTurn = take;
+        this.nextTurn = take;
         setTimeout(function () {
           var _iterator3 = _createForOfIteratorHelper(_this3.game.players),
               _step3;
@@ -41750,7 +41751,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             _iterator3.f();
           }
 
-          _this3.game.turn = Number(take);
+          _this3.game.turn = Number(_this3.nextTurn);
 
           _this3.players[take].takenCards.push(1);
 

@@ -405,11 +405,10 @@
 
             sendCard() {
                 this.players[this.ppm[0]].cards.splice(this.cardId, 1);
-                //this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
 
                 axios.post('/card/games/' + this.game.id, this.card)
                     .then(response => {
-                        //this.nextTurn = response.data;
+                        this.nextTurn = response.data;
                         this.card = {};
                         this.cardId = null;
                         this.cardState = true;
@@ -433,11 +432,11 @@
                 }
 
                 axios.post('/call/games/' + this.game.id, call)
-                    // .then(response => {
-                    //     //this.game.players[this.ppm[0]].scores.push(response.data.score);
-                    //     //this.game.state = response.data.state;
-                    //     //this.game.turn = response.data.turn;
-                    // })
+                    .then(response => {
+                        this.game.players[this.ppm[0]].scores.push(response.data.score);
+                        this.game.state = response.data.state;
+                        this.game.turn = response.data.turn;
+                    })
                     .catch(error => {
                         location.reload();
                     });
