@@ -432,11 +432,11 @@
                 }
 
                 axios.post('/call/games/' + this.game.id, call)
-                    .then(response => {
-                        this.game.players[this.ppm[0]].scores.push(response.data.score);
-                        this.game.state = response.data.state;
-                        this.game.turn = response.data.turn;
-                    })
+                    // .then(response => {
+                    //     this.game.players[this.ppm[0]].scores.push(response.data.score);
+                    //     this.game.state = response.data.state;
+                    //     this.game.turn = response.data.turn;
+                    // })
                     .catch(error => {
                         location.reload();
                     });

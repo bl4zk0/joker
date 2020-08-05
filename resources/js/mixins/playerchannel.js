@@ -21,7 +21,6 @@ export default {
         showCards(cards, initial) {
             if (this.game.state === 'void' || this.game.state === 'ready' || this.game.state === 'start') return;
 
-            // TODO: mokled tu dadiskonektda an daarefresha mag dros state gvakvs mosaxodi
             cards = cards === null ? [] : cards;
             cards.sort( (a, b) => {
                 let aValue = this.cardSortValue(a);
@@ -30,12 +29,11 @@ export default {
             });
             let player = this.players[this.ppm[0]];
             player.cards = cards;
-            if (initial) {
+            if (this.game.state === 'card') {
                 let scoresL = this.game.players[this.ppm[0]].scores.length - 1;
-                if (scoresL > 0) {
-                    let take = this.game.players[this.ppm[0]].scores[scoresL].take;
-                    player.takenCards = Array.from(new Array(take).keys());
-                }
+                let take = this.game.players[this.ppm[0]].scores[scoresL].take;
+                player.takenCards = Array.from(new Array(take).keys());
+
             } else {
                 player.takenCards = [];
             }
@@ -46,8 +44,8 @@ export default {
                 if (initial) {
                     cardsL = this.game.players[this.ppm[i]].cards_count;
                     cardsL = this.game.state === 'trump' ? 3 : cardsL;
-                    scoresLL = this.game.players[this.ppm[i]].scores.length - 1;
-                    if (scoresLL > 0) {
+                    if (this.game.state === 'card') {
+                        scoresLL = this.game.players[this.ppm[i]].scores.length - 1;
                         let takee = this.game.players[this.ppm[i]].scores[scoresLL].take;
                         this.players[this.ppm[i]].takenCards = Array.from(new Array(takee).keys());
                     }

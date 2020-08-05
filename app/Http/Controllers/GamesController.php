@@ -112,13 +112,13 @@ class GamesController extends Controller
         $game->updateTurn();
         $game->updateCallCount();
 
-        broadcast(new PlayerCallEvent($game, $score, $player->position))->toOthers();
+        broadcast(new PlayerCallEvent($game, $score, $player->position));
 
-        return [
-            'score' => $score,
-            'state' => $game->state,
-            'turn' => $game->turn,
-        ];
+//        return [
+//            'score' => $score,
+//            'state' => $game->state,
+//            'turn' => $game->turn,
+//        ];
     }
 
     /**

@@ -2434,8 +2434,6 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     call: function call(event) {
-      var _this3 = this;
-
       if (!this.turn || this.game.state !== 'call') {
         console.log('wrong turn or state');
         return;
@@ -2445,12 +2443,12 @@ __webpack_require__.r(__webpack_exports__);
       var call = {
         call: event.target.getAttribute('data-value')
       };
-      axios.post('/call/games/' + this.game.id, call).then(function (response) {
-        _this3.game.players[_this3.ppm[0]].scores.push(response.data.score);
-
-        _this3.game.state = response.data.state;
-        _this3.game.turn = response.data.turn;
-      })["catch"](function (error) {
+      axios.post('/call/games/' + this.game.id, call) // .then(response => {
+      //     this.game.players[this.ppm[0]].scores.push(response.data.score);
+      //     this.game.state = response.data.state;
+      //     this.game.turn = response.data.turn;
+      // })
+      ["catch"](function (error) {
         location.reload();
       });
     },
@@ -41235,10 +41233,13 @@ __webpack_require__.r(__webpack_exports__);
       var p = _this.ppm.indexOf(event.position);
 
       var content = event.score.call === 0 ? '-' : event.score.call;
-      $('#player' + p).attr('data-content', content).popover('show');
-      setTimeout(function () {
-        $('#player' + p).popover('hide');
-      }, 3000);
+
+      if (p !== 0) {
+        $('#player' + p).attr('data-content', content).popover('show');
+        setTimeout(function () {
+          $('#player' + p).popover('hide');
+        }, 3000);
+      }
 
       _this.game.players[event.position].scores.push(event.score);
 
@@ -41574,8 +41575,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     showCards: function showCards(cards, initial) {
       var _this2 = this;
 
-      if (this.game.state === 'void' || this.game.state === 'ready' || this.game.state === 'start') return; // TODO: mokled tu dadiskonektda an daarefresha mag dros state gvakvs mosaxodi
-
+      if (this.game.state === 'void' || this.game.state === 'ready' || this.game.state === 'start') return;
       cards = cards === null ? [] : cards;
       cards.sort(function (a, b) {
         var aValue = _this2.cardSortValue(a);
@@ -41587,13 +41587,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var player = this.players[this.ppm[0]];
       player.cards = cards;
 
-      if (initial) {
+      if (this.game.state === 'card') {
         var scoresL = this.game.players[this.ppm[0]].scores.length - 1;
-
-        if (scoresL > 0) {
-          var take = this.game.players[this.ppm[0]].scores[scoresL].take;
-          player.takenCards = Array.from(new Array(take).keys());
-        }
+        var take = this.game.players[this.ppm[0]].scores[scoresL].take;
+        player.takenCards = Array.from(new Array(take).keys());
       } else {
         player.takenCards = [];
       }
@@ -41605,9 +41602,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         if (initial) {
           cardsL = this.game.players[this.ppm[i]].cards_count;
           cardsL = this.game.state === 'trump' ? 3 : cardsL;
-          scoresLL = this.game.players[this.ppm[i]].scores.length - 1;
 
-          if (scoresLL > 0) {
+          if (this.game.state === 'card') {
+            scoresLL = this.game.players[this.ppm[i]].scores.length - 1;
             var takee = this.game.players[this.ppm[i]].scores[scoresLL].take;
             this.players[this.ppm[i]].takenCards = Array.from(new Array(takee).keys());
           }

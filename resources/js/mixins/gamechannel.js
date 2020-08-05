@@ -14,10 +14,13 @@ export default {
             .listen('PlayerCallEvent', event => {
                 let p = this.ppm.indexOf(event.position);
                 let content = event.score.call === 0 ? '-' : event.score.call;
-                $('#player' + p).attr('data-content', content).popover('show');
-                setTimeout(() => {
-                    $('#player' + p).popover('hide');
-                }, 3000);
+
+                if (p !== 0) {
+                    $('#player' + p).attr('data-content', content).popover('show');
+                    setTimeout(() => {
+                        $('#player' + p).popover('hide');
+                    }, 3000);
+                }
                 this.game.players[event.position].scores.push(event.score);
                 this.game.except = event.except;
                 this.game.turn = event.turn;
