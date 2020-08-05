@@ -97,7 +97,7 @@
             <!-- player3 cards -->
             <div v-for="(index) in players[ppm[3]].cards"
                  class="p-card p3-card card_back card_back_size"
-                 :style="'margin-top: ' + (getMargin(1) + (index * marginStep())) + 'px'"></div>
+                 :style="'margin-top: ' + (getMargin(3) + (index * marginStep())) + 'px'"></div>
             <!-- players cards -->
 
             <!-- taken cards-->
@@ -216,7 +216,18 @@
                 <button class="btn btn-light" data-action="mojokra" @click="actionJoker">მოჯოკრა</button>
                 <button class="btn btn-danger" data-action="kvevidan" @click="actionJoker">ქვევიდან</button>
             </div>
+
+            <div id="password-card" class="border bg-white rounded shadow p-1" v-show="passwordProtected">
+                <div class="p-1 mb-2">
+                    პინ-კოდი: <span class="text-success">{{ game.password }}</span>
+                    <button type="button" class="btn btn-sm btn-secondary" style="float:right" @click="copyLink">copy</button>
+                </div>
+
+                <input class="form-control" id="table-link"
+                       :value="'https://mojokre.dev/games/' + game.id + '?p=' + game.password">
+            </div>
         </div>
+
         <div class="modal fade" id="kicked" data-backdrop="static" data-keyboard="false" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content bg-danger">
@@ -229,7 +240,9 @@
                 </div>
             </div>
         </div>
+
         <chat :messages="messages" :game-id="this.game.id"></chat>
+
         <div class="close-w d-none">
             <button type="button" class="btn btn-outline-light" @click="closeW">
                 <i class="fas fa-times"></i>
@@ -408,7 +421,7 @@
 
                 axios.post('/card/games/' + this.game.id, this.card)
                     .then(response => {
-                        this.nextTurn = response.data;
+                        //this.nextTurn = response.data;
                         this.card = {};
                         this.cardId = null;
                         this.cardState = true;

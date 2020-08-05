@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\CardDealEvent;
+use App\Events\CardPlayEvent;
 use App\Events\KickUserEvent;
 use App\Events\PlayerCallEvent;
 use App\Events\GetReadyEvent;
@@ -10,6 +11,7 @@ use App\Events\UpdateGameEvent;
 use App\Events\UpdateLobbyEvent;
 use App\Events\UpdateReadyEvent;
 use App\Game;
+use App\Jobs\BotJob;
 use App\Jobs\ResetGameStart;
 use App\Rules\CardRule;
 use App\Rules\GamePasswordRule;
@@ -38,8 +40,6 @@ class GamesController extends Controller
         broadcast(new GetReadyEvent($game->id, Auth::user()->player->position, '1'))->toOthers();
 
         return response([], 200);
-
-        //$game->start();
     }
 
     public function ready(Request $request, Game $game)
@@ -83,7 +83,6 @@ class GamesController extends Controller
             broadcast(new CardDealEvent($player->user->id, $player->cards));
         });
 
-        // ese shesacvlelia $game->broadcast();
         broadcast(new UpdateGameEvent($game));
     }
 
@@ -113,6 +112,10 @@ class GamesController extends Controller
         $game->updateCallCount();
 
         broadcast(new PlayerCallEvent($game, $score, $player->position));
+
+        if ($game->players[$game->turn]->disconnected) {
+            BotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSeconds(1));
+        }
 
 //        return [
 //            'score' => $score,
@@ -153,10 +156,18 @@ class GamesController extends Controller
 
         $player->removeCard($request->card);
 
-        $card = $game->addCard($card);
-        $game->checkTake($card);
+        $card = $game->addCard($card, $player);
+        $checkTake = $game->checkTake();
+        broadcast (new CardPlayEvent($game->id, $player->position, $card, $checkTake))->toOthers();
 
-        return $game->turn;
+        if ($checkTake !== false) {
+            $game->checkEndOfTheHand();
+        }
+
+        if ($game->players[$game->turn]->disconnected) {
+            BotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSeconds(1));
+        }
+        //return $game->turn;
     }
 
     /**
@@ -206,6 +217,8 @@ class GamesController extends Controller
      */
     public function show(Request $request, Game $game)
     {
+        $game->makeVisible('password');
+
         $player = Auth::user()->player;
         $cards = $player->cards;
         $cards = $game->state == 'trump' ? array_slice($cards, 0, 3) : $cards;

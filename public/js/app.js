@@ -2235,6 +2235,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2425,7 +2438,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.players[this.ppm[0]].cards.splice(this.cardId, 1);
       axios.post('/card/games/' + this.game.id, this.card).then(function (response) {
-        _this2.nextTurn = response.data;
+        //this.nextTurn = response.data;
         _this2.card = {};
         _this2.cardId = null;
         _this2.cardState = true;
@@ -26991,7 +27004,7 @@ var render = function() {
               staticClass: "p-card p3-card card_back card_back_size",
               style:
                 "margin-top: " +
-                (_vm.getMargin(1) + index * _vm.marginStep()) +
+                (_vm.getMargin(3) + index * _vm.marginStep()) +
                 "px"
             })
           }),
@@ -27501,6 +27514,53 @@ var render = function() {
                 },
                 [_vm._v("ქვევიდან")]
               )
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.passwordProtected,
+                  expression: "passwordProtected"
+                }
+              ],
+              staticClass: "border bg-white rounded shadow p-1",
+              attrs: { id: "password-card" }
+            },
+            [
+              _c("div", { staticClass: "p-1 mb-2" }, [
+                _vm._v("\n                პინ-კოდი: "),
+                _c("span", { staticClass: "text-success" }, [
+                  _vm._v(_vm._s(_vm.game.password))
+                ]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-sm btn-secondary",
+                    staticStyle: { float: "right" },
+                    attrs: { type: "button" },
+                    on: { click: _vm.copyLink }
+                  },
+                  [_vm._v("copy")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("input", {
+                staticClass: "form-control",
+                attrs: { id: "table-link" },
+                domProps: {
+                  value:
+                    "https://mojokre.dev/games/" +
+                    _vm.game.id +
+                    "?p=" +
+                    _vm.game.password
+                }
+              })
             ]
           )
         ],
@@ -41227,9 +41287,12 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     Echo["private"]('game.' + this.game.id).listen('UpdateGameEvent', function (event) {
+      console.log('UpdateGameEvent');
       _this.game = event.game;
-      _this.nextTurn = event.game.turn;
+      _this.nextTurn = event.game.turn; // ai es temaaaaaaa
     }).listen('PlayerCallEvent', function (event) {
+      console.log('PlayerCallEvent');
+
       var p = _this.ppm.indexOf(event.position);
 
       var content = event.score.call === 0 ? '-' : event.score.call;
@@ -41247,6 +41310,8 @@ __webpack_require__.r(__webpack_exports__);
       _this.game.turn = event.turn;
       _this.game.state = event.state;
     }).listen('CardPlayEvent', function (event) {
+      console.log('CardPlayEvent');
+
       _this.game.cards.push(event.card);
 
       _this.players[event.position].cards.pop();
@@ -41348,6 +41413,9 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     showStart: function showStart() {
       return App.user.id === this.game.user_id && this.game.state === 'start' && this.game.players.length === 4;
+    },
+    passwordProtected: function passwordProtected() {
+      return this.game.state === 'start' && this.game.password !== null && this.game.players.length < 4;
     }
   },
   created: function created() {
@@ -41379,6 +41447,9 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         even: -21.5,
         odd: -16.5
+      }, {
+        even: -27.5,
+        odd: -22.5
       }];
       var bigMargins = [{
         even: -47,
@@ -41389,6 +41460,9 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         even: -47,
         odd: -34.5
+      }, {
+        even: -59.5,
+        odd: -47
       }];
       var count = this.players[this.ppm[n]].cards.length;
 
@@ -41504,7 +41578,7 @@ __webpack_require__.r(__webpack_exports__);
       window.location = '/lobby';
     },
     showChat: function showChat() {
-      if (this.windowWidth < 576) {
+      if (this.windowWidth < 768) {
         $('#play-table').addClass('d-none');
         $('#chat-wrapper').removeClass('d-none');
         $('.close-w').removeClass('d-none');
@@ -41516,7 +41590,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     showScoreboard: function showScoreboard() {
-      if (this.windowWidth < 576) {
+      if (this.windowWidth < 768) {
         $('#play-table').addClass('d-none');
         $('#scoreboard').removeClass('d-none');
         $('.close-w').removeClass('d-none');
@@ -41532,6 +41606,12 @@ __webpack_require__.r(__webpack_exports__);
       $('#chat-wrapper').addClass('d-none');
       $('#scoreboard').addClass('d-none');
       $('.close-w').addClass('d-none');
+    },
+    copyLink: function copyLink() {
+      var link = document.getElementById("table-link");
+      link.select();
+      link.setSelectionRange(0, 99999);
+      document.execCommand("copy");
     }
   }
 });
@@ -41564,6 +41644,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     var _this = this;
 
     Echo["private"]('user.' + App.user.id).listen('CardDealEvent', function (event) {
+      console.log('CardDealEvent');
       _this.dealtCards = event.cards;
       _this.setTrump = event.trump;
       setTimeout(function () {
@@ -41753,7 +41834,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           _this3.players[take].takenCards.push(1);
 
           _this3.game.cards = [];
-        }, 1000);
+        }, 900);
       } else {
         this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
       }

@@ -8,10 +8,12 @@ export default {
     created() {
         Echo.private('game.' + this.game.id)
             .listen('UpdateGameEvent', event => {
+                console.log('UpdateGameEvent');
                 this.game = event.game;
-                this.nextTurn = event.game.turn;
+                this.nextTurn = event.game.turn; // ai es temaaaaaaa
             })
             .listen('PlayerCallEvent', event => {
+                console.log('PlayerCallEvent');
                 let p = this.ppm.indexOf(event.position);
                 let content = event.score.call === 0 ? '-' : event.score.call;
 
@@ -27,6 +29,7 @@ export default {
                 this.game.state = event.state;
             })
             .listen('CardPlayEvent', event => {
+                console.log('CardPlayEvent');
                 this.game.cards.push(event.card);
                 this.players[event.position].cards.pop();
                 this.game.players[event.position].card = event.card;

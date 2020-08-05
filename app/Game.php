@@ -53,7 +53,7 @@ class Game extends Model
      * danarchen shemtxvevashi davamatot karti rogorc aris
      * @param $card
      */
-    public function addCard($card)
+    public function addCard($card, $player)
     {
         if ($this->jokInCards() && isset($card['action']) && $card['action'] == 'mojokra') {
             $card['strength'] = 17;
@@ -66,7 +66,7 @@ class Game extends Model
         $this->cards = $cards;
         $this->save();
 
-        auth()->user()->player()->update(['card' => $card]);
+        $player->update(['card' => $card]);
 
         $this->refresh();
 
@@ -83,32 +83,47 @@ class Game extends Model
      *
      * sxva shemtxvevashi ubralod chamomsvlelis pozicia ganvaaxlot
      */
-    public function checkTake($card)
+    public function checkTake()
     {
         if (count($this->cards) == 4) {
             $highestCard = $this->highestCard();
+            $position = -1;
             foreach ($this->players as $player) {
                 if ($player->card == $highestCard) {
                     $player->scores()->increment('take');
                     $this->update(['turn' => $player->position]);
-                    broadcast (new CardPlayEvent(
-                        $this->id,
-                        auth()->user()->player->position,
-                        $card,
-                        $player->position))->toOthers();
+                    $position = $player->position;
+//                    broadcast (new CardPlayEvent(
+//                        $this->id,
+//                        auth()->user()->player->position,
+//                        $card,
+//                        $player->position))->toOthers();
                 }
                 $player->update(['card' => null]);
             }
 
-            if (empty($this->players()->pluck('cards')->whereNotNull()->toArray())) {
-                $this->calcScoresAfterHand();
-                // check end of the game;
-                // tu tamashi damtavrda true gvaqvs return-shi da unda davamtavrot tamashi...
-                $this->checkEnd();
-            }
+            return $position;
+
+//            if (empty($this->players()->pluck('cards')->whereNotNull()->toArray())) {
+//                $this->calcScoresAfterHand();
+//                // check end of the game;
+//                // tu tamashi damtavrda true gvaqvs return-shi da unda davamtavrot tamashi...
+//                $this->checkEnd();
+//            }
         } else {
             $this->updateTurn();
-            broadcast (new CardPlayEvent($this->id, auth()->user()->player->position, $card))->toOthers();
+            return false;
+            //broadcast (new CardPlayEvent($this->id, auth()->user()->player->position, $card))->toOthers();
+        }
+    }
+
+    public function checkEndOfTheHand()
+    {
+        if (empty($this->players()->pluck('cards')->whereNotNull()->toArray())) {
+            $this->calcScoresAfterHand();
+            // check end of the game;
+            // tu tamashi damtavrda true gvaqvs return-shi da unda davamtavrot tamashi...
+            $this->checkEnd();
         }
     }
 

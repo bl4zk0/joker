@@ -90,11 +90,17 @@
 }
 
 #suits, #callboard,
-#jokhigh, #jokjoker {
+#jokhigh, #jokjoker, #password-card {
     position: absolute;
     bottom: 210px;
     left: 50%;
     z-index: 1000;
+}
+
+#password-card {
+    bottom: 50%;
+    width: 350px;
+    margin-left: -175px;
 }
 
 #suits {
@@ -405,10 +411,6 @@
         margin-left: 5px;
     }
 
-    #chat-wrapper {
-        border-right: none !important;
-    }
-
     .card_back_size {
         width: 69px !important;
         height: 94px !important;
@@ -431,6 +433,10 @@
 @media (min-width: 768px) {
     #play-table{
         min-width: 500px;
+    }
+
+    #chat-wrapper {
+        border-right: none !important;
     }
 
 }

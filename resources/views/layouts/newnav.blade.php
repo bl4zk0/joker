@@ -15,7 +15,10 @@
             @auth
                 <li class="ml-3 nav-item dropdown">
                     <a class="nav-avatar" href="#" data-toggle="dropdown" aria-expanded="false">
-                        <img class="border rounded-circle g_avatar" src="{{ Auth::user()->avatar_url }}">
+                        <img class="border rounded-circle g_avatar"
+                             src="{{ Auth::user()->avatar_url }}"
+                             title="{{ Auth::user()->username }}"
+                             alt="{{ Auth::user()->username }}">
                     </a>
                     <div class="dropdown-menu dropdown-menu-right bg-success">
                         <a class="dropdown-item text-white" href="{{ route('logout') }}"

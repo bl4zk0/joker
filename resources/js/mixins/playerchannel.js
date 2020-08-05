@@ -9,6 +9,7 @@ export default {
     created() {
         Echo.private('user.' + App.user.id)
             .listen('CardDealEvent', event => {
+                console.log('CardDealEvent');
                 this.dealtCards = event.cards;
                 this.setTrump = event.trump;
                 setTimeout(()=> {
@@ -173,7 +174,7 @@ export default {
                     this.game.turn = Number(this.nextTurn);
                     this.players[take].takenCards.push(1);
                     this.game.cards = [];
-                }, 1000);
+                }, 900);
             } else {
                 this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
             }

@@ -12,6 +12,10 @@ export default {
         showStart() {
             return App.user.id === this.game.user_id && this.game.state === 'start' && this.game.players.length === 4;
         },
+
+        passwordProtected() {
+            return this.game.state === 'start' && this.game.password !== null && this.game.players.length < 4;
+        }
     },
 
     created() {
@@ -36,12 +40,14 @@ export default {
                 {even: -47, odd: -34.5},
                 {even: -27.5, odd: -22.5},
                 {even: -21.5, odd: -16.5},
+                {even: -27.5, odd: -22.5},
             ];
 
             let bigMargins = [
                 {even: -47, odd: -34.5},
                 {even: -59.5, odd: -47},
                 {even: -47, odd: -34.5},
+                {even: -59.5, odd: -47},
             ];
 
             let count = this.players[this.ppm[n]].cards.length;
@@ -158,7 +164,7 @@ export default {
         },
 
         showChat() {
-            if (this.windowWidth < 576) {
+            if (this.windowWidth < 768) {
                 $('#play-table').addClass('d-none');
                 $('#chat-wrapper').removeClass('d-none');
                 $('.close-w').removeClass('d-none');
@@ -171,7 +177,7 @@ export default {
         },
 
         showScoreboard() {
-            if (this.windowWidth < 576) {
+            if (this.windowWidth < 768) {
                 $('#play-table').addClass('d-none');
                 $('#scoreboard').removeClass('d-none');
                 $('.close-w').removeClass('d-none');
@@ -188,6 +194,13 @@ export default {
             $('#chat-wrapper').addClass('d-none');
             $('#scoreboard').addClass('d-none');
             $('.close-w').addClass('d-none');
+        },
+
+        copyLink() {
+            let link = document.getElementById("table-link");
+            link.select();
+            link.setSelectionRange(0, 99999);
+            document.execCommand("copy");
         }
     }
 }
