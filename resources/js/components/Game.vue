@@ -3,7 +3,7 @@
         <component :is="scoreboard" :initial-players="game.players"></component>
 
         <div id="play-table">
-            <div class="btn-table" v-show="game.state === 'start'">
+            <div class="btn-table" v-show="game.state === 'start' || game.state === 'finished'">
                 <a href="/lobby" class="btn btn-outline-light"><i class="fas fa-arrow-circle-left"></i></a>
             </div>
             <div id="btn-chat" class="btn-table d-xl-none">
@@ -123,36 +123,32 @@
 
             <!-- players -->
             <div id="player0">
-                <div class="avatar border rounded-circle" :class="active(0)">
-
-                </div>
+                <img v-if="getAvatarUrl(0)" :src="getAvatarUrl(0)" class="avatar border rounded-circle" :class="active(0)">
+                <div v-else class="avatar border rounded-circle"></div>
                 <div class="u-name" v-text="getUsername(0)"></div>
             </div>
             <div id="player1" data-container="body" data-toggle="popover" data-placement="top" data-trigger="manual">
                 <div class="kick" title="გაგდება" v-show="canKickUser(1)">
                     <i class="fas fa-times" @click="kick(1)"></i>
                 </div>
-                <div class="avatar border rounded-circle" :class="active(1)">
-
-                </div>
+                <img v-if="getAvatarUrl(1)" :src="getAvatarUrl(1)" class="avatar border rounded-circle" :class="active(1)">
+                <div v-else class="avatar border rounded-circle"></div>
                 <div class="u-name" v-text="getUsername(1)"></div>
             </div>
             <div id="player2" data-container="body" data-toggle="popover" data-placement="right" data-trigger="manual">
                 <div class="kick" title="გაგდება" v-show="canKickUser(2)">
                     <i class="fas fa-times" @click="kick(2)"></i>
                 </div>
-                <div class="avatar border rounded-circle" :class="active(2)">
-
-                </div>
+                <img v-if="getAvatarUrl(2)" :src="getAvatarUrl(2)" class="avatar border rounded-circle" :class="active(2)">
+                <div v-else class="avatar border rounded-circle"></div>
                 <div class="u-name" v-text="getUsername(2)"></div>
             </div>
             <div id="player3" data-container="body" data-toggle="popover" data-placement="top" data-trigger="manual">
                 <div class="kick" title="გაგდება" v-show="canKickUser(3)">
                     <i class="fas fa-times" @click="kick(3)"></i>
                 </div>
-                <div class="avatar border rounded-circle" :class="active(3)">
-
-                </div>
+                <img v-if="getAvatarUrl(3)" :src="getAvatarUrl(3)" class="avatar border rounded-circle" :class="active(3)">
+                <div v-else class="avatar border rounded-circle"></div>
                 <div class="u-name" v-text="getUsername(3)"></div>
             </div>
 
@@ -224,7 +220,29 @@
                 </div>
 
                 <input class="form-control" id="table-link"
-                       :value="'https://mojokre.dev/games/' + game.id + '?p=' + game.password">
+                       :value="url + '/games/' + game.id + '?p=' + game.password">
+            </div>
+            <div id="game-over" class="border bg-white rounded text-center d-none">
+                <div id="place-0" class="game-over-card">
+                    <h5 class="text-success">1 <i class="fas fa-star"></i></h5>
+                    <img src="" class="avatar border border-success rounded-circle">
+                    <div class="u-name"></div>
+                </div>
+                <div id="place-1" class="game-over-card">
+                    <h5 class="text-success">2 <i class="fas fa-star"></i></h5>
+                    <img src="" class="avatar border border-success rounded-circle">
+                    <div class="u-name"></div>
+                </div>
+                <div id="place-2" class="game-over-card">
+                    <h5 class="text-danger">3 <i class="fas fa-star"></i></h5>
+                    <img src="" class="avatar border border-danger rounded-circle">
+                    <div class="u-name"></div>
+                </div>
+                <div id="place-3" class="game-over-card">
+                    <h5 class="text-danger">4 <i class="fas fa-star"></i></h5>
+                    <img src="" class="avatar border border-danger rounded-circle">
+                    <div class="u-name"></div>
+                </div>
             </div>
         </div>
 

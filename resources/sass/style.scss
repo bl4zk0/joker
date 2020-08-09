@@ -97,6 +97,16 @@
     z-index: 1000;
 }
 
+#game-over {
+    position: absolute;
+    min-width: 350px;
+    max-width: 700px;
+    margin: 0 auto;
+    z-index: 1001;
+    left: 50px;
+    top: 8px;
+}
+
 #password-card {
     bottom: 50%;
     width: 350px;
@@ -273,6 +283,11 @@
     min-width: 60px;
 }
 
+.game-over-card {
+    display: inline-block;
+    margin: 8px;
+}
+
 .btn-table {
     margin-top: 10px;
     margin-left: 4px;
@@ -385,6 +400,7 @@
 .avatar {
     width: 50px;
     height: 50px;
+    border-width: 2px !important;
 }
 
 .close-w {
@@ -431,7 +447,7 @@
 }
 
 @media (min-width: 768px) {
-    #play-table{
+    #play-table {
         min-width: 500px;
     }
 

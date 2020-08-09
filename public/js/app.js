@@ -2248,6 +2248,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -26736,8 +26754,10 @@ var render = function() {
                 {
                   name: "show",
                   rawName: "v-show",
-                  value: _vm.game.state === "start",
-                  expression: "game.state === 'start'"
+                  value:
+                    _vm.game.state === "start" || _vm.game.state === "finished",
+                  expression:
+                    "game.state === 'start' || game.state === 'finished'"
                 }
               ],
               staticClass: "btn-table"
@@ -27070,10 +27090,13 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("div", { attrs: { id: "player0" } }, [
-            _c("div", {
-              staticClass: "avatar border rounded-circle",
-              class: _vm.active(0)
-            }),
+            _vm.getAvatarUrl(0)
+              ? _c("img", {
+                  staticClass: "avatar border rounded-circle",
+                  class: _vm.active(0),
+                  attrs: { src: _vm.getAvatarUrl(0) }
+                })
+              : _c("div", { staticClass: "avatar border rounded-circle" }),
             _vm._v(" "),
             _c("div", {
               staticClass: "u-name",
@@ -27119,10 +27142,13 @@ var render = function() {
                 ]
               ),
               _vm._v(" "),
-              _c("div", {
-                staticClass: "avatar border rounded-circle",
-                class: _vm.active(1)
-              }),
+              _vm.getAvatarUrl(1)
+                ? _c("img", {
+                    staticClass: "avatar border rounded-circle",
+                    class: _vm.active(1),
+                    attrs: { src: _vm.getAvatarUrl(1) }
+                  })
+                : _c("div", { staticClass: "avatar border rounded-circle" }),
               _vm._v(" "),
               _c("div", {
                 staticClass: "u-name",
@@ -27169,10 +27195,13 @@ var render = function() {
                 ]
               ),
               _vm._v(" "),
-              _c("div", {
-                staticClass: "avatar border rounded-circle",
-                class: _vm.active(2)
-              }),
+              _vm.getAvatarUrl(2)
+                ? _c("img", {
+                    staticClass: "avatar border rounded-circle",
+                    class: _vm.active(2),
+                    attrs: { src: _vm.getAvatarUrl(2) }
+                  })
+                : _c("div", { staticClass: "avatar border rounded-circle" }),
               _vm._v(" "),
               _c("div", {
                 staticClass: "u-name",
@@ -27219,10 +27248,13 @@ var render = function() {
                 ]
               ),
               _vm._v(" "),
-              _c("div", {
-                staticClass: "avatar border rounded-circle",
-                class: _vm.active(3)
-              }),
+              _vm.getAvatarUrl(3)
+                ? _c("img", {
+                    staticClass: "avatar border rounded-circle",
+                    class: _vm.active(3),
+                    attrs: { src: _vm.getAvatarUrl(3) }
+                  })
+                : _c("div", { staticClass: "avatar border rounded-circle" }),
               _vm._v(" "),
               _c("div", {
                 staticClass: "u-name",
@@ -27555,14 +27587,17 @@ var render = function() {
                 attrs: { id: "table-link" },
                 domProps: {
                   value:
-                    "https://mojokre.dev/games/" +
+                    _vm.url +
+                    "/games/" +
                     _vm.game.id +
                     "?p=" +
                     _vm.game.password
                 }
               })
             ]
-          )
+          ),
+          _vm._v(" "),
+          _vm._m(3)
         ],
         2
       ),
@@ -27581,7 +27616,7 @@ var render = function() {
         [
           _c("div", { staticClass: "modal-dialog" }, [
             _c("div", { staticClass: "modal-content bg-danger" }, [
-              _vm._m(3),
+              _vm._m(4),
               _vm._v(" "),
               _c("div", { staticClass: "modal-footer" }, [
                 _c(
@@ -27640,6 +27675,75 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("small", [_c("strong", [_vm._v("დაწყება")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "border bg-white rounded text-center d-none",
+        attrs: { id: "game-over" }
+      },
+      [
+        _c("div", { staticClass: "game-over-card", attrs: { id: "place-0" } }, [
+          _c("h5", { staticClass: "text-success" }, [
+            _vm._v("1 "),
+            _c("i", { staticClass: "fas fa-star" })
+          ]),
+          _vm._v(" "),
+          _c("img", {
+            staticClass: "avatar border border-success rounded-circle",
+            attrs: { src: "" }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "u-name" })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "game-over-card", attrs: { id: "place-1" } }, [
+          _c("h5", { staticClass: "text-success" }, [
+            _vm._v("2 "),
+            _c("i", { staticClass: "fas fa-star" })
+          ]),
+          _vm._v(" "),
+          _c("img", {
+            staticClass: "avatar border border-success rounded-circle",
+            attrs: { src: "" }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "u-name" })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "game-over-card", attrs: { id: "place-2" } }, [
+          _c("h5", { staticClass: "text-danger" }, [
+            _vm._v("3 "),
+            _c("i", { staticClass: "fas fa-star" })
+          ]),
+          _vm._v(" "),
+          _c("img", {
+            staticClass: "avatar border border-danger rounded-circle",
+            attrs: { src: "" }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "u-name" })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "game-over-card", attrs: { id: "place-3" } }, [
+          _c("h5", { staticClass: "text-danger" }, [
+            _vm._v("4 "),
+            _c("i", { staticClass: "fas fa-star" })
+          ]),
+          _vm._v(" "),
+          _c("img", {
+            staticClass: "avatar border border-danger rounded-circle",
+            attrs: { src: "" }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "u-name" })
+        ])
+      ]
+    )
   },
   function() {
     var _vm = this
@@ -41379,6 +41483,15 @@ __webpack_require__.r(__webpack_exports__);
       _this.game.players = event.players;
 
       _this.playerPositionsMap();
+    }).listen('GameOverEvent', function (event) {
+      _this.game = event.game;
+
+      for (var i = 0; i < 4; i++) {
+        $("#place-".concat(i, " img")).attr('src', _this.game.players[event.places[i].position].user.avatar_url);
+        $("#place-".concat(i, " .u-name")).text(_this.game.players[event.places[i].position].user.username);
+      }
+
+      $('#game-over').removeClass('d-none');
     }).listenForWhisper('message', function (message) {
       _this.messages.push(message);
 
@@ -41407,7 +41520,8 @@ __webpack_require__.r(__webpack_exports__);
       windowWidth: window.innerWidth,
       ppm: [],
       timer: 10,
-      nextTurn: 4
+      nextTurn: 4,
+      url: window.App.url
     };
   },
   computed: {
@@ -41508,6 +41622,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     getUsername: function getUsername(p) {
       return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].user.username : '...';
+    },
+    getAvatarUrl: function getAvatarUrl(p) {
+      return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].user.avatar_url : false;
     },
     playedCard: function playedCard(n) {
       var player = this.game.players[this.ppm[n]];

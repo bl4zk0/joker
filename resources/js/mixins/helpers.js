@@ -4,7 +4,8 @@ export default {
             windowWidth: window.innerWidth,
             ppm: [],
             timer: 10,
-            nextTurn: 4
+            nextTurn: 4,
+            url: window.App.url
         }
     },
 
@@ -92,6 +93,10 @@ export default {
 
         getUsername(p) {
             return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].user.username : '...';
+        },
+
+        getAvatarUrl(p) {
+            return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].user.avatar_url : false;
         },
 
         playedCard(n) {

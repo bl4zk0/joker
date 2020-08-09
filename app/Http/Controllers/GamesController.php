@@ -161,13 +161,16 @@ class GamesController extends Controller
         broadcast (new CardPlayEvent($game->id, $player->position, $card, $checkTake))->toOthers();
 
         if ($checkTake !== false) {
-            $game->checkEndOfTheHand();
+            if ($game->checkEndOfTheHand()) {
+                $game->finishGame();
+                return response([], 200);
+            }
         }
 
         if ($game->players[$game->turn]->disconnected) {
             BotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSeconds(1));
         }
-        //return $game->turn;
+
     }
 
     /**

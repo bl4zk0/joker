@@ -25,7 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'password', 'email_verified_at', 'socialite_account',
+        'username', 'email', 'password', 'email_verified_at', 'socialite_account', 'avatar_url'
     ];
 
     /**
@@ -62,12 +62,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->socialite_account ? $this->socialite->name : $username;
     }
 
-    public function getAvatarUrlAttribute()
+    public function getAvatarUrlAttribute($avatar_url)
     {
-        if ($this->socialite_account) {
-            return $this->socialite->avatar_url;
-        } else {
-            return 'https://www.gravatar.com/avatar/' . md5($this->email) . '?s=60&d=retro&f=y';
-        }
+        return $this->socialite_account ? $this->socialite->avatar_url : $avatar_url;
     }
 }

@@ -13,7 +13,8 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script>
         window.App = {!! json_encode([
-            'user' => Auth::user()
+            'user' => Auth::user(),
+            'url' => env('APP_URL')
         ]) !!};
     </script>
 

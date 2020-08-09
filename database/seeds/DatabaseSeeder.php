@@ -13,22 +13,22 @@ class DatabaseSeeder extends Seeder
     {
         factory('App\User')->create([
             'username' => 'Ako',
-            'email' => 'ako@example.com'
+            'email' => 'https://www.gravatar.com/avatar/' . md5('ako@example.com') . '?s=50&d=retro&f=y'
         ]);
 
         factory('App\User')->create([
             'username' => 'Sally',
-            'email' => 'sally@example.com'
+            'email' => 'https://www.gravatar.com/avatar/' . md5('sally@example.com') . '?s=50&d=retro&f=y'
         ]);
 
         factory('App\User')->create([
             'username' => 'John',
-            'email' => 'john@example.com'
+            'email' => 'https://www.gravatar.com/avatar/' . md5('john@example.com') . '?s=50&d=retro&f=y'
         ]);
 
         factory('App\User')->create([
             'username' => 'Jane',
-            'email' => 'jane@example.com'
+            'email' => 'https://www.gravatar.com/avatar/' . md5('jane@example.com') . '?s=50&d=retro&f=y'
         ]);
     }
 }

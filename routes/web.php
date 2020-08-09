@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Faker\Generator as Faker;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,11 +17,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/test', function (Faker $faker) {
+Route::get('/test', function () {
+    $g = \App\Game::find(1);
 
-});
-Route::get('/gamedev', function () {
-    return view('gamedev');
+    $ss = $g->scores()->latest()->limit(4)->get()->sortByDesc('result');
+    $ss->each(function ($s) {
+        $s->append('position');
+    });
+    broadcast(new \App\Events\GameOverEvent($g, $ss));
+    return 'ok';
 });
 
 Auth::routes(['verify' => true]);

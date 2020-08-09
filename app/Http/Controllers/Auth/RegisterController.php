@@ -64,10 +64,12 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        $avatar_url = 'https://www.gravatar.com/avatar/' . md5($data['email']) . '?s=50&d=retro&f=y';
         return User::create([
             'username' => $data['username'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'avatar_url' => $avatar_url
         ]);
     }
 }

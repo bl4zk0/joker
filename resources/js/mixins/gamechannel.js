@@ -96,6 +96,14 @@ export default {
                 this.game.players = event.players;
                 this.playerPositionsMap();
             })
+            .listen('GameOverEvent', event => {
+                this.game = event.game;
+                for (let i = 0; i < 4; i++) {
+                    $(`#place-${i} img`).attr('src', this.game.players[event.places[i].position].user.avatar_url);
+                    $(`#place-${i} .u-name`).text(this.game.players[event.places[i].position].user.username);
+                }
+                $('#game-over').removeClass('d-none');
+            })
             .listenForWhisper('message', message => {
                 this.messages.push(message);
                 this.$nextTick(() => {

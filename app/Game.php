@@ -42,7 +42,6 @@ class Game extends Model
 
         $this->refresh();
 
-        //es event shevcvalot $this->broadcast();
         broadcast(new StartGameEvent($this, $cards));
     }
 
@@ -123,7 +122,7 @@ class Game extends Model
             $this->calcScoresAfterHand();
             // check end of the game;
             // tu tamashi damtavrda true gvaqvs return-shi da unda davamtavrot tamashi...
-            $this->checkEnd();
+            return $this->checkEnd();
         }
     }
 
@@ -202,12 +201,29 @@ class Game extends Model
         return false;
     }
 
+    public function finishGame()
+    {
+        $scores = $this->scores()->latest()->limit(4)->get()->sortByDesc('result');
+        $scores->each(function ($s) {
+            $s->append('position');
+        });
+
+        $this->players->each(function ($player) {
+            $player->increment('games_played');
+        });
+
+        $this->update(['state' => 'finished', 'turn' => 4]);
+        $this->refresh();
+
+        broadcast(new \App\Events\GameOverEvent($this, $scores));
+    }
+
     public function calcScoresAfterHand()
     {
         $all = $this->numCardsToDeal();
         $penalty = $this->penalty;
 
-        $this->players->each(function ($player, $key) use($all, $penalty) {
+        $this->players->each(function ($player) use($all, $penalty) {
             $score = $player->scores()->latest()->first();
 
             if ($score->call == $score->take && $score->call == $all) {
