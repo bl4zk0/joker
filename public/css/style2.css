@@ -33,7 +33,8 @@
 }
 
 .cover-container {
-  max-width: 42em;
+    width: 100%;
+    max-width: 42em;
 }
 
 
@@ -60,11 +61,6 @@
 .navbar-nav .active {
   color: #fff;
   border-bottom-color: #fff !important;
-}
-
-.g_avatar {
-    border-width: 2px !important;
-    border-color: rgba(255, 255, 255, 0.5) !important;
 }
 
 .navbar-nav li.show .g_avatar, .g_avatar:hover {
@@ -104,4 +100,6 @@
 .g_avatar {
     width: 42px;
     height: 42px;
+    border-width: 2px !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
 }

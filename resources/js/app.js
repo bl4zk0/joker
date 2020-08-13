@@ -21,6 +21,7 @@ window.Vue = require('vue');
 
 Vue.component('lobby', require('./components/Lobby.vue').default);
 Vue.component('game', require('./components/Game.vue').default);
+Vue.component('flash', require('./components/Flash.vue').default);
 
 
 /**

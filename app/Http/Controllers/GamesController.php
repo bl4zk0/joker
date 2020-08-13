@@ -23,6 +23,7 @@ class GamesController extends Controller
 {
     /**
      * @param Game $game
+     * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function start(Game $game)
@@ -33,13 +34,17 @@ class GamesController extends Controller
             abort(406, 'Not enough players');
         }
 
-        $game->update(['state' => 'ready', 'ready' => ['players' => [Auth::id()], 'count' => 1]]);
-
-        ResetGameStart::dispatch($game)->delay(now()->addSeconds(13));
-
-        broadcast(new GetReadyEvent($game->id, Auth::user()->player->position, '1'))->toOthers();
+        $game->start();
 
         return response([], 200);
+
+//        $game->update(['state' => 'ready', 'ready' => ['players' => [Auth::id()], 'count' => 1]]);
+//
+//        ResetGameStart::dispatch($game)->delay(now()->addSeconds(12));
+//
+//        broadcast(new GetReadyEvent($game->id, Auth::user()->player->position, '1'))->toOthers();
+//
+//        return response([], 200);
     }
 
     public function ready(Request $request, Game $game)

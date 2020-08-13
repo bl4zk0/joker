@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Gravatar;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\User;
@@ -64,12 +65,11 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $avatar_url = 'https://www.gravatar.com/avatar/' . md5($data['email']) . '?s=50&d=retro&f=y';
         return User::create([
             'username' => $data['username'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'avatar_url' => $avatar_url
+            'avatar_url' => Gravatar::url($data['email'])
         ]);
     }
 }

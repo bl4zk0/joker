@@ -35,7 +35,7 @@ class Deck
 
     /**
      * @param $num
-     * @return array[]
+     * @return array
      */
     public function deal($num)
     {

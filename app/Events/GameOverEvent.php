@@ -13,17 +13,17 @@ class GameOverEvent implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $game;
-    public $places;
+    public $scores;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($game, $places)
+    public function __construct($game, $scores)
     {
         $this->game = $game;
-        $this->places = $places;
+        $this->scores = $scores;
     }
 
     /**

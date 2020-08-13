@@ -9,6 +9,7 @@ export default {
         Echo.private('game.' + this.game.id)
             .listen('UpdateGameEvent', event => {
                 console.log('UpdateGameEvent');
+                this.callSum = 0;
                 this.game = event.game;
                 this.nextTurn = event.game.turn; // ai es temaaaaaaa
             })
@@ -23,6 +24,7 @@ export default {
                         $('#player' + p).popover('hide');
                     }, 3000);
                 }
+                this.callSum += event.score.call;
                 this.game.players[event.position].scores.push(event.score);
                 this.game.except = event.except;
                 this.game.turn = event.turn;
@@ -36,8 +38,9 @@ export default {
                 this.hideCards(event.take);
             })
             .listen('StartGameEvent', event => {
+                $('#ready').addClass('d-none');
                 clearInterval(this.timerFn);
-                this.game.state = 'void';
+
                 let cards = event.cards;
                 let i = 0;
                 let p = 0;
@@ -70,9 +73,10 @@ export default {
                 this.game.state = 'ready';
                 $('#ready-check').removeClass('d-none');
                 $('#ready th').eq(event.position).addClass('bg-success');
+                $('#ready').removeClass('d-none');
                 this.timerFn = setInterval(() => {
                     if (this.timer === 0) {
-                        this.game.state = 'void';
+                        $('#ready').addClass('d-none');
                         clearInterval(this.timerFn);
                         this.timer = 10;
                         $('#ready th').removeClass();
@@ -99,8 +103,8 @@ export default {
             .listen('GameOverEvent', event => {
                 this.game = event.game;
                 for (let i = 0; i < 4; i++) {
-                    $(`#place-${i} img`).attr('src', this.game.players[event.places[i].position].user.avatar_url);
-                    $(`#place-${i} .u-name`).text(this.game.players[event.places[i].position].user.username);
+                    $(`#place-${i} img`).attr('src', this.game.players[event.scores[i].position].avatar_url);
+                    $(`#place-${i} .u-name`).text(this.game.players[event.scores[i].position].username);
                 }
                 $('#game-over').removeClass('d-none');
             })

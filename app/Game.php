@@ -4,8 +4,10 @@ namespace App;
 
 use App\Events\CardDealEvent;
 use App\Events\CardPlayEvent;
+use App\Events\GameOverEvent;
 use App\Events\StartGameEvent;
 use App\Events\UpdateGameEvent;
+use App\Jobs\BotJob;
 use Illuminate\Database\Eloquent\Model;
 
 class Game extends Model
@@ -43,6 +45,10 @@ class Game extends Model
         $this->refresh();
 
         broadcast(new StartGameEvent($this, $cards));
+
+        if ($this->players[0]->disconnected) {
+            BotJob::dispatch($this->players[0], $this)->delay(now()->addSeconds(count($cards) + 3));
+        }
     }
 
     /**
@@ -208,14 +214,18 @@ class Game extends Model
             $s->append('position');
         });
 
-        $this->players->each(function ($player) {
-            $player->increment('games_played');
-        });
+        for ($i = 0; $i < 4; $i++) {
+            if ($i == 0 || $i == 1) {
+                $this->players[$scores[$i]->position]->increment('games_won');
+            }
+
+            $this->players[$scores[$i]->position]->increment('games_played');
+        }
 
         $this->update(['state' => 'finished', 'turn' => 4]);
         $this->refresh();
 
-        broadcast(new \App\Events\GameOverEvent($this, $scores));
+        broadcast(new GameOverEvent($this, $scores));
     }
 
     public function calcScoresAfterHand()
@@ -306,7 +316,7 @@ class Game extends Model
         }
     }
 
-    public function deal()
+    public function deal($start = false)
     {
         $deck = new Deck;
         $num = $this->numCardsToDeal();

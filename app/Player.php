@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Player extends Model
 {
     protected $guarded = [];
-    protected $with = ['user:id,username,avatar_url', 'scores'];
-    protected $appends = ['cards_count'];
-    protected $hidden = ['cards'];
+    protected $with = ['scores'];
+    protected $appends = ['cards_count', 'username', 'avatar_url'];
+    protected $hidden = ['cards', 'user'];
     protected $casts = [
         'cards' => 'array',
         'card' => 'array',
@@ -149,5 +149,15 @@ class Player extends Model
     public function getCardsCountAttribute()
     {
         return $this->cards === null ? 0 : count($this->cards);
+    }
+
+    public function getAvatarUrlAttribute()
+    {
+        return $this->user->avatar_url;
+    }
+
+    public function getUsernameAttribute()
+    {
+        return $this->user->username;
     }
 }

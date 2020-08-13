@@ -16993,6 +16993,13 @@ readers do not read off random characters that represent icons */
   height: 94px;
 }
 
+#player0card:hover,
+#player1card:hover,
+#player2card:hover,
+#player3card:hover {
+  z-index: 100 !important;
+}
+
 #player0card {
   left: 50%;
   top: 50%;
@@ -17273,7 +17280,7 @@ readers do not read off random characters that represent icons */
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  max-width: 81px;
+  max-width: 75px;
 }
 
 #scoreboard .table td {

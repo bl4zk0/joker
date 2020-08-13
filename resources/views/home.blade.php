@@ -1,27 +1,23 @@
 @extends('layouts.app')
 
-@section('nav')
-    @include('layouts.nav')
+@section('style')
+    <link href="{{ asset('css/style2.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Dashboard</div>
+    <div class="wrapper">
+        <div class="cover-container p-3 mx-auto">
+            <header class="masthead">
+                @include('layouts.nav')
+            </header>
 
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    You are logged in!
-                </div>
-            </div>
+            <main role="main" class="inner cover text-center">
+                <h1 class="cover-heading"><img src="{{ asset('storage/imgs/logo.png') }}"></h1>
+                <p class="lead">კეთილი იყოს თქვენი მობრძანება ჯოკერის პორტალზე! ითამაშეთ და გაერთეთ 🙂</p>
+                <p class="lead">
+                    <a href="/lobby" class="btn btn-lg btn-success btn-main">თამაშის დაწყება</a>
+                </p>
+            </main>
         </div>
     </div>
-</div>
 @endsection

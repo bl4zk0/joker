@@ -28,10 +28,13 @@ class PlayerBot
     {
         $this->game->update(['state' => 'call', 'trump' => ['strength' => 16, 'suit' => 'black_joker']]);
         $this->game->players->each(function ($player) {
-            broadcast(new CardDealEvent($player->user->id, $player->cards));
+            broadcast(new CardDealEvent($player->user_id, $player->cards));
         });
 
         broadcast(new UpdateGameEvent($this->game));
+
+        BotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSeconds(1));
+
     }
 
     public function call()
@@ -65,18 +68,30 @@ class PlayerBot
     public function card()
     {
         foreach ($this->player->cards as $card) {
-            if ($this->player->canPlay($card, $this->game->cards, $this->game->trump)) {
+            $card2 = $card;
+            if (empty($this->game->cards) && $card['strength'] == 16) {
+                $card2['action'] = 'magali';
+                $suit = $this->game->trump['strength'] == 16 ? 'hearts' : $this->game->trump['suit'];
+                $card2['actionsuit'] = $suit;
+            } elseif ($card['strength'] == 16) {
+                $card2['action'] = 'mojokra';
+            }
+
+            if ($this->player->canPlay($card2, $this->game->cards, $this->game->trump)) {
                 $this->player->removeCard($card);
-                if (empty($this->game->cards) && $card['strength'] == 16) {
-                    $card['action'] = 'magali';
-                    $card['actionsuit'] = 'hearts';
-                } elseif ($card['strength'] == 16) {
-                    $card['action'] = 'mojokra';
-                }
-                $card = $this->game->addCard($card, $this->player);
+
+                $card = $this->game->addCard($card2, $this->player);
                 $checkTake = $this->game->checkTake();
+
                 broadcast (new CardPlayEvent($this->game->id, $this->player->position, $card, $checkTake));
-                if ($checkTake !== false) $this->game->checkEndOfTheHand();
+
+                if ($checkTake !== false) {
+                    if ($this->game->checkEndOfTheHand()) {
+                        $this->game->finishGame();
+                        return;
+                    }
+                }
+
                 break;
             }
         }

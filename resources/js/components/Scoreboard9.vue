@@ -4,10 +4,10 @@
             <thead>
             <tr class="bg-primary">
                 <th scope="col">#</th>
-                <th scope="col">{{ this.players[0] ? this.players[0].user.username : '...'}}</th>
-                <th scope="col">{{ this.players[1] ? this.players[1].user.username : '...'}}</th>
-                <th scope="col">{{ this.players[2] ? this.players[2].user.username : '...'}}</th>
-                <th scope="col">{{ this.players[3] ? this.players[3].user.username : '...'}}</th>
+                <th scope="col">{{ this.players[0] ? this.players[0].username : '...'}}</th>
+                <th scope="col">{{ this.players[1] ? this.players[1].username : '...'}}</th>
+                <th scope="col">{{ this.players[2] ? this.players[2].username : '...'}}</th>
+                <th scope="col">{{ this.players[3] ? this.players[3].username : '...'}}</th>
             </tr>
             </thead>
             <tbody>

@@ -172,7 +172,7 @@
                         @click="call"></button>
             </div>
 
-            <div id="ready" class="bg-white border rounded p-1 text-center" v-show="this.game.state === 'ready'">
+            <div id="ready" class="bg-white border rounded p-1 text-center d-none">
                 <p id="ready-waiting" class="d-none ">დაელოდეთ მოთამაშეების თანხმობას</p>
                 <div id="ready-check" class="d-none mb-3">
                     <p>მზად ხარ თამაშის დასაწყებად?</p>
@@ -185,10 +185,10 @@
                 <table class="table table-bordered mt-3 mb-0" style="max-width: 310px;">
                     <thead>
                         <tr class="bg-primary text-white">
-                            <th scope="col">{{ this.game.players[0] ? this.game.players[0].user.username : '...'}}</th>
-                            <th scope="col">{{ this.game.players[1] ? this.game.players[1].user.username : '...'}}</th>
-                            <th scope="col">{{ this.game.players[2] ? this.game.players[2].user.username : '...'}}</th>
-                            <th scope="col">{{ this.game.players[3] ? this.game.players[3].user.username : '...'}}</th>
+                            <th scope="col">{{ this.game.players[0] ? this.game.players[0].username : '...'}}</th>
+                            <th scope="col">{{ this.game.players[1] ? this.game.players[1].username : '...'}}</th>
+                            <th scope="col">{{ this.game.players[2] ? this.game.players[2].username : '...'}}</th>
+                            <th scope="col">{{ this.game.players[3] ? this.game.players[3].username : '...'}}</th>
                         </tr>
                     </thead>
                 </table>
@@ -224,22 +224,22 @@
             </div>
             <div id="game-over" class="border bg-white rounded text-center d-none">
                 <div id="place-0" class="game-over-card">
-                    <h5 class="text-success">1 <i class="fas fa-star"></i></h5>
+                    <h5 class="text-success">1 <i class="fas fa-trophy"></i>></h5>
                     <img src="" class="avatar border border-success rounded-circle">
                     <div class="u-name"></div>
                 </div>
                 <div id="place-1" class="game-over-card">
-                    <h5 class="text-success">2 <i class="fas fa-star"></i></h5>
+                    <h5 class="text-success">2 <i class="fas fa-trophy"></i></h5>
                     <img src="" class="avatar border border-success rounded-circle">
                     <div class="u-name"></div>
                 </div>
                 <div id="place-2" class="game-over-card">
-                    <h5 class="text-danger">3 <i class="fas fa-star"></i></h5>
+                    <h5 class="text-danger">3 <i class="fas fa-trophy"></i></h5>
                     <img src="" class="avatar border border-danger rounded-circle">
                     <div class="u-name"></div>
                 </div>
                 <div id="place-3" class="game-over-card">
-                    <h5 class="text-danger">4 <i class="fas fa-star"></i></h5>
+                    <h5 class="text-danger">4 <i class="fas fa-trophy"></i></h5>
                     <img src="" class="avatar border border-danger rounded-circle">
                     <div class="u-name"></div>
                 </div>
@@ -323,18 +323,16 @@
 
         methods: {
             start(event) {
-                // hide button
-                this.game.state = 'void';
-
+                this.game.state = 'ready';
                 // post start
                 axios.post('/start/games/' + this.game.id)
                     .then(response => {
-                        this.game.state = 'ready';
                         $('#ready-waiting').removeClass('d-none');
                         $('#ready th').eq(this.ppm[0]).addClass('bg-success');
+                        $('#ready').removeClass('d-none');
                         this.timerFn = setInterval(() => {
                             if (this.timer === 0) {
-                                this.game.state = 'void';
+                                $('#ready').addClass('d-none');
                                 clearInterval(this.timerFn);
                                 this.timer = 10;
                                 $('#ready th').removeClass();

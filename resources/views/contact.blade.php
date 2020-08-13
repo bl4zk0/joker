@@ -8,11 +8,11 @@
     <div class="wrapper">
         <div class="cover-container p-3 mx-auto">
             <header class="masthead">
-                @include('layouts.newnav')
+                @include('layouts.nav')
             </header>
 
             <main>
-                <div class="card text-dark" style="width:42em">
+                <div class="card text-dark">
                     <div class="card-header"><i class="fas fa-envelope"></i> მოგვწერეთ</div>
 
                     <div class="card-body">
@@ -69,4 +69,7 @@
             </main>
         </div>
     </div>
+    @if (session('status'))
+        <flash :message="{{ json_encode(session('status')) }}"></flash>
+    @endif
 @endsection

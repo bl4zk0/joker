@@ -7,7 +7,7 @@
 @section('content')
     <div class="lobby-wrapper">
         <div class="container">
-            @include('layouts.newnav')
+            @include('layouts.nav')
 
             <div class="card mt-3">
                 <div class="card-header">

@@ -1,0 +1,12 @@
+{
+    "Password": "პაროლი",
+    "Confirm Password": "დაადასტურეთ პაროლი",
+    "Reset Password": "პაროლის აღდგენა",
+    "Register": "რეგისტრაცია",
+    "Forgot Your Password?": "დაგავიწყდათ პაროლი?",
+    "Verify Your Email Address": "დაადასტურეთ თქვენი ელ-ფოსტა",
+    "A fresh verification link has been sent to your email address.": "ახალი ლინკი გამოგზავნილია თქვენს ელ-ფოსტაზე.",
+    "Before proceeding, please check your email for a verification link.": "გასაგრძელებლად გთხოვთ შეამოწმოთ თქვენი ელ-ფოსტა, რომელზეც გამოგზავნილია ლინკი დასადასტურებლად.",
+    "If you did not receive the email": "თუ არ მიგიღიათ დასტურის ლინკი",
+    "click here to request another": "დააჭირეთ აქ ახალის გამოსაგზავნად"
+}

@@ -10,6 +10,8 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
 
+    protected $appends = ['username', 'avatar_url'];
+
     protected static function boot()
     {
         parent::boot();

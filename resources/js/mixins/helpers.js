@@ -5,7 +5,8 @@ export default {
             ppm: [],
             timer: 10,
             nextTurn: 4,
-            url: window.App.url
+            url: window.App.url,
+            callSum: 0
         }
     },
 
@@ -28,7 +29,7 @@ export default {
         window.onresize = () => {
             this.windowWidth = window.innerWidth
         };
-        $('body').addClass('bg-success');
+
         if (this.game.state === 'trump' && this.turn) {
             $('#suits').removeClass('d-none');
         }
@@ -92,11 +93,11 @@ export default {
         },
 
         getUsername(p) {
-            return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].user.username : '...';
+            return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].username : '...';
         },
 
         getAvatarUrl(p) {
-            return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].user.avatar_url : false;
+            return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].avatar_url : false;
         },
 
         playedCard(n) {

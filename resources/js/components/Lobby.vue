@@ -1,5 +1,9 @@
 <template>
     <div class="card-body d-flex justify-content-around flex-wrap">
+        <div v-show="this.games.length === 0" class="alert alert-info">
+            მაგიდები არ მოიძებნა.
+        </div>
+
         <div class="card card-table mb-3" v-for="game in this.games" :key="game.id">
             <div class="card-header">{{ game.creator.username + '`s game' }}</div>
             <ul class="list-group list-group-flush">

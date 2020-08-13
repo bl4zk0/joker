@@ -24,6 +24,6 @@ class ContactMeController extends Controller
         Mail::to('admin@mojokre.ge')
             ->send(new ContactMe($request->name, $request->email, $request->message));
 
-        return view('emailsent');
+        return redirect('/contact')->with('status', 'წერილი გაიგზავნა');
     }
 }

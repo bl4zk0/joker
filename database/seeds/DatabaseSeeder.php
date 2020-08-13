@@ -1,5 +1,6 @@
 <?php
 
+use App\Gravatar;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,22 +14,26 @@ class DatabaseSeeder extends Seeder
     {
         factory('App\User')->create([
             'username' => 'Ako',
-            'email' => 'https://www.gravatar.com/avatar/' . md5('ako@example.com') . '?s=50&d=retro&f=y'
+            'email' => 'ako@example.com',
+            'avatar_url' => Gravatar::url('ako@example.com')
         ]);
 
         factory('App\User')->create([
             'username' => 'Sally',
-            'email' => 'https://www.gravatar.com/avatar/' . md5('sally@example.com') . '?s=50&d=retro&f=y'
+            'email' => 'sally@example.com',
+            'avatar_url' => Gravatar::url('sally@example.com')
         ]);
 
         factory('App\User')->create([
             'username' => 'John',
-            'email' => 'https://www.gravatar.com/avatar/' . md5('john@example.com') . '?s=50&d=retro&f=y'
+            'email' => 'john@example.com',
+            'avatar_url' => Gravatar::url('john@example.com')
         ]);
 
         factory('App\User')->create([
             'username' => 'Jane',
-            'email' => 'https://www.gravatar.com/avatar/' . md5('jane@example.com') . '?s=50&d=retro&f=y'
+            'email' => 'jane@example.com',
+            'avatar_url' => Gravatar::url('jane@example.com')
         ]);
     }
 }
