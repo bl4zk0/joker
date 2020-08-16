@@ -10,7 +10,7 @@
                 <a class="nav-link {{ Request::path() === '/' ? 'active' : '' }}" href="/">მთავარი<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ Request::path() === 'contact' ? 'active' : '' }}" href="/contact">კავშირი</a>
+                <a class="nav-link {{ Request::path() === 'contact' ? 'active' : '' }}" href="{{ route('contact') }}">კავშირი</a>
             </li>
             @auth
                 <li class="ml-3 nav-item dropdown">
@@ -18,7 +18,7 @@
                         <img class="border rounded-circle g_avatar"
                              src="{{ Auth::user()->avatar_url }}"
                              title="{{ Auth::user()->username }}"
-                             alt="{{ Auth::user()->username }}">
+                             alt="{{ Auth::user()->username }}_avatar">
                     </a>
                     <div class="dropdown-menu dropdown-menu-right bg-success">
                         <a class="dropdown-item text-white" href="/user/{{ Auth::id() }}">

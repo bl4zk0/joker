@@ -123,33 +123,57 @@
 
             <!-- players -->
             <div id="player0">
-                <img v-if="getAvatarUrl(0)" :src="getAvatarUrl(0)" class="avatar border rounded-circle" :class="active(0)">
+                <img v-if="getAvatarUrl(0)"
+                     :src="getAvatarUrl(0)"
+                     class="avatar border rounded-circle"
+                     :class="active(0)"
+                     alt="avatar">
                 <div v-else class="avatar border rounded-circle"></div>
-                <div class="u-name" v-text="getUsername(0)"></div>
+                <div class="u-name">
+                    <a :href="getProfileLink(0)" v-text="getUsername(0)" class="text-white" target="_blank"></a>
+                </div>
             </div>
             <div id="player1" data-container="body" data-toggle="popover" data-placement="top" data-trigger="manual">
                 <div class="kick" title="გაგდება" v-show="canKickUser(1)">
                     <i class="fas fa-times" @click="kick(1)"></i>
                 </div>
-                <img v-if="getAvatarUrl(1)" :src="getAvatarUrl(1)" class="avatar border rounded-circle" :class="active(1)">
+                <img v-if="getAvatarUrl(1)"
+                     :src="getAvatarUrl(1)"
+                     class="avatar border rounded-circle"
+                     :class="active(1)"
+                     alt="avatar">
                 <div v-else class="avatar border rounded-circle"></div>
-                <div class="u-name" v-text="getUsername(1)"></div>
+                <div class="u-name">
+                    <a :href="getProfileLink(1)" v-text="getUsername(1)" class="text-white" target="_blank"></a>
+                </div>
             </div>
             <div id="player2" data-container="body" data-toggle="popover" data-placement="right" data-trigger="manual">
                 <div class="kick" title="გაგდება" v-show="canKickUser(2)">
                     <i class="fas fa-times" @click="kick(2)"></i>
                 </div>
-                <img v-if="getAvatarUrl(2)" :src="getAvatarUrl(2)" class="avatar border rounded-circle" :class="active(2)">
+                <img v-if="getAvatarUrl(2)"
+                     :src="getAvatarUrl(2)"
+                     class="avatar border rounded-circle"
+                     :class="active(2)"
+                     alt="avatar">
                 <div v-else class="avatar border rounded-circle"></div>
-                <div class="u-name" v-text="getUsername(2)"></div>
+                <div class="u-name">
+                    <a :href="getProfileLink(2)" v-text="getUsername(2)" class="text-white" target="_blank"></a>
+                </div>
             </div>
             <div id="player3" data-container="body" data-toggle="popover" data-placement="top" data-trigger="manual">
                 <div class="kick" title="გაგდება" v-show="canKickUser(3)">
                     <i class="fas fa-times" @click="kick(3)"></i>
                 </div>
-                <img v-if="getAvatarUrl(3)" :src="getAvatarUrl(3)" class="avatar border rounded-circle" :class="active(3)">
+                <img v-if="getAvatarUrl(3)"
+                     :src="getAvatarUrl(3)"
+                     class="avatar border rounded-circle"
+                     :class="active(3)"
+                     alt="avatar">
                 <div v-else class="avatar border rounded-circle"></div>
-                <div class="u-name" v-text="getUsername(3)"></div>
+                <div class="u-name">
+                    <a :href="getProfileLink(3)" v-text="getUsername(3)" class="text-white" target="_blank"></a>
+                </div>
             </div>
 
             <div id="start-btn" class="shadow" v-show="showStart">
@@ -225,22 +249,22 @@
             <div id="game-over" class="border bg-white rounded text-center d-none">
                 <div id="place-0" class="game-over-card">
                     <h5 class="text-success">1 <i class="fas fa-trophy"></i>></h5>
-                    <img src="" class="avatar border border-success rounded-circle">
+                    <img src="" class="avatar border border-success rounded-circle" alt="avatar">
                     <div class="u-name"></div>
                 </div>
                 <div id="place-1" class="game-over-card">
                     <h5 class="text-success">2 <i class="fas fa-trophy"></i></h5>
-                    <img src="" class="avatar border border-success rounded-circle">
+                    <img src="" class="avatar border border-success rounded-circle" alt="avatar">
                     <div class="u-name"></div>
                 </div>
                 <div id="place-2" class="game-over-card">
                     <h5 class="text-danger">3 <i class="fas fa-trophy"></i></h5>
-                    <img src="" class="avatar border border-danger rounded-circle">
+                    <img src="" class="avatar border border-danger rounded-circle" alt="avatar">
                     <div class="u-name"></div>
                 </div>
                 <div id="place-3" class="game-over-card">
                     <h5 class="text-danger">4 <i class="fas fa-trophy"></i></h5>
-                    <img src="" class="avatar border border-danger rounded-circle">
+                    <img src="" class="avatar border border-danger rounded-circle" alt="avatar">
                     <div class="u-name"></div>
                 </div>
             </div>
@@ -324,22 +348,22 @@
         methods: {
             start(event) {
                 this.game.state = 'ready';
+
+                $('#ready-waiting').removeClass('d-none');
+                $('#ready th').eq(this.ppm[0]).addClass('bg-success');
+                $('#ready').removeClass('d-none');
+                this.timerFn = setInterval(() => {
+                    if (this.timer === 0) {
+                        $('#ready').addClass('d-none');
+                        clearInterval(this.timerFn);
+                        this.timer = 10;
+                        $('#ready th').removeClass();
+                    }
+                    this.timer--;
+                }, 1000);
+
                 // post start
                 axios.post('/start/games/' + this.game.id)
-                    .then(response => {
-                        $('#ready-waiting').removeClass('d-none');
-                        $('#ready th').eq(this.ppm[0]).addClass('bg-success');
-                        $('#ready').removeClass('d-none');
-                        this.timerFn = setInterval(() => {
-                            if (this.timer === 0) {
-                                $('#ready').addClass('d-none');
-                                clearInterval(this.timerFn);
-                                this.timer = 10;
-                                $('#ready th').removeClass();
-                            }
-                            this.timer--;
-                        }, 1000);
-                    })
                     .catch(error => {
                         location.reload();
                     });

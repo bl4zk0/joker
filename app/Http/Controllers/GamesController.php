@@ -11,13 +11,15 @@ use App\Events\UpdateGameEvent;
 use App\Events\UpdateLobbyEvent;
 use App\Events\UpdateReadyEvent;
 use App\Game;
-use App\Jobs\BotJob;
-use App\Jobs\ResetGameStart;
+use App\Jobs\PlayerBotJob;
+use App\Jobs\PlayerReconnectedJob;
+use App\Jobs\ResetGameStartJob;
 use App\Rules\CardRule;
 use App\Rules\GamePasswordRule;
 use App\Rules\KickUserRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class GamesController extends Controller
 {
@@ -34,13 +36,14 @@ class GamesController extends Controller
             abort(406, 'Not enough players');
         }
 
+        //this is for admin
         $game->start();
 
         return response([], 200);
 
 //        $game->update(['state' => 'ready', 'ready' => ['players' => [Auth::id()], 'count' => 1]]);
 //
-//        ResetGameStart::dispatch($game)->delay(now()->addSeconds(12));
+//        ResetGameStartJob::dispatch($game)->delay(now()->addSeconds(12));
 //
 //        broadcast(new GetReadyEvent($game->id, Auth::user()->player->position, '1'))->toOthers();
 //
@@ -119,7 +122,7 @@ class GamesController extends Controller
         broadcast(new PlayerCallEvent($game, $score, $player->position));
 
         if ($game->players[$game->turn]->disconnected) {
-            BotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSeconds(1));
+            PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());
         }
 
 //        return [
@@ -173,7 +176,7 @@ class GamesController extends Controller
         }
 
         if ($game->players[$game->turn]->disconnected) {
-            BotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSeconds(1));
+            PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());
         }
 
     }
@@ -225,6 +228,7 @@ class GamesController extends Controller
      */
     public function show(Request $request, Game $game)
     {
+        dd($request);
         $game->makeVisible('password');
 
         $player = Auth::user()->player;
@@ -233,7 +237,7 @@ class GamesController extends Controller
 
         if ($game->players->contains($player)) {
             if ($player->disconnected) {
-                $player->update(['disconnected' => false]);
+                PlayerReconnectedJob::dispatch($player)->delay(now()->addSecond());
             }
             return view('game', compact('game', 'cards'));
         }
@@ -270,7 +274,7 @@ class GamesController extends Controller
         $request->validate([
             'position' => ['required', new KickUserRule($game->players)]
         ]);
-
+        logger($request->position);
         $game->kick($request->position);
 
         broadcast(new KickUserEvent($game->id, $request->position, $game->players))->toOthers();
@@ -280,9 +284,9 @@ class GamesController extends Controller
 
     public function leave(Game $game)
     {
+        exit;
         $this->authorize('leave', $game);
-
-        if ($game->state == 'start') {
+        if ($game->state == 'start' || $game->state == 'ready') {
             auth()->user()->player->update(['game_id' => null, 'position' => null]);
             $game->refresh();
             if (auth()->user()->is($game->creator) && $game->players()->count() > 0) {
@@ -291,18 +295,23 @@ class GamesController extends Controller
                 broadcast(new UpdateGameEvent($game));
             } elseif ($game->players()->count() == 0) {
                 $game->delete();
+                return;
             } else {
                 $game->reposition();
                 broadcast(new UpdateGameEvent($game));
             }
             broadcast(new UpdateLobbyEvent());
-            return;
-        }
+        } else {
+            if ($game->players()->where('disconnected', true)->count() == 3) {
+                $game->delete();
+                return;
+            }
 
-        if ($game->state != '0') {
             auth()->user()->player->update(['disconnected' => true]);
-            return;
-            // if all players leave subtract points delete game
+
+            if ($game->turn == auth()->user()->player->position) {
+                PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSeconds(1));
+            }
         }
     }
 }

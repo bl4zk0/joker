@@ -29,13 +29,20 @@ Auth::routes(['verify' => true]);
 Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider')->where('provider','facebook|google');
 Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback')->where('provider','facebook|google');
 
-Route::view('/', 'home')->name('home');
+Route::view('/', 'home')->name('home')->middleware('disconnected');
 Route::get('/contact', 'ContactMeController@index');
-Route::post('/contact', 'ContactMeController@store');
+Route::post('/contact', 'ContactMeController@store')->name('contact');
 Route::get('/user/{user}', 'ProfilesController@show');
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::get('/lobby', 'GamesController@index')->middleware('verified');
+    Route::get('/lobby', 'GamesController@index')->name('lobby')->middleware('verified');
+    Route::get('/email/change', 'ProfilesController@emailChangeForm')->middleware('password.confirm');
+    Route::post('/email/change', 'ProfilesController@emailChange')->middleware('password.confirm');
+    Route::get('/password/change', 'ProfilesController@passwordChangeForm')->middleware('password.confirm');
+    Route::post('/password/change', 'ProfilesController@passwordChange')->middleware('password.confirm');
+});
+
+Route::group(['middleware' => ['auth', 'disconnected']], function () {
     Route::get('/games/{game}', 'GamesController@show')->middleware('verified');
     Route::post('/games', 'GamesController@store')->middleware('verified');
     Route::post('/start/games/{game}', 'GamesController@start');
@@ -45,8 +52,4 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/trump/games/{game}', 'GamesController@trump');
     Route::post('/kick/games/{game}', 'GamesController@kick');
     Route::post('/leave/games/{game}', 'GamesController@leave');
-    Route::get('/email/change', 'ProfilesController@emailChangeForm')->middleware('password.confirm');
-    Route::post('/email/change', 'ProfilesController@emailChange')->middleware('password.confirm');
-    Route::get('/password/change', 'ProfilesController@passwordChangeForm')->middleware('password.confirm');
-    Route::post('/password/change', 'ProfilesController@passwordChange')->middleware('password.confirm');
 });

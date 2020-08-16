@@ -2306,6 +2306,30 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2375,23 +2399,22 @@ __webpack_require__.r(__webpack_exports__);
     start: function start(event) {
       var _this = this;
 
-      this.game.state = 'ready'; // post start
+      this.game.state = 'ready';
+      $('#ready-waiting').removeClass('d-none');
+      $('#ready th').eq(this.ppm[0]).addClass('bg-success');
+      $('#ready').removeClass('d-none');
+      this.timerFn = setInterval(function () {
+        if (_this.timer === 0) {
+          $('#ready').addClass('d-none');
+          clearInterval(_this.timerFn);
+          _this.timer = 10;
+          $('#ready th').removeClass();
+        }
 
-      axios.post('/start/games/' + this.game.id).then(function (response) {
-        $('#ready-waiting').removeClass('d-none');
-        $('#ready th').eq(_this.ppm[0]).addClass('bg-success');
-        $('#ready').removeClass('d-none');
-        _this.timerFn = setInterval(function () {
-          if (_this.timer === 0) {
-            $('#ready').addClass('d-none');
-            clearInterval(_this.timerFn);
-            _this.timer = 10;
-            $('#ready th').removeClass();
-          }
+        _this.timer--;
+      }, 1000); // post start
 
-          _this.timer--;
-        }, 1000);
-      })["catch"](function (error) {
+      axios.post('/start/games/' + this.game.id)["catch"](function (error) {
         location.reload();
       });
     },
@@ -2563,18 +2586,52 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['initialGames'],
   data: function data() {
     return {
-      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
       games: this.initialGames
     };
   },
   created: function created() {
     var _this = this;
 
-    window.Echo["private"]('lobby').listen('UpdateLobbyEvent', function (event) {
+    Echo["private"]('lobby').listen('UpdateLobbyEvent', function (event) {
+      console.log('UpdateLobbyEvent');
       _this.games = event.games;
     });
   },
@@ -27820,14 +27877,17 @@ var render = function() {
               ? _c("img", {
                   staticClass: "avatar border rounded-circle",
                   class: _vm.active(0),
-                  attrs: { src: _vm.getAvatarUrl(0) }
+                  attrs: { src: _vm.getAvatarUrl(0), alt: "avatar" }
                 })
               : _c("div", { staticClass: "avatar border rounded-circle" }),
             _vm._v(" "),
-            _c("div", {
-              staticClass: "u-name",
-              domProps: { textContent: _vm._s(_vm.getUsername(0)) }
-            })
+            _c("div", { staticClass: "u-name" }, [
+              _c("a", {
+                staticClass: "text-white",
+                attrs: { href: _vm.getProfileLink(0), target: "_blank" },
+                domProps: { textContent: _vm._s(_vm.getUsername(0)) }
+              })
+            ])
           ]),
           _vm._v(" "),
           _c(
@@ -27872,14 +27932,17 @@ var render = function() {
                 ? _c("img", {
                     staticClass: "avatar border rounded-circle",
                     class: _vm.active(1),
-                    attrs: { src: _vm.getAvatarUrl(1) }
+                    attrs: { src: _vm.getAvatarUrl(1), alt: "avatar" }
                   })
                 : _c("div", { staticClass: "avatar border rounded-circle" }),
               _vm._v(" "),
-              _c("div", {
-                staticClass: "u-name",
-                domProps: { textContent: _vm._s(_vm.getUsername(1)) }
-              })
+              _c("div", { staticClass: "u-name" }, [
+                _c("a", {
+                  staticClass: "text-white",
+                  attrs: { href: _vm.getProfileLink(1), target: "_blank" },
+                  domProps: { textContent: _vm._s(_vm.getUsername(1)) }
+                })
+              ])
             ]
           ),
           _vm._v(" "),
@@ -27925,14 +27988,17 @@ var render = function() {
                 ? _c("img", {
                     staticClass: "avatar border rounded-circle",
                     class: _vm.active(2),
-                    attrs: { src: _vm.getAvatarUrl(2) }
+                    attrs: { src: _vm.getAvatarUrl(2), alt: "avatar" }
                   })
                 : _c("div", { staticClass: "avatar border rounded-circle" }),
               _vm._v(" "),
-              _c("div", {
-                staticClass: "u-name",
-                domProps: { textContent: _vm._s(_vm.getUsername(2)) }
-              })
+              _c("div", { staticClass: "u-name" }, [
+                _c("a", {
+                  staticClass: "text-white",
+                  attrs: { href: _vm.getProfileLink(2), target: "_blank" },
+                  domProps: { textContent: _vm._s(_vm.getUsername(2)) }
+                })
+              ])
             ]
           ),
           _vm._v(" "),
@@ -27978,14 +28044,17 @@ var render = function() {
                 ? _c("img", {
                     staticClass: "avatar border rounded-circle",
                     class: _vm.active(3),
-                    attrs: { src: _vm.getAvatarUrl(3) }
+                    attrs: { src: _vm.getAvatarUrl(3), alt: "avatar" }
                   })
                 : _c("div", { staticClass: "avatar border rounded-circle" }),
               _vm._v(" "),
-              _c("div", {
-                staticClass: "u-name",
-                domProps: { textContent: _vm._s(_vm.getUsername(3)) }
-              })
+              _c("div", { staticClass: "u-name" }, [
+                _c("a", {
+                  staticClass: "text-white",
+                  attrs: { href: _vm.getProfileLink(3), target: "_blank" },
+                  domProps: { textContent: _vm._s(_vm.getUsername(3)) }
+                })
+              ])
             ]
           ),
           _vm._v(" "),
@@ -28414,7 +28483,7 @@ var staticRenderFns = [
           _vm._v(" "),
           _c("img", {
             staticClass: "avatar border border-success rounded-circle",
-            attrs: { src: "" }
+            attrs: { src: "", alt: "avatar" }
           }),
           _vm._v(" "),
           _c("div", { staticClass: "u-name" })
@@ -28428,7 +28497,7 @@ var staticRenderFns = [
           _vm._v(" "),
           _c("img", {
             staticClass: "avatar border border-success rounded-circle",
-            attrs: { src: "" }
+            attrs: { src: "", alt: "avatar" }
           }),
           _vm._v(" "),
           _c("div", { staticClass: "u-name" })
@@ -28442,7 +28511,7 @@ var staticRenderFns = [
           _vm._v(" "),
           _c("img", {
             staticClass: "avatar border border-danger rounded-circle",
-            attrs: { src: "" }
+            attrs: { src: "", alt: "avatar" }
           }),
           _vm._v(" "),
           _c("div", { staticClass: "u-name" })
@@ -28456,7 +28525,7 @@ var staticRenderFns = [
           _vm._v(" "),
           _c("img", {
             staticClass: "avatar border border-danger rounded-circle",
-            attrs: { src: "" }
+            attrs: { src: "", alt: "avatar" }
           }),
           _vm._v(" "),
           _c("div", { staticClass: "u-name" })
@@ -28521,43 +28590,53 @@ var render = function() {
           { key: game.id, staticClass: "card card-table mb-3" },
           [
             _c("div", { staticClass: "card-header" }, [
-              _vm._v(_vm._s(game.creator.username + "`s game"))
+              _c("strong", [
+                _vm._v(
+                  _vm._s(game.type === 1 ? "სტანდარტული" : "9-იანები") +
+                    " | " +
+                    _vm._s(game.penalty)
+                )
+              ])
             ]),
             _vm._v(" "),
             _c("ul", { staticClass: "list-group list-group-flush" }, [
               _c("li", { staticClass: "list-group-item" }, [
-                _vm._v(
-                  "1: " +
-                    _vm._s(
-                      game.players[0] ? game.players[0].user.username : " "
-                    )
-                )
-              ]),
-              _vm._v(" "),
-              _c("li", { staticClass: "list-group-item" }, [
-                _vm._v(
-                  "2: " +
-                    _vm._s(
-                      game.players[1] ? game.players[1].user.username : " "
-                    )
-                )
-              ]),
-              _vm._v(" "),
-              _c("li", { staticClass: "list-group-item" }, [
-                _vm._v(
-                  "3: " +
-                    _vm._s(
-                      game.players[2] ? game.players[2].user.username : " "
-                    )
-                )
-              ]),
-              _vm._v(" "),
-              _c("li", { staticClass: "list-group-item" }, [
-                _vm._v(
-                  "4: " +
-                    _vm._s(
-                      game.players[3] ? game.players[3].user.username : " "
-                    )
+                _c(
+                  "a",
+                  {
+                    staticClass: "text-dark u-link",
+                    attrs: {
+                      href: game.players[0]
+                        ? "/user/" + game.players[0].user_id
+                        : "",
+                      target: "_blank"
+                    }
+                  },
+                  [
+                    _c("img", {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: game.players[0],
+                          expression: "game.players[0]"
+                        }
+                      ],
+                      staticClass: "avatar border rounded-circle",
+                      attrs: {
+                        src: game.players[0] ? game.players[0].avatar_url : "",
+                        alt: "avatar"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("span", [
+                      _vm._v(
+                        _vm._s(
+                          game.players[0] ? game.players[0].username : "..."
+                        )
+                      )
+                    ])
+                  ]
                 )
               ]),
               _vm._v(" "),
@@ -28565,11 +28644,131 @@ var render = function() {
                 _c(
                   "a",
                   {
-                    staticClass: "btn btn-light",
+                    staticClass: "text-dark u-link",
+                    attrs: {
+                      href: game.players[1]
+                        ? "/user/" + game.players[1].user_id
+                        : "",
+                      target: "_blank"
+                    }
+                  },
+                  [
+                    _c("img", {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: game.players[1],
+                          expression: "game.players[1]"
+                        }
+                      ],
+                      staticClass: "avatar border rounded-circle",
+                      attrs: {
+                        src: game.players[1] ? game.players[1].avatar_url : "",
+                        alt: "avatar"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("span", [
+                      _vm._v(
+                        _vm._s(
+                          game.players[1] ? game.players[1].username : "..."
+                        )
+                      )
+                    ])
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("li", { staticClass: "list-group-item" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "text-dark u-link",
+                    attrs: {
+                      href: game.players[2]
+                        ? "/user/" + game.players[2].user_id
+                        : "",
+                      target: "_blank"
+                    }
+                  },
+                  [
+                    _c("img", {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: game.players[2],
+                          expression: "game.players[2]"
+                        }
+                      ],
+                      staticClass: "avatar border rounded-circle",
+                      attrs: {
+                        src: game.players[2] ? game.players[2].avatar_url : "",
+                        alt: "avatar"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("span", [
+                      _vm._v(
+                        _vm._s(
+                          game.players[2] ? game.players[2].username : "..."
+                        )
+                      )
+                    ])
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("li", { staticClass: "list-group-item" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "text-dark u-link",
+                    attrs: {
+                      href: game.players[3]
+                        ? "/user/" + game.players[3].user_id
+                        : "",
+                      target: "_blank"
+                    }
+                  },
+                  [
+                    _c("img", {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: game.players[3],
+                          expression: "game.players[3]"
+                        }
+                      ],
+                      staticClass: "avatar border rounded-circle",
+                      attrs: {
+                        src: game.players[3] ? game.players[3].avatar_url : "",
+                        alt: "avatar"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("span", [
+                      _vm._v(
+                        _vm._s(
+                          game.players[3] ? game.players[3].username : "..."
+                        )
+                      )
+                    ])
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("li", { staticClass: "list-group-item" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "btn btn-block btn-success",
                     class: _vm.kl(game.players.length),
                     attrs: { href: _vm.path(game.id) }
                   },
-                  [_vm._v("Join")]
+                  [_vm._v("შესვლა")]
                 )
               ])
             ])
@@ -41754,8 +41953,13 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
-  key: "6b252d137909e98b47e0",
+  key: "6b252d137909e98b47e00",
   cluster: "eu",
+  wsHost: window.location.hostname,
+  wsPort: 6001,
+  wssPort: 6001,
+  enabledTransports: ['ws', 'wss'],
+  disableStats: true,
   forceTLS: true
 });
 
@@ -42213,7 +42417,6 @@ __webpack_require__.r(__webpack_exports__);
 
     Echo["private"]('game.' + this.game.id).listen('UpdateGameEvent', function (event) {
       console.log('UpdateGameEvent');
-      _this.callSum = 0;
       _this.game = event.game;
       _this.nextTurn = event.game.turn; // ai es temaaaaaaa
     }).listen('PlayerCallEvent', function (event) {
@@ -42346,8 +42549,7 @@ __webpack_require__.r(__webpack_exports__);
       ppm: [],
       timer: 10,
       nextTurn: 4,
-      url: window.App.url,
-      callSum: 0
+      url: window.App.url
     };
   },
   computed: {
@@ -42355,10 +42557,15 @@ __webpack_require__.r(__webpack_exports__);
       return App.user.id === this.game.user_id && this.game.state === 'start' && this.game.players.length === 4;
     },
     passwordProtected: function passwordProtected() {
-      return this.game.state === 'start' && this.game.password !== null && this.game.players.length < 4;
+      return this.game.state === 'start' && this.game.password && this.game.players.length < 4;
     }
   },
   created: function created() {
+    // window.addEventListener("beforeunload", event => {
+    //     if (this.game.state !== 'finished') {
+    //         axios.post('/leave/games/' + this.game.id);
+    //     }
+    // });
     this.playerPositionsMap();
     this.showCards(this.initialCards, true);
   },
@@ -42446,6 +42653,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     getUsername: function getUsername(p) {
       return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].username : '...';
+    },
+    getProfileLink: function getProfileLink(p) {
+      return this.game.players[this.ppm[p]] ? '/user/' + this.game.players[this.ppm[p]].user_id : '#';
     },
     getAvatarUrl: function getAvatarUrl(p) {
       return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].avatar_url : false;

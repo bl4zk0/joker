@@ -7,7 +7,7 @@ use App\Events\CardPlayEvent;
 use App\Events\GameOverEvent;
 use App\Events\StartGameEvent;
 use App\Events\UpdateGameEvent;
-use App\Jobs\BotJob;
+use App\Jobs\PlayerBotJob;
 use Illuminate\Database\Eloquent\Model;
 
 class Game extends Model
@@ -34,6 +34,17 @@ class Game extends Model
         static::created(function($game) {
             $game->addPlayer($game->creator, 0);
         });
+        static::deleting(function($game) {
+            $game->players->each(function ($player) {
+                $player->scores()->delete();
+                $player->update([
+                    'position' => null,
+                    'card' => null,
+                    'cards' => null,
+                    'disconnected' => false
+                ]);
+            });
+        });
     }
 
     public function start()
@@ -47,7 +58,7 @@ class Game extends Model
         broadcast(new StartGameEvent($this, $cards));
 
         if ($this->players[0]->disconnected) {
-            BotJob::dispatch($this->players[0], $this)->delay(now()->addSeconds(count($cards) + 3));
+            PlayerBotJob::dispatch($this->players[0], $this)->delay(now()->addSeconds(count($cards) + 3));
         }
     }
 
@@ -550,12 +561,6 @@ class Game extends Model
         array_push($kicked, $player->id);
         $this->update(['kicked_users' => $kicked]);
         $this->refresh();
-        $this->updatePlayersPosition();
-    }
-
-    public function updatePlayersPosition() {
-        $this->players->each(function ($player, $key) {
-            $player->setPosition($key);
-        });
+        $this->reposition();
     }
 }

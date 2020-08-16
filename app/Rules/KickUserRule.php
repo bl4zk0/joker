@@ -27,7 +27,7 @@ class KickUserRule implements Rule
      */
     public function passes($attribute, $value)
     {
-        return $this->players->has($value);
+        return $this->players->has($value) && $value != auth()->user()->player->position;
     }
 
     /**
@@ -37,6 +37,6 @@ class KickUserRule implements Rule
      */
     public function message()
     {
-        return 'Wrong player';
+        return 'დაფიქსირდა შეცდომა!';
     }
 }

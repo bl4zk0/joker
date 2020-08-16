@@ -15,9 +15,10 @@
                     <div class="card text-dark">
                         <div class="card-body">
                             <div class="border-bottom pb-2">
-                                <h5>
+                                <h5 class="h-name">
                                     <img src="{{ $user->avatar_url }}"
-                                         class="avatar border rounded-circle"> {{ $user->username }}
+                                         class="avatar border rounded-circle"
+                                         alt="avatar"> {{ $user->username }}
                                 </h5>
                                 @can('update', $user)
                                     <form>

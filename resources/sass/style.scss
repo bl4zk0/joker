@@ -419,6 +419,19 @@
     box-shadow: 0 0 0 0.2rem rgb(39 255 0 / 25%);
 }
 
+.u-link {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+    display: inline-block;
+}
+.h-name {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 .card-table {
     width: 100%;
 }

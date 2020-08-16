@@ -9,7 +9,6 @@ export default {
         Echo.private('game.' + this.game.id)
             .listen('UpdateGameEvent', event => {
                 console.log('UpdateGameEvent');
-                this.callSum = 0;
                 this.game = event.game;
                 this.nextTurn = event.game.turn; // ai es temaaaaaaa
             })

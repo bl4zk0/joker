@@ -2,28 +2,26 @@
 
 namespace App\Jobs;
 
-use App\PlayerBot;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class BotJob implements ShouldQueue
+class PlayerReconnectedJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $player, $game;
+    private $player;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($player, $game)
+    public function __construct($player)
     {
         $this->player = $player;
-        $this->game = $game;
     }
 
     /**
@@ -33,8 +31,6 @@ class BotJob implements ShouldQueue
      */
     public function handle()
     {
-        $bot = new PlayerBot($this->player, $this->game);
-        $method = $this->game->state;
-        $bot->$method();
+        $this->player->update(['disconnected' => false]);
     }
 }

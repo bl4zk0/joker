@@ -8,7 +8,7 @@ use App\Events\CardDealEvent;
 use App\Events\CardPlayEvent;
 use App\Events\PlayerCallEvent;
 use App\Events\UpdateGameEvent;
-use App\Jobs\BotJob;
+use App\Jobs\PlayerBotJob;
 
 class PlayerBot
 {
@@ -33,7 +33,7 @@ class PlayerBot
 
         broadcast(new UpdateGameEvent($this->game));
 
-        BotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSeconds(1));
+        PlayerBotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSecond());
 
     }
 
@@ -61,7 +61,7 @@ class PlayerBot
         broadcast(new PlayerCallEvent($this->game, $score, $this->player->position));
 
         if ($this->game->players[$this->game->turn]->disconnected) {
-            BotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSeconds(1));
+            PlayerBotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSecond());
         }
     }
 
@@ -97,7 +97,7 @@ class PlayerBot
         }
 
         if ($this->game->players[$this->game->turn]->disconnected) {
-            BotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSeconds(1));
+            PlayerBotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSecond());
         }
 
     }

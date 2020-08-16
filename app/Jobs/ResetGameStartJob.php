@@ -10,11 +10,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ResetGameStart implements ShouldQueue
+class ResetGameStartJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $game;
+    private $game;
 
     /**
      * Create a new job instance.

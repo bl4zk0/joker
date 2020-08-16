@@ -5,8 +5,7 @@ export default {
             ppm: [],
             timer: 10,
             nextTurn: 4,
-            url: window.App.url,
-            callSum: 0
+            url: window.App.url
         }
     },
 
@@ -16,11 +15,17 @@ export default {
         },
 
         passwordProtected() {
-            return this.game.state === 'start' && this.game.password !== null && this.game.players.length < 4;
+            return this.game.state === 'start' && this.game.password && this.game.players.length < 4;
         }
     },
 
     created() {
+        // window.addEventListener("beforeunload", event => {
+        //     if (this.game.state !== 'finished') {
+        //         axios.post('/leave/games/' + this.game.id);
+        //     }
+        // });
+
         this.playerPositionsMap();
         this.showCards(this.initialCards, true);
     },
@@ -94,6 +99,10 @@ export default {
 
         getUsername(p) {
             return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].username : '...';
+        },
+
+        getProfileLink(p) {
+            return this.game.players[this.ppm[p]] ? '/user/' + this.game.players[this.ppm[p]].user_id : '#';
         },
 
         getAvatarUrl(p) {
