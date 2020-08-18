@@ -10,7 +10,7 @@ export default {
             .listen('UpdateGameEvent', event => {
                 console.log('UpdateGameEvent');
                 this.game = event.game;
-                this.nextTurn = event.game.turn; // ai es temaaaaaaa
+                this.nextTurn = event.game.turn;
             })
             .listen('PlayerCallEvent', event => {
                 console.log('PlayerCallEvent');
@@ -28,11 +28,32 @@ export default {
                 this.game.except = event.except;
                 this.game.turn = event.turn;
                 this.game.state = event.state;
+                this.playState = true;
             })
             .listen('CardPlayEvent', event => {
                 console.log('CardPlayEvent');
                 this.game.cards.push(event.card);
-                this.players[event.position].cards.pop();
+
+                if (event.position === this.ppm[0]) {
+                    let id = 0;
+                    let cards = this.players[event.position].cards;
+                    for (let idx in cards) {
+                        if (Number(event.card.strength) > 14 || Number(event.card.strength) == 1) {
+                            if (event.card.suit == cards[idx].suit) {
+                                id = idx;
+                            }
+                        } else {
+                            if (event.card.suit == cards[idx].suit && event.card.strength == cards[idx].strength) {
+                                id = idx;
+                            }
+                        }
+                    }
+
+                    this.players[event.position].cards.splice(id, 1);
+                } else {
+                    this.players[event.position].cards.pop();
+                }
+
                 this.game.players[event.position].card = event.card;
                 this.hideCards(event.take);
             })
@@ -100,10 +121,12 @@ export default {
                 this.playerPositionsMap();
             })
             .listen('GameOverEvent', event => {
+                this.playState = false;
                 this.game = event.game;
                 for (let i = 0; i < 4; i++) {
                     $(`#place-${i} img`).attr('src', this.game.players[event.scores[i].position].avatar_url);
-                    $(`#place-${i} .u-name`).text(this.game.players[event.scores[i].position].username);
+                    $(`#place-${i} .u-name a`).attr('href', `/user/${this.game.players[event.scores[i].position].user_id}`)
+                        .text(this.game.players[event.scores[i].position].username);
                 }
                 $('#game-over').removeClass('d-none');
             })

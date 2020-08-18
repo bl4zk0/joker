@@ -12,14 +12,12 @@ use App\Events\UpdateLobbyEvent;
 use App\Events\UpdateReadyEvent;
 use App\Game;
 use App\Jobs\PlayerBotJob;
-use App\Jobs\PlayerReconnectedJob;
 use App\Jobs\ResetGameStartJob;
+use App\PlayerBot;
 use App\Rules\CardRule;
 use App\Rules\GamePasswordRule;
 use App\Rules\KickUserRule;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class GamesController extends Controller
 {
@@ -36,18 +34,13 @@ class GamesController extends Controller
             abort(406, 'Not enough players');
         }
 
-        //this is for admin
-        $game->start();
+        $game->update(['state' => 'ready', 'ready' => ['players' => [auth()->id()], 'count' => 1]]);
+
+        ResetGameStartJob::dispatch($game)->delay(now()->addSeconds(12));
+
+        broadcast(new GetReadyEvent($game->id, auth()->user()->player->position, '1'))->toOthers();
 
         return response([], 200);
-
-//        $game->update(['state' => 'ready', 'ready' => ['players' => [Auth::id()], 'count' => 1]]);
-//
-//        ResetGameStartJob::dispatch($game)->delay(now()->addSeconds(12));
-//
-//        broadcast(new GetReadyEvent($game->id, Auth::user()->player->position, '1'))->toOthers();
-//
-//        return response([], 200);
     }
 
     public function ready(Request $request, Game $game)
@@ -56,14 +49,15 @@ class GamesController extends Controller
 
         $request->validate(['ready' => ['required', 'boolean']]);
 
-        $game->addReadyPlayer(Auth::id(), $request->ready);
+        $game->addReadyPlayer(auth()->id(), $request->ready);
 
-        broadcast(new UpdateReadyEvent($game->id, Auth::user()->player->position, $request->ready))->toOthers();
+        broadcast(new UpdateReadyEvent($game->id, auth()->user()->player->position, $request->ready))->toOthers();
 
         if ($game->ready['count'] == 4) {
             $game->start();
         }
 
+        return response([], 200);
     }
 
     /**
@@ -92,6 +86,8 @@ class GamesController extends Controller
         });
 
         broadcast(new UpdateGameEvent($game));
+
+        return response([], 200);
     }
 
     /**
@@ -109,7 +105,7 @@ class GamesController extends Controller
         $request->validate([
             'call' => ['required', 'integer', 'min:0', "max:$max", "not_in:$except"]
         ]);
-        $player = Auth::user()->player;
+        $player = auth()->user()->player;
         $score = $player->scores()->create([
             'quarter' => $game->quarter,
             'call' => $request->call,
@@ -125,11 +121,8 @@ class GamesController extends Controller
             PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());
         }
 
-//        return [
-//            'score' => $score,
-//            'state' => $game->state,
-//            'turn' => $game->turn,
-//        ];
+        return response([], 200);
+
     }
 
     /**
@@ -179,6 +172,7 @@ class GamesController extends Controller
             PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());
         }
 
+        return response([], 200);
     }
 
     /**
@@ -197,7 +191,6 @@ class GamesController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -216,6 +209,8 @@ class GamesController extends Controller
             'password' => $password
         ]);
 
+        $game->addPlayer(auth()->user());
+
         broadcast(new UpdateLobbyEvent());
         return redirect($game->path());
     }
@@ -224,47 +219,58 @@ class GamesController extends Controller
      * Display the specified resource.
      *
      * @param Game $game
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(Request $request, Game $game)
     {
-        dd($request);
+        $pin = null;
+
+        if ($game->password != null) {
+            if ($request->has('pin')) {
+                $pin = $request->pin;
+            } else if ($game->players->contains(auth()->user()->player)) {
+                $pin = $game->password;
+            }
+        }
+
+        return view('game', ['id' => $game->id, 'password' => (bool) $game->password, 'pin' => $pin]);
+    }
+
+    public function join(Request $request, Game $game)
+    {
+        $this->authorize('join', $game);
+
         $game->makeVisible('password');
 
-        $player = Auth::user()->player;
+        $player = auth()->user()->player;
         $cards = $player->cards;
         $cards = $game->state == 'trump' ? array_slice($cards, 0, 3) : $cards;
 
         if ($game->players->contains($player)) {
             if ($player->disconnected) {
-                PlayerReconnectedJob::dispatch($player)->delay(now()->addSecond());
+                $player->update(['disconnected' => false]);;
             }
-            return view('game', compact('game', 'cards'));
+            return compact('game', 'cards');
         }
 
         if ($game->password != null) {
-            if (! $request->has('p')) {
-                return view('enter_password');
-            } else {
-                $request->validate([
-                    'p' => ['required', new GamePasswordRule($game->password)]
-                ]);
-            }
+            $request->validate([
+                'pin' => ['required', new GamePasswordRule($game->password)]
+            ]);
         }
 
         if ($game->state == 'start' && $game->players()->count() < 4) {
 
-            $game->addPlayer(Auth::user());
+            $game->addPlayer(auth()->user());
 
             $game->refresh();
 
             broadcast(new UpdateGameEvent($game));
             broadcast(new UpdateLobbyEvent());
 
-            return view('game', compact('game', 'cards'));
+            return compact('game', 'cards');
 
         } else {
-            return redirect('/lobby');
+            return response(['message' => 'You can not join table'], 409);
         }
     }
 
@@ -274,7 +280,7 @@ class GamesController extends Controller
         $request->validate([
             'position' => ['required', new KickUserRule($game->players)]
         ]);
-        logger($request->position);
+
         $game->kick($request->position);
 
         broadcast(new KickUserEvent($game->id, $request->position, $game->players))->toOthers();
@@ -284,8 +290,8 @@ class GamesController extends Controller
 
     public function leave(Game $game)
     {
-        exit;
         $this->authorize('leave', $game);
+
         if ($game->state == 'start' || $game->state == 'ready') {
             auth()->user()->player->update(['game_id' => null, 'position' => null]);
             $game->refresh();
@@ -310,8 +316,19 @@ class GamesController extends Controller
             auth()->user()->player->update(['disconnected' => true]);
 
             if ($game->turn == auth()->user()->player->position) {
-                PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSeconds(1));
+                PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());
             }
         }
+    }
+
+    public function bot(Game $game)
+    {
+        $this->authorize('bot', $game);
+
+        $bot = new PlayerBot(auth()->user()->player, $game);
+        $method = $game->state;
+        $bot->$method();
+
+        return response([], 200);
     }
 }

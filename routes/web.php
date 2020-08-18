@@ -13,17 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/test', function () {
-    $g = \App\Game::find(1);
-
-    $ss = $g->scores()->latest()->limit(4)->get()->sortByDesc('result');
-    $ss->each(function ($s) {
-        $s->append('position');
-    });
-    broadcast(new \App\Events\GameOverEvent($g, $ss));
-    return 'ok';
-});
-
 Auth::routes(['verify' => true]);
 
 Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider')->where('provider','facebook|google');
@@ -45,6 +34,7 @@ Route::group(['middleware' => ['auth']], function () {
 Route::group(['middleware' => ['auth', 'disconnected']], function () {
     Route::get('/games/{game}', 'GamesController@show')->middleware('verified');
     Route::post('/games', 'GamesController@store')->middleware('verified');
+    Route::post('/join/games/{game}', 'GamesController@join');
     Route::post('/start/games/{game}', 'GamesController@start');
     Route::post('/ready/games/{game}', 'GamesController@ready');
     Route::post('/call/games/{game}', 'GamesController@call');
@@ -52,4 +42,5 @@ Route::group(['middleware' => ['auth', 'disconnected']], function () {
     Route::post('/trump/games/{game}', 'GamesController@trump');
     Route::post('/kick/games/{game}', 'GamesController@kick');
     Route::post('/leave/games/{game}', 'GamesController@leave');
+    Route::post('/bot/games/{game}', 'GamesController@bot');
 });

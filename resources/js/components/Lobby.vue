@@ -1,52 +1,30 @@
 <template>
     <div class="card-body d-flex justify-content-around flex-wrap">
-        <div v-show="this.games.length === 0" class="alert alert-info">
+        <div v-if="games.length === 0" class="alert alert-info">
             მაგიდები არ მოიძებნა.
         </div>
 
-        <div class="card card-table mb-3" v-for="game in this.games" :key="game.id">
-            <div class="card-header">
+        <div v-else class="card card-table mb-3" v-for="game in games" :key="game.id">
+            <div class="card-header text-center">
                 <strong>{{ game.type === 1 ? 'სტანდარტული' : '9-იანები' }} | {{ game.penalty }}</strong>
             </div>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    <a :href="game.players[0] ? '/user/' + game.players[0].user_id : ''"
-                       class="text-dark u-link" target="_blank">
-                        <img :src="game.players[0] ? game.players[0].avatar_url : ''" v-show="game.players[0]"
+
+                <li class="list-group-item" v-for="n in [0,1,2,3]">
+                    <a v-if="game.players[n]"
+                       :href="'/user/' + game.players[n].user_id"
+                       class="text-dark u-link"
+                       target="_blank">
+                        <img :src="game.players[n].avatar_url"
                              class="avatar border rounded-circle"
                              alt="avatar">
-                        <span>{{ game.players[0] ? game.players[0].username : '...' }}</span>
+                        <span v-text="game.players[n].username"></span>
                     </a>
+                    <span v-else>...</span>
                 </li>
+
                 <li class="list-group-item">
-                    <a :href="game.players[1] ? '/user/' + game.players[1].user_id : ''"
-                       class="text-dark u-link" target="_blank">
-                        <img :src="game.players[1] ? game.players[1].avatar_url : ''" v-show="game.players[1]"
-                             class="avatar border rounded-circle"
-                             alt="avatar">
-                        <span>{{ game.players[1] ? game.players[1].username : '...' }}</span>
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a :href="game.players[2] ? '/user/' + game.players[2].user_id : ''"
-                       class="text-dark u-link" target="_blank">
-                        <img :src="game.players[2] ? game.players[2].avatar_url : ''" v-show="game.players[2]"
-                             class="avatar border rounded-circle"
-                             alt="avatar">
-                        <span>{{ game.players[2] ? game.players[2].username : '...' }}</span>
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a :href="game.players[3] ? '/user/' + game.players[3].user_id : ''"
-                       class="text-dark u-link" target="_blank">
-                        <img :src="game.players[3] ? game.players[3].avatar_url : ''" v-show="game.players[3]"
-                             class="avatar border rounded-circle"
-                             alt="avatar">
-                        <span>{{ game.players[3] ? game.players[3].username : '...' }}</span>
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a :href="path(game.id)" class="btn btn-block btn-success" :class="kl(game.players.length)">შესვლა</a>
+                    <a :href="path(game.id)" class="btn btn-block btn-success" :class="klas(game.players.length)">შესვლა</a>
                 </li>
             </ul>
         </div>
@@ -66,7 +44,7 @@
         created() {
             Echo.private('lobby')
                 .listen('UpdateLobbyEvent', event => {
-                    console.log('UpdateLobbyEvent');
+                    console.log('UpdateLobbyEvent', event);
                     this.games = event.games;
                 });
         },
@@ -75,7 +53,7 @@
             path(id) {
                 return '/games/' + id;
             },
-            kl(n) {
+            klas(n) {
                 return n === 4 ? 'disabled' : '';
             }
         }

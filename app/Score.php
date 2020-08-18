@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Score extends Model
 {
     protected $guarded = [];
-    protected $casts = ['call' => 'integer'];
+    protected $casts = ['quarter' => 'integer', 'call' => 'integer', 'take' => 'integer', 'result' => 'integer'];
+    protected $hidden = ['created_at', 'updated_at'];
 
     public $position = null;
 

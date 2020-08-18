@@ -21,7 +21,7 @@ class UpdateLobbyEvent implements ShouldBroadcastNow
      */
     public function __construct()
     {
-        $this->games = \App\Game::latest()->where('state', '0')->get();
+        $this->games = \App\Game::latest()->where('state', 'start')->get();
     }
 
     /**

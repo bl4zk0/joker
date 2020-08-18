@@ -1,5 +1,5 @@
 export default {
-    props: ['initialPlayers'],
+    props: ['initialPlayers', 'penalty'],
 
     computed: {
         players() {

@@ -1,9 +1,9 @@
 <template>
     <div class="d-flex justify-content-center">
-        <component :is="scoreboard" :initial-players="game.players"></component>
+        <component :is="scoreboard" :initial-players="game.players" :penalty="game.penalty"></component>
 
         <div id="play-table">
-            <div class="btn-table" v-show="game.state === 'start' || game.state === 'finished'">
+            <div class="btn-table" v-show="game.state === 'start'">
                 <a href="/lobby" class="btn btn-outline-light"><i class="fas fa-arrow-circle-left"></i></a>
             </div>
             <div id="btn-chat" class="btn-table d-xl-none">
@@ -22,55 +22,16 @@
             </div>
 
             <!-- played cards -->
-            <div id="player0card"
-                 :class="playedCard(0)"
-                 :style="'z-index: ' + cardsZIndex(0)">
-                <div v-if="playedCardAction(0)"
-                     class="card-action">
+            <div v-for="n in [0,1,2,3]"
+                 :id="`player${n}card`"
+                 :class="playedCard(n)"
+                 :style="'z-index:' + cardsZIndex(n)">
+                <div v-if="playedCardAction(n)" class="card-action">
                     <div>
-                        <span v-text="actions[game.players[this.ppm[0]].card['action']]"></span>
-                        <span v-text="actionsuits[game.players[this.ppm[0]].card['actionsuit']]"
-                              style="font-size: 24px"
-                              :class="suitColor(game.players[this.ppm[0]].card['actionsuit'])"></span>
-                    </div>
-                </div>
-            </div>
-            <div id="player1card"
-                 :class="playedCard(1)"
-                 :style="'z-index: ' + cardsZIndex(1)">
-                <div v-if="playedCardAction(1)"
-                     class="card-action">
-                    <div>
-                        <span v-text="actions[game.players[this.ppm[1]].card['action']]"></span>
-                        <span v-text="actionsuits[game.players[this.ppm[1]].card['actionsuit']]"
-                              style="font-size: 24px"
-                              :class="suitColor(game.players[this.ppm[1]].card['actionsuit'])"></span>
-                    </div>
-                </div>
-            </div>
-            <div id="player2card"
-                 :class="playedCard(2)"
-                 :style="'z-index: ' + cardsZIndex(2)">
-                <div v-if="playedCardAction(2)"
-                     class="card-action">
-                    <div>
-                        <span v-text="actions[game.players[this.ppm[2]].card['action']]"></span>
-                        <span v-text="actionsuits[game.players[this.ppm[2]].card['actionsuit']]"
-                              style="font-size: 24px"
-                              :class="suitColor(game.players[this.ppm[2]].card['actionsuit'])"></span>
-                    </div>
-                </div>
-            </div>
-            <div id="player3card"
-                 :class="playedCard(3)"
-                 :style="'z-index: ' + cardsZIndex(3)">
-                <div v-if="playedCardAction(3)"
-                     class="card-action">
-                    <div>
-                        <span v-text="actions[game.players[this.ppm[3]].card['action']]"></span>
-                        <span v-text="actionsuits[game.players[this.ppm[3]].card['actionsuit']]"
-                              style="font-size: 24px"
-                              :class="suitColor(game.players[this.ppm[3]].card['actionsuit'])"></span>
+                        <span v-text="actions[game.players[ppm[n]].card['action']]"></span>
+                        <span v-text="actionsuits[game.players[ppm[n]].card['actionsuit']]"
+                              style="font-size:24px"
+                              :class="suitColor(game.players[ppm[n]].card['actionsuit'])"></span>
                     </div>
                 </div>
             </div>
@@ -98,6 +59,7 @@
             <div v-for="(index) in players[ppm[3]].cards"
                  class="p-card p3-card card_back card_back_size"
                  :style="'margin-top: ' + (getMargin(3) + (index * marginStep())) + 'px'"></div>
+
             <!-- players cards -->
 
             <!-- taken cards-->
@@ -133,46 +95,23 @@
                     <a :href="getProfileLink(0)" v-text="getUsername(0)" class="text-white" target="_blank"></a>
                 </div>
             </div>
-            <div id="player1" data-container="body" data-toggle="popover" data-placement="top" data-trigger="manual">
-                <div class="kick" title="გაგდება" v-show="canKickUser(1)">
-                    <i class="fas fa-times" @click="kick(1)"></i>
+            <div v-for="n in 3"
+                 :id="`player${n}`"
+                 data-container="body"
+                 data-toggle="popover"
+                 data-placement="top"
+                 data-trigger="manual">
+                <div class="kick" title="გაგდება" v-show="canKickUser(n)">
+                    <i class="fas fa-times" @click="kick(n)"></i>
                 </div>
-                <img v-if="getAvatarUrl(1)"
-                     :src="getAvatarUrl(1)"
+                <img v-if="getAvatarUrl(n)"
+                     :src="getAvatarUrl(n)"
                      class="avatar border rounded-circle"
-                     :class="active(1)"
+                     :class="active(n)"
                      alt="avatar">
                 <div v-else class="avatar border rounded-circle"></div>
                 <div class="u-name">
-                    <a :href="getProfileLink(1)" v-text="getUsername(1)" class="text-white" target="_blank"></a>
-                </div>
-            </div>
-            <div id="player2" data-container="body" data-toggle="popover" data-placement="right" data-trigger="manual">
-                <div class="kick" title="გაგდება" v-show="canKickUser(2)">
-                    <i class="fas fa-times" @click="kick(2)"></i>
-                </div>
-                <img v-if="getAvatarUrl(2)"
-                     :src="getAvatarUrl(2)"
-                     class="avatar border rounded-circle"
-                     :class="active(2)"
-                     alt="avatar">
-                <div v-else class="avatar border rounded-circle"></div>
-                <div class="u-name">
-                    <a :href="getProfileLink(2)" v-text="getUsername(2)" class="text-white" target="_blank"></a>
-                </div>
-            </div>
-            <div id="player3" data-container="body" data-toggle="popover" data-placement="top" data-trigger="manual">
-                <div class="kick" title="გაგდება" v-show="canKickUser(3)">
-                    <i class="fas fa-times" @click="kick(3)"></i>
-                </div>
-                <img v-if="getAvatarUrl(3)"
-                     :src="getAvatarUrl(3)"
-                     class="avatar border rounded-circle"
-                     :class="active(3)"
-                     alt="avatar">
-                <div v-else class="avatar border rounded-circle"></div>
-                <div class="u-name">
-                    <a :href="getProfileLink(3)" v-text="getUsername(3)" class="text-white" target="_blank"></a>
+                    <a :href="getProfileLink(n)" v-text="getUsername(n)" class="text-white" target="_blank"></a>
                 </div>
             </div>
 
@@ -243,32 +182,32 @@
                     <button type="button" class="btn btn-sm btn-secondary" style="float:right" @click="copyLink">copy</button>
                 </div>
 
-                <input class="form-control" id="table-link"
-                       :value="url + '/games/' + game.id + '?p=' + game.password">
+                <input class="form-control" id="table-link" readonly
+                       :value="url + '/games/' + game.id + '?pin=' + game.password">
             </div>
-            <div id="game-over" class="border bg-white rounded text-center d-none">
-                <div id="place-0" class="game-over-card">
-                    <h5 class="text-success">1 <i class="fas fa-trophy"></i>></h5>
-                    <img src="" class="avatar border border-success rounded-circle" alt="avatar">
-                    <div class="u-name"></div>
+
+            <div id="game-over" class="bg-success d-none">
+                <div class="btn-table">
+                    <a href="/lobby" class="btn btn-outline-light"><i class="fas fa-arrow-circle-left"></i></a>
                 </div>
-                <div id="place-1" class="game-over-card">
-                    <h5 class="text-success">2 <i class="fas fa-trophy"></i></h5>
-                    <img src="" class="avatar border border-success rounded-circle" alt="avatar">
-                    <div class="u-name"></div>
-                </div>
-                <div id="place-2" class="game-over-card">
-                    <h5 class="text-danger">3 <i class="fas fa-trophy"></i></h5>
-                    <img src="" class="avatar border border-danger rounded-circle" alt="avatar">
-                    <div class="u-name"></div>
-                </div>
-                <div id="place-3" class="game-over-card">
-                    <h5 class="text-danger">4 <i class="fas fa-trophy"></i></h5>
-                    <img src="" class="avatar border border-danger rounded-circle" alt="avatar">
-                    <div class="u-name"></div>
+                <div class="d-flex justify-content-center">
+                    <h5 class="alert alert-warning">თამაში დასრულდა!</h5>
+                    <div class="card mt-5">
+                        <div class="card-body text-center">
+                            <div v-for="n in [0,1,2,3]" :id="`place-${n}`" class="game-over-card">
+                                <h5 :class="n > 1 ? 'text-danger' : 'text-success'">{{ n+1 }} <i class="fas fa-trophy"></i></h5>
+                                <img src="#" class="avatar border rounded-circle" alt="avatar">
+                                <div class="u-name">
+                                    <a href="#" class="text-dark" target="_blank"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <chat :messages="messages" :game-id="game.id"></chat>
 
         <div class="modal fade" id="kicked" data-backdrop="static" data-keyboard="false" tabindex="-1">
             <div class="modal-dialog">
@@ -282,8 +221,6 @@
                 </div>
             </div>
         </div>
-
-        <chat :messages="messages" :game-id="this.game.id"></chat>
 
         <div class="close-w d-none">
             <button type="button" class="btn btn-outline-light" @click="closeW">
@@ -309,7 +246,7 @@
         data() {
             return {
                 game: this.initialGame,
-                cardState: true,
+                playState: true,
                 players: [
                     {cards: [], takenCards: []},
                     {cards: [], takenCards: []},
@@ -381,18 +318,16 @@
             },
 
             actionCard(event) {
+                if (! this.turn || this.game.state !== 'card' || ! this.playState) {
+                    console.log('wrong turn or state');
+                    return;
+                }
                 // es aris state roca karts daacher sxva kartebze rom vegar daachiro da itamasho sanam es karti ar gaigzavneba
-                if (! this.cardState) return;
-                this.cardState = false;
+                this.playState = false;
+
                 let strength = event.target.getAttribute('data-strength');
                 let suit = event.target.getAttribute('data-suit');
                 let card = { strength, suit };
-
-                if (! this.turn || this.game.state !== 'card') {
-                    console.log('wrong turn or state');
-                    this.cardState = true;
-                    return;
-                }
 
                 this.cardId = event.target.id;
                 this.card.card = card;
@@ -406,6 +341,7 @@
                 } else {
                     if (! this.canPlay(card)) {
                         console.log('you can not play this card');
+                        this.playState = true;
                         return;
                     }
                     this.afterActionCard(card);
@@ -427,6 +363,7 @@
                     $('#jokjoker').addClass('d-none');
                     if (! this.canPlay(card)) {
                         console.log('you can not play this card');
+                        this.playState = true;
                         return;
                     }
                     this.afterActionCard(card);
@@ -434,9 +371,23 @@
             },
 
             actionSuit(event) {
+                if (! this.turn || ! this.playState) {
+                    console.log('wrong turn or state');
+                    return;
+                }
+
                 let suit = event.target.getAttribute('data-suit');
                 if (this.game.state === 'trump') {
-                    axios.post('/trump/games/' + this.game.id, {trump: suit});
+
+                    this.playState = false;
+
+                    axios.post('/trump/games/' + this.game.id, {trump: suit})
+                        .then(response => {
+                            this.playState = true;
+                        })
+                        .catch(error => {
+                            location.reload();
+                        })
                     this.setTrump = false;
                 } else if (this.game.state === 'card') {
                     let card = {
@@ -448,9 +399,13 @@
                     this.card.actionsuit = suit;
                     if (! this.canPlay(card)) {
                         console.log('you can not play this card');
+                        this.playState = true;
                         return;
                     }
                     this.afterActionCard(card);
+                } else {
+                    console.log('wrong turn or state');
+                    return;
                 }
 
                 $('#suits').addClass('d-none');
@@ -461,10 +416,8 @@
 
                 axios.post('/card/games/' + this.game.id, this.card)
                     .then(response => {
-                        //this.nextTurn = response.data;
                         this.card = {};
                         this.cardId = null;
-                        this.cardState = true;
                     })
                     .catch(error => {
                         location.reload();
@@ -473,10 +426,12 @@
 
             call(event) {
 
-                if (! this.turn || this.game.state !== 'call') {
+                if (! this.turn || this.game.state !== 'call' || ! this.playState) {
                     console.log('wrong turn or state');
                     return;
                 }
+
+                this.playState = false;
 
                 this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
 
@@ -485,11 +440,9 @@
                 }
 
                 axios.post('/call/games/' + this.game.id, call)
-                    // .then(response => {
-                    //     this.game.players[this.ppm[0]].scores.push(response.data.score);
-                    //     this.game.state = response.data.state;
-                    //     this.game.turn = response.data.turn;
-                    // })
+                    .then(response => {
+                        this.playState = true;
+                    })
                     .catch(error => {
                         location.reload();
                     });

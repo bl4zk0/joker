@@ -37,6 +37,6 @@ class GamePasswordRule implements Rule
      */
     public function message()
     {
-        return 'პაროლი არასწორია';
+        return 'პინ-კოდი არასწორია';
     }
 }

@@ -2,157 +2,19 @@
     <div id="scoreboard" class="d-none d-md-block px-2">
         <table class="table table-bordered text-white">
             <thead>
-            <tr class="bg-primary">
-                <th scope="col">#</th>
-                <th scope="col">{{ this.players[0] ? this.players[0].username : '...'}}</th>
-                <th scope="col">{{ this.players[1] ? this.players[1].username : '...'}}</th>
-                <th scope="col">{{ this.players[2] ? this.players[2].username : '...'}}</th>
-                <th scope="col">{{ this.players[3] ? this.players[3].username : '...'}}</th>
-            </tr>
+                <tr class="bg-primary">
+                    <th scope="col">#</th>
+                    <th scope="col" v-for="p in [0,1,2,3]" v-text="players[p] ? players[p].username : '...'"></th>
+                </tr>
             </thead>
             <tbody>
-            <tr>
-                <th scope="row">9</th>
-                <td v-html="showScores(0, 0)"></td>
-                <td v-html="showScores(1, 0)"></td>
-                <td v-html="showScores(2, 0)"></td>
-                <td v-html="showScores(3, 0)"></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td v-html="showScores(0, 1)"></td>
-                <td v-html="showScores(1, 1)"></td>
-                <td v-html="showScores(2, 1)"></td>
-                <td v-html="showScores(3, 1)"></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td v-html="showScores(0, 2)"></td>
-                <td v-html="showScores(1, 2)"></td>
-                <td v-html="showScores(2, 2)"></td>
-                <td v-html="showScores(3, 2)"></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td v-html="showScores(0, 3)"></td>
-                <td v-html="showScores(1, 3)"></td>
-                <td v-html="showScores(2, 3)"></td>
-                <td v-html="showScores(3, 3)"></td>
-            </tr>
-            <tr class="bg-info">
-                <th scope="row">&Sigma;</th>
-                <td v-html="showResult(0, 4)"></td>
-                <td v-html="showResult(1, 4)"></td>
-                <td v-html="showResult(2, 4)"></td>
-                <td v-html="showResult(3, 4)"></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td v-html="showScores(0, 5)"></td>
-                <td v-html="showScores(1, 5)"></td>
-                <td v-html="showScores(2, 5)"></td>
-                <td v-html="showScores(3, 5)"></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="bg-info">
-                <th scope="row">&Sigma;</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="bg-info">
-                <th scope="row">&Sigma;</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <th scope="row">9</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="bg-info">
-                <th scope="row">&Sigma;</th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+                <tr v-for="n in 20" :class="n % 5 === 0 ? 'bg-info' : ''">
+                    <th scope="row">{{ n % 5 === 0 ? '&Sigma;' : 9 }}</th>
+                    <td v-for="p in [0,1,2,3]" v-html="n % 5 === 0 ? showResult(p , n - 1) : showScores(p , n - 1)"></td>
+                </tr>
             </tbody>
         </table>
+        <div><span class="badge badge-danger">I--I {{ this.penalty }}</span></div>
     </div>
 </template>
 

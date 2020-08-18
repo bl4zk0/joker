@@ -13,6 +13,7 @@ class PlayerTest extends TestCase
     public function it_can_determine_highest_card_of_suit_in_players_cards_and_if_suit_is_in_cards()
     {
         $game = factory('App\Game')->create();
+        $game->addPlayer($game->creator);
 
         $cards = [
             ['strength' => 13, 'suit' => 'hearts'],
@@ -37,6 +38,7 @@ class PlayerTest extends TestCase
     public function it_can_determine_if_player_can_play_a_card_aka_cvetaoba()
     {
         $game = factory('App\Game')->create();
+        $game->addPlayer($game->creator);
 
         $cards = [
             ['strength' => 16, 'suit' => 'black_joker'],
@@ -93,6 +95,7 @@ class PlayerTest extends TestCase
     public function it_can_remove_a_card()
     {
         $game = factory('App\Game')->create();
+        $game->addPlayer($game->creator);
 
         $cards = [
             ['strength' => 13, 'suit' => 'hearts'],

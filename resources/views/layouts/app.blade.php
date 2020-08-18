@@ -14,7 +14,8 @@
     <script>
         window.App = {!! json_encode([
             'user' => Auth::user(),
-            'url' => env('APP_URL')
+            'url' => env('APP_URL'),
+            'bot_timer' => env('BOT_TIMER')
         ]) !!};
     </script>
 

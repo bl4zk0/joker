@@ -1,0 +1,109 @@
+<template>
+    <div>
+        <div v-if="game === null" class="d-flex justify-content-center align-items-center vh-100">
+            <div class="card" v-show="this.showPasswordForm">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div>
+                            <input type="text"
+                                   maxlength="4"
+                                   placeholder="პინ-კოდი"
+                                   class="form-control"
+                                   :class="errorMessage ? 'is-invalid' : ''"
+                                   v-model="passwordInput"
+                                   name="password"
+                                   :disabled="showLoadingBtn"
+                                   @keypress="joinWithEnter">
+
+                            <span v-show="errorMessage" class="invalid-feedback">
+                                <strong v-text="errorMessage"></strong>
+                            </span>
+                        </div>
+                        <div class="ml-2">
+                            <button type="button" class="btn btn-success" @click="join(true)" :disabled="showLoadingBtn">
+                                <span class="spinner-border spinner-border-sm" v-show="showLoadingBtn"></span>
+                                შესვლა
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-show="showLoading" class="alert alert-success">
+                <div class="spinner-border spinner-border-sm" role="status"></div> მიმდინარეობს ჩატვირთვა...
+            </div>
+        </div>
+
+        <game v-else :initial-game="game" :initial-cards="cards"></game>
+    </div>
+</template>
+
+<script>
+    import game from './Game';
+
+    export default {
+        components: { game },
+        props: ['gameId', 'hasPassword', 'pinCode'],
+
+        mounted() {
+            if (this.hasPassword === false) {
+                this.join();
+            } else if (this.pinCode) {
+                this.join(true);
+            }
+        },
+
+        data() {
+            return {
+                game: null,
+                cards: null,
+                passwordInput: this.pinCode,
+                errorMessage: '',
+                showPasswordForm: this.hasPassword,
+                showLoading: false,
+                showLoadingBtn: false
+            }
+        },
+
+        methods: {
+            join(btnPressed = false) {
+                let password = null;
+
+                if (! btnPressed) {
+                    this.showLoading = true;
+                } else {
+                    if (! this.passwordInput) {
+                        this.errorMessage = 'შეიყვანეთ პინ-კოდი';
+                        return;
+                    } else {
+                        this.errorMessage = '';
+                        this.showLoadingBtn = true;
+                        password = { pin: this.passwordInput }
+                    }
+                }
+
+                axios.post('/join/games/' + this.gameId, password)
+                    .then(response => {
+                        this.game = response.data.game;
+                        this.cards = response.data.cards;
+                    })
+                    .catch(error => {
+                        console.log(error)
+                        if (error.response.data.errors) {
+                            this.passwordInput = '';
+                            this.showLoadingBtn = false;
+                            this.errorMessage = 'პინ-კოდი არასწორია';
+                        } else {
+                            window.location = '/lobby';
+                        }
+                    });
+            },
+
+            joinWithEnter(event)
+            {
+                if (event.key === 'Enter') {
+                    this.join(true);
+                }
+            }
+        }
+    }
+</script>

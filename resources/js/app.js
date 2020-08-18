@@ -20,7 +20,7 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('lobby', require('./components/Lobby.vue').default);
-Vue.component('game', require('./components/Game.vue').default);
+Vue.component('game-view', require('./components/GameView.vue').default);
 Vue.component('flash', require('./components/Flash.vue').default);
 
 

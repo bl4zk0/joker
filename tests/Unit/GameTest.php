@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class GameTest extends TestCase
@@ -33,13 +34,15 @@ class GameTest extends TestCase
 
         $game->addPlayer(factory('App\User')->create());
 
-        $this->assertCount(2, $game->players);
+        $this->assertCount(1, $game->players);
     }
 
     /** @test */
     public function it_determines_positions_correctly()
     {
-        $game = factory('App\Game')->create();
+        $user = factory('App\User')->create();
+        $game = factory('App\Game')->create(['user_id' => $user->id]);
+        $game->addPlayer($user);
         $this->assertEquals(1, $game->determinePosition());
 
         $game->addPlayer(factory('App\User')->create());
@@ -71,8 +74,10 @@ class GameTest extends TestCase
     /** @test */
     public function it_determines_except_number_and_validates_call()
     {
-        $game = factory('App\Game')->create(['type' => 9, 'state' => 'call', 'call_count' => 3]);
+        $user = factory('App\User')->create();
+        $game = factory('App\Game')->create(['type' => 9, 'user_id' => $user->id, 'state' => 'call', 'call_count' => 3]);
 
+        $game->addPlayer($user);
         $game->addPlayer(factory('App\User')->create());
         $game->addPlayer(factory('App\User')->create());
         $game->addPlayer(factory('App\User')->create());
@@ -93,6 +98,7 @@ class GameTest extends TestCase
         $user = $this->signIn();
 
         $game = factory('App\Game')->create(['user_id' => $user->id, 'state' => 'call']);
+        $game->addPlayer($user);
 
         $this->postJson('/call' . $game->path(), ['call' => 9])
             ->assertStatus(422);
@@ -104,6 +110,7 @@ class GameTest extends TestCase
         $user = $this->signIn();
 
         $game = factory('App\Game')->create(['user_id' => $user->id, 'type' => 9, 'state' => 'trump']);
+        $game->addPlayer($user);
 
         $this->postJson('/trump' . $game->path(), ['trump' => 'foobar'])
             ->assertStatus(422);
@@ -119,9 +126,10 @@ class GameTest extends TestCase
         $user = $this->signIn();
 
         $game = factory('App\Game')->create(['user_id' => $user->id, 'type' => 9, 'state' => 'card']);
+        $game->addPlayer($user);
+        $game->refresh();
 
-        $game->players[0]->cards = [['strength' => 12, 'suit' => 'hearts'], ['strength' => 7, 'suit' => 'hearts']];
-        $game->players[0]->save();
+        $user->player->update(['cards' => [['strength' => 12, 'suit' => 'hearts'], ['strength' => 7, 'suit' => 'hearts']]]);
 
         $this->postJson('/card' . $game->path(), ['card' => ['strength' => 14, 'suit' => 'hearts']])
             ->assertStatus(422);
@@ -133,6 +141,7 @@ class GameTest extends TestCase
         $user = $this->signIn();
 
         $game = factory('App\Game')->create(['state' => 'call']);
+        $game->addPlayer($game->creator);
 
         $game->addPlayer($user);
 
@@ -146,6 +155,7 @@ class GameTest extends TestCase
         $user = $this->signIn();
 
         $game = factory('App\Game')->create(['state' => 'trump']);
+        $game->addPlayer($game->creator);
 
         $game->addPlayer($user);
 
@@ -159,7 +169,7 @@ class GameTest extends TestCase
         $user = $this->signIn();
 
         $game = factory('App\Game')->create(['state' => 'card']);
-
+        $game->addPlayer($game->creator);
         $game->addPlayer($user);
 
         $this->postJson('/card' . $game->path())
@@ -185,6 +195,7 @@ class GameTest extends TestCase
         $game = factory('App\Game')->create(['user_id' => $user->id]);
         $user2 = factory('App\User')->create();
 
+        $game->addPlayer($user);
         $game->addPlayer($user2);
 
         $this->postJson('/leave' . $game->path());
@@ -195,9 +206,9 @@ class GameTest extends TestCase
     /** @test */
     public function when_creator_leaves_and_no_other_players_left_game_is_deleted()
     {
-        $user = $this->signIn();
-
-        $game = factory('App\Game')->create(['user_id' => $user->id]);
+        $game = factory('App\Game')->create();
+        $game->addPlayer($game->creator);
+        $this->signIn($game->creator);
 
         $this->postJson('/leave' . $game->path());
 
@@ -223,10 +234,11 @@ class GameTest extends TestCase
         $user = $this->signIn();
 
         $game = factory('App\Game')->create(['user_id' => $user->id, 'trump' => ['strength' => 14, 'suit' => 'hearts']]);
+        $game->addPlayer($user);
 
         $game->refresh();
 
-        $game->addCard(['strength' => 14, 'suit' => 'hearts']);
+        $game->addCard(['strength' => 14, 'suit' => 'hearts'], $user->player);
 
         $this->assertTrue(in_array(['strength' => 14, 'suit' => 'hearts'], $game->cards));
         $this->assertEquals(['strength' => 14, 'suit' => 'hearts'], $game->players[0]->card);
@@ -237,7 +249,7 @@ class GameTest extends TestCase
             ['strength' => 11, 'suit' => 'hearts']
         ]]);
 
-        $game->addCard(['strength' => 16, 'suit' => 'black_joker', 'action' => 'mojokra']);
+        $game->addCard(['strength' => 16, 'suit' => 'black_joker', 'action' => 'mojokra'], $user->player);
 
         $this->assertEquals(['strength' => 17, 'suit' => 'black_joker', 'action' => 'mojokra'], $game->highestCard());
 
@@ -247,13 +259,13 @@ class GameTest extends TestCase
             ['strength' => 11, 'suit' => 'hearts']
         ]]);
 
-        $game->addCard(['strength' => 16, 'suit' => 'black_joker', 'action' => 'nije']);
+        $game->addCard(['strength' => 16, 'suit' => 'black_joker', 'action' => 'nije'], $user->player);
 
         $this->assertEquals(['strength' => 16, 'suit' => 'color_joker', 'action' => 'mojokra'], $game->highestCard());
     }
 
     /** @test */
-    public function it_can_determines_highest_card()
+    public function it_can_determine_highest_card()
     {
         $game = factory('App\Game')->create(['trump' => ['strength' => 16, 'suit' => 'black_joker']]);
 

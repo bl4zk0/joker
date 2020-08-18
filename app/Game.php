@@ -12,32 +12,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class Game extends Model
 {
-    /*
-     * TODO: check broadcasted game properties use model resources??
-     * throttle join game request
-     */
     protected $guarded = [];
     protected $with = ['creator', 'players'];
-    protected $hidden = ['password'];
+    protected $hidden = ['password', 'ready', 'kicked_users', 'created_at', 'updated_at', 'creator', 'call_count'];
     protected $appends = ['except'];
     protected $casts = [
         'cards' => 'array',
         'kicked_users' => 'array',
         'trump' => 'array',
-        'ready' => 'array'
+        'ready' => 'array',
+        'turn' => 'integer',
+        'quarter' => 'integer'
     ];
 
     protected static function boot()
     {
         parent::boot();
 
-        static::created(function($game) {
-            $game->addPlayer($game->creator, 0);
-        });
         static::deleting(function($game) {
             $game->players->each(function ($player) {
                 $player->scores()->delete();
                 $player->update([
+                    'game_id' => null,
                     'position' => null,
                     'card' => null,
                     'cards' => null,
@@ -106,30 +102,17 @@ class Game extends Model
             $position = -1;
             foreach ($this->players as $player) {
                 if ($player->card == $highestCard) {
-                    $player->scores()->increment('take');
+                    $player->scores()->latest()->first()->increment('take');
                     $this->update(['turn' => $player->position]);
                     $position = $player->position;
-//                    broadcast (new CardPlayEvent(
-//                        $this->id,
-//                        auth()->user()->player->position,
-//                        $card,
-//                        $player->position))->toOthers();
                 }
                 $player->update(['card' => null]);
             }
 
             return $position;
-
-//            if (empty($this->players()->pluck('cards')->whereNotNull()->toArray())) {
-//                $this->calcScoresAfterHand();
-//                // check end of the game;
-//                // tu tamashi damtavrda true gvaqvs return-shi da unda davamtavrot tamashi...
-//                $this->checkEnd();
-//            }
         } else {
             $this->updateTurn();
             return false;
-            //broadcast (new CardPlayEvent($this->id, auth()->user()->player->position, $card))->toOthers();
         }
     }
 
@@ -137,8 +120,7 @@ class Game extends Model
     {
         if (empty($this->players()->pluck('cards')->whereNotNull()->toArray())) {
             $this->calcScoresAfterHand();
-            // check end of the game;
-            // tu tamashi damtavrda true gvaqvs return-shi da unda davamtavrot tamashi...
+
             return $this->checkEnd();
         }
     }
@@ -208,7 +190,7 @@ class Game extends Model
         $this->update([
             'hand_count' => $this->hand_count + 1,
             'turn' => $this->turnPosition(),
-            'state' => 'deal',
+            'state' => 'dealing',
             'trump' => null
         ]);
 
@@ -225,18 +207,22 @@ class Game extends Model
             $s->append('position');
         });
 
+        $scores = $scores->toArray();
+
         for ($i = 0; $i < 4; $i++) {
             if ($i == 0 || $i == 1) {
-                $this->players[$scores[$i]->position]->increment('games_won');
+                $this->players[$scores[$i]['position']]->increment('games_won');
             }
 
-            $this->players[$scores[$i]->position]->increment('games_played');
+            $this->players[$scores[$i]['position']]->increment('games_played');
         }
 
-        $this->update(['state' => 'finished', 'turn' => 4]);
+        $this->update(['state' => 'finished', 'trump' => null, 'turn' => 4]);
         $this->refresh();
 
         broadcast(new GameOverEvent($this, $scores));
+
+        $this->delete();
     }
 
     public function calcScoresAfterHand()
@@ -285,10 +271,7 @@ class Game extends Model
                             ->update(['color' => 'red']);
                     }
 
-                    $player->scores()->create([
-                        'quarter' => $this->quarter,
-                        'result' => $result
-                    ]);
+                    $this->createResult($player, $result);
                 }
                 break;
             case 2:
@@ -307,10 +290,7 @@ class Game extends Model
                         $result = $sum;
                     }
 
-                    $player->scores()->create([
-                        'quarter' => $this->quarter,
-                        'result' => $result
-                    ]);
+                    $this->createResult($player, $result);
                 }
                 break;
             default:
@@ -318,10 +298,7 @@ class Game extends Model
                 {
                     $result = $player->scores()->where('quarter', $this->quarter)->sum('result');
 
-                    $player->scores()->create([
-                        'quarter' => $this->quarter,
-                        'result' => $result
-                    ]);
+                    $this->createResult($player, $result);
                 }
                 break;
         }
@@ -438,11 +415,9 @@ class Game extends Model
         return $this->hasMany(Player::class)->orderBy('position', 'asc');
     }
 
-    public function addPlayer(User $user, $pos = null)
+    public function addPlayer(User $user)
     {
-        $pos = $pos === 0 ? $pos : $this->players()->count();
-
-        $user->player->update(['game_id' => $this->id, 'position' => $pos]);
+        $user->player->update(['game_id' => $this->id, 'position' => $this->players()->count()]);
     }
 
     public function path()
@@ -558,9 +533,19 @@ class Game extends Model
         $player = $this->players[$pos];
         $player->update(['game_id' => null, 'position' => null]);
         $kicked = $this->kicked_users;
-        array_push($kicked, $player->id);
+        array_push($kicked, $player->user_id);
         $this->update(['kicked_users' => $kicked]);
         $this->refresh();
         $this->reposition();
+    }
+
+    public function createResult($player, $result)
+    {
+        if ($this->quarter > 1) {
+            $prevResult = $player->scores()->where([['quarter', $this->quarter - 1], ['call', null]])->max('result');
+            $result += $prevResult;
+        }
+
+        $player->scores()->create(['quarter' => $this->quarter, 'result' => $result]);
     }
 }

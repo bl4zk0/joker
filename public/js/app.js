@@ -2267,69 +2267,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -2347,7 +2284,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       game: this.initialGame,
-      cardState: true,
+      playState: true,
       players: [{
         cards: [],
         takenCards: []
@@ -2429,22 +2366,19 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     actionCard: function actionCard(event) {
-      // es aris state roca karts daacher sxva kartebze rom vegar daachiro da itamasho sanam es karti ar gaigzavneba
-      if (!this.cardState) return;
-      this.cardState = false;
+      if (!this.turn || this.game.state !== 'card' || !this.playState) {
+        console.log('wrong turn or state');
+        return;
+      } // es aris state roca karts daacher sxva kartebze rom vegar daachiro da itamasho sanam es karti ar gaigzavneba
+
+
+      this.playState = false;
       var strength = event.target.getAttribute('data-strength');
       var suit = event.target.getAttribute('data-suit');
       var card = {
         strength: strength,
         suit: suit
       };
-
-      if (!this.turn || this.game.state !== 'card') {
-        console.log('wrong turn or state');
-        this.cardState = true;
-        return;
-      }
-
       this.cardId = event.target.id;
       this.card.card = card;
 
@@ -2457,6 +2391,7 @@ __webpack_require__.r(__webpack_exports__);
       } else {
         if (!this.canPlay(card)) {
           console.log('you can not play this card');
+          this.playState = true;
           return;
         }
 
@@ -2480,6 +2415,7 @@ __webpack_require__.r(__webpack_exports__);
 
         if (!this.canPlay(card)) {
           console.log('you can not play this card');
+          this.playState = true;
           return;
         }
 
@@ -2487,11 +2423,23 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     actionSuit: function actionSuit(event) {
+      var _this2 = this;
+
+      if (!this.turn || !this.playState) {
+        console.log('wrong turn or state');
+        return;
+      }
+
       var suit = event.target.getAttribute('data-suit');
 
       if (this.game.state === 'trump') {
+        this.playState = false;
         axios.post('/trump/games/' + this.game.id, {
           trump: suit
+        }).then(function (response) {
+          _this2.playState = true;
+        })["catch"](function (error) {
+          location.reload();
         });
         this.setTrump = false;
       } else if (this.game.state === 'card') {
@@ -2505,43 +2453,45 @@ __webpack_require__.r(__webpack_exports__);
 
         if (!this.canPlay(card)) {
           console.log('you can not play this card');
+          this.playState = true;
           return;
         }
 
         this.afterActionCard(card);
+      } else {
+        console.log('wrong turn or state');
+        return;
       }
 
       $('#suits').addClass('d-none');
     },
     sendCard: function sendCard() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.players[this.ppm[0]].cards.splice(this.cardId, 1);
       axios.post('/card/games/' + this.game.id, this.card).then(function (response) {
-        //this.nextTurn = response.data;
-        _this2.card = {};
-        _this2.cardId = null;
-        _this2.cardState = true;
+        _this3.card = {};
+        _this3.cardId = null;
       })["catch"](function (error) {
         location.reload();
       });
     },
     call: function call(event) {
-      if (!this.turn || this.game.state !== 'call') {
+      var _this4 = this;
+
+      if (!this.turn || this.game.state !== 'call' || !this.playState) {
         console.log('wrong turn or state');
         return;
       }
 
+      this.playState = false;
       this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
       var call = {
         call: event.target.getAttribute('data-value')
       };
-      axios.post('/call/games/' + this.game.id, call) // .then(response => {
-      //     this.game.players[this.ppm[0]].scores.push(response.data.score);
-      //     this.game.state = response.data.state;
-      //     this.game.turn = response.data.turn;
-      // })
-      ["catch"](function (error) {
+      axios.post('/call/games/' + this.game.id, call).then(function (response) {
+        _this4.playState = true;
+      })["catch"](function (error) {
         location.reload();
       });
     },
@@ -2550,6 +2500,126 @@ __webpack_require__.r(__webpack_exports__);
       this.game.players[this.ppm[0]].card = card;
       this.sendCard();
       this.hideCards(this.checkTake());
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/GameView.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/GameView.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Game */ "./resources/js/components/Game.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    game: _Game__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  props: ['gameId', 'hasPassword', 'pinCode'],
+  mounted: function mounted() {
+    if (this.hasPassword === false) {
+      this.join();
+    } else if (this.pinCode) {
+      this.join(true);
+    }
+  },
+  data: function data() {
+    return {
+      game: null,
+      cards: null,
+      passwordInput: this.pinCode,
+      errorMessage: '',
+      showPasswordForm: this.hasPassword,
+      showLoading: false,
+      showLoadingBtn: false
+    };
+  },
+  methods: {
+    join: function join() {
+      var _this = this;
+
+      var btnPressed = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      var password = null;
+
+      if (!btnPressed) {
+        this.showLoading = true;
+      } else {
+        if (!this.passwordInput) {
+          this.errorMessage = 'შეიყვანეთ პინ-კოდი';
+          return;
+        } else {
+          this.errorMessage = '';
+          this.showLoadingBtn = true;
+          password = {
+            pin: this.passwordInput
+          };
+        }
+      }
+
+      axios.post('/join/games/' + this.gameId, password).then(function (response) {
+        _this.game = response.data.game;
+        _this.cards = response.data.cards;
+      })["catch"](function (error) {
+        console.log(error);
+
+        if (error.response.data.errors) {
+          _this.passwordInput = '';
+          _this.showLoadingBtn = false;
+          _this.errorMessage = 'პინ-კოდი არასწორია';
+        } else {
+          window.location = '/lobby';
+        }
+      });
+    },
+    joinWithEnter: function joinWithEnter(event) {
+      if (event.key === 'Enter') {
+        this.join(true);
+      }
     }
   }
 });
@@ -2598,28 +2668,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['initialGames'],
   data: function data() {
@@ -2631,7 +2679,7 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     Echo["private"]('lobby').listen('UpdateLobbyEvent', function (event) {
-      console.log('UpdateLobbyEvent');
+      console.log('UpdateLobbyEvent', event);
       _this.games = event.games;
     });
   },
@@ -2639,7 +2687,7 @@ __webpack_require__.r(__webpack_exports__);
     path: function path(id) {
       return '/games/' + id;
     },
-    kl: function kl(n) {
+    klas: function klas(n) {
       return n === 4 ? 'disabled' : '';
     }
   }
@@ -2729,148 +2777,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   mixins: [_mixins_scoreboard__WEBPACK_IMPORTED_MODULE_0__["default"]]
@@ -2888,144 +2794,6 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_scoreboard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/scoreboard */ "./resources/js/mixins/scoreboard.js");
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -27523,7 +27291,10 @@ var render = function() {
     [
       _c(_vm.scoreboard, {
         tag: "component",
-        attrs: { "initial-players": _vm.game.players }
+        attrs: {
+          "initial-players": _vm.game.players,
+          penalty: _vm.game.penalty
+        }
       }),
       _vm._v(" "),
       _c(
@@ -27537,10 +27308,8 @@ var render = function() {
                 {
                   name: "show",
                   rawName: "v-show",
-                  value:
-                    _vm.game.state === "start" || _vm.game.state === "finished",
-                  expression:
-                    "game.state === 'start' || game.state === 'finished'"
+                  value: _vm.game.state === "start",
+                  expression: "game.state === 'start'"
                 }
               ],
               staticClass: "btn-table"
@@ -27608,165 +27377,47 @@ var render = function() {
             ]
           ),
           _vm._v(" "),
-          _c(
-            "div",
-            {
-              class: _vm.playedCard(0),
-              style: "z-index: " + _vm.cardsZIndex(0),
-              attrs: { id: "player0card" }
-            },
-            [
-              _vm.playedCardAction(0)
-                ? _c("div", { staticClass: "card-action" }, [
-                    _c("div", [
-                      _c("span", {
-                        domProps: {
-                          textContent: _vm._s(
-                            _vm.actions[
-                              _vm.game.players[this.ppm[0]].card["action"]
-                            ]
-                          )
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("span", {
-                        class: _vm.suitColor(
-                          _vm.game.players[this.ppm[0]].card["actionsuit"]
-                        ),
-                        staticStyle: { "font-size": "24px" },
-                        domProps: {
-                          textContent: _vm._s(
-                            _vm.actionsuits[
-                              _vm.game.players[this.ppm[0]].card["actionsuit"]
-                            ]
-                          )
-                        }
-                      })
+          _vm._l([0, 1, 2, 3], function(n) {
+            return _c(
+              "div",
+              {
+                class: _vm.playedCard(n),
+                style: "z-index:" + _vm.cardsZIndex(n),
+                attrs: { id: "player" + n + "card" }
+              },
+              [
+                _vm.playedCardAction(n)
+                  ? _c("div", { staticClass: "card-action" }, [
+                      _c("div", [
+                        _c("span", {
+                          domProps: {
+                            textContent: _vm._s(
+                              _vm.actions[
+                                _vm.game.players[_vm.ppm[n]].card["action"]
+                              ]
+                            )
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("span", {
+                          class: _vm.suitColor(
+                            _vm.game.players[_vm.ppm[n]].card["actionsuit"]
+                          ),
+                          staticStyle: { "font-size": "24px" },
+                          domProps: {
+                            textContent: _vm._s(
+                              _vm.actionsuits[
+                                _vm.game.players[_vm.ppm[n]].card["actionsuit"]
+                              ]
+                            )
+                          }
+                        })
+                      ])
                     ])
-                  ])
-                : _vm._e()
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              class: _vm.playedCard(1),
-              style: "z-index: " + _vm.cardsZIndex(1),
-              attrs: { id: "player1card" }
-            },
-            [
-              _vm.playedCardAction(1)
-                ? _c("div", { staticClass: "card-action" }, [
-                    _c("div", [
-                      _c("span", {
-                        domProps: {
-                          textContent: _vm._s(
-                            _vm.actions[
-                              _vm.game.players[this.ppm[1]].card["action"]
-                            ]
-                          )
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("span", {
-                        class: _vm.suitColor(
-                          _vm.game.players[this.ppm[1]].card["actionsuit"]
-                        ),
-                        staticStyle: { "font-size": "24px" },
-                        domProps: {
-                          textContent: _vm._s(
-                            _vm.actionsuits[
-                              _vm.game.players[this.ppm[1]].card["actionsuit"]
-                            ]
-                          )
-                        }
-                      })
-                    ])
-                  ])
-                : _vm._e()
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              class: _vm.playedCard(2),
-              style: "z-index: " + _vm.cardsZIndex(2),
-              attrs: { id: "player2card" }
-            },
-            [
-              _vm.playedCardAction(2)
-                ? _c("div", { staticClass: "card-action" }, [
-                    _c("div", [
-                      _c("span", {
-                        domProps: {
-                          textContent: _vm._s(
-                            _vm.actions[
-                              _vm.game.players[this.ppm[2]].card["action"]
-                            ]
-                          )
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("span", {
-                        class: _vm.suitColor(
-                          _vm.game.players[this.ppm[2]].card["actionsuit"]
-                        ),
-                        staticStyle: { "font-size": "24px" },
-                        domProps: {
-                          textContent: _vm._s(
-                            _vm.actionsuits[
-                              _vm.game.players[this.ppm[2]].card["actionsuit"]
-                            ]
-                          )
-                        }
-                      })
-                    ])
-                  ])
-                : _vm._e()
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              class: _vm.playedCard(3),
-              style: "z-index: " + _vm.cardsZIndex(3),
-              attrs: { id: "player3card" }
-            },
-            [
-              _vm.playedCardAction(3)
-                ? _c("div", { staticClass: "card-action" }, [
-                    _c("div", [
-                      _c("span", {
-                        domProps: {
-                          textContent: _vm._s(
-                            _vm.actions[
-                              _vm.game.players[this.ppm[3]].card["action"]
-                            ]
-                          )
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("span", {
-                        class: _vm.suitColor(
-                          _vm.game.players[this.ppm[3]].card["actionsuit"]
-                        ),
-                        staticStyle: { "font-size": "24px" },
-                        domProps: {
-                          textContent: _vm._s(
-                            _vm.actionsuits[
-                              _vm.game.players[this.ppm[3]].card["actionsuit"]
-                            ]
-                          )
-                        }
-                      })
-                    ])
-                  ])
-                : _vm._e()
-            ]
-          ),
+                  : _vm._e()
+              ]
+            )
+          }),
           _vm._v(" "),
           _vm._l(_vm.players[_vm.ppm[0]].cards, function(card, index) {
             return _c("div", {
@@ -27890,173 +27541,63 @@ var render = function() {
             ])
           ]),
           _vm._v(" "),
-          _c(
-            "div",
-            {
-              attrs: {
-                id: "player1",
-                "data-container": "body",
-                "data-toggle": "popover",
-                "data-placement": "top",
-                "data-trigger": "manual"
-              }
-            },
-            [
-              _c(
-                "div",
-                {
-                  directives: [
-                    {
-                      name: "show",
-                      rawName: "v-show",
-                      value: _vm.canKickUser(1),
-                      expression: "canKickUser(1)"
-                    }
-                  ],
-                  staticClass: "kick",
-                  attrs: { title: "გაგდება" }
-                },
-                [
-                  _c("i", {
-                    staticClass: "fas fa-times",
-                    on: {
-                      click: function($event) {
-                        return _vm.kick(1)
+          _vm._l(3, function(n) {
+            return _c(
+              "div",
+              {
+                attrs: {
+                  id: "player" + n,
+                  "data-container": "body",
+                  "data-toggle": "popover",
+                  "data-placement": "top",
+                  "data-trigger": "manual"
+                }
+              },
+              [
+                _c(
+                  "div",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.canKickUser(n),
+                        expression: "canKickUser(n)"
                       }
-                    }
-                  })
-                ]
-              ),
-              _vm._v(" "),
-              _vm.getAvatarUrl(1)
-                ? _c("img", {
-                    staticClass: "avatar border rounded-circle",
-                    class: _vm.active(1),
-                    attrs: { src: _vm.getAvatarUrl(1), alt: "avatar" }
-                  })
-                : _c("div", { staticClass: "avatar border rounded-circle" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "u-name" }, [
-                _c("a", {
-                  staticClass: "text-white",
-                  attrs: { href: _vm.getProfileLink(1), target: "_blank" },
-                  domProps: { textContent: _vm._s(_vm.getUsername(1)) }
-                })
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              attrs: {
-                id: "player2",
-                "data-container": "body",
-                "data-toggle": "popover",
-                "data-placement": "right",
-                "data-trigger": "manual"
-              }
-            },
-            [
-              _c(
-                "div",
-                {
-                  directives: [
-                    {
-                      name: "show",
-                      rawName: "v-show",
-                      value: _vm.canKickUser(2),
-                      expression: "canKickUser(2)"
-                    }
-                  ],
-                  staticClass: "kick",
-                  attrs: { title: "გაგდება" }
-                },
-                [
-                  _c("i", {
-                    staticClass: "fas fa-times",
-                    on: {
-                      click: function($event) {
-                        return _vm.kick(2)
+                    ],
+                    staticClass: "kick",
+                    attrs: { title: "გაგდება" }
+                  },
+                  [
+                    _c("i", {
+                      staticClass: "fas fa-times",
+                      on: {
+                        click: function($event) {
+                          return _vm.kick(n)
+                        }
                       }
-                    }
+                    })
+                  ]
+                ),
+                _vm._v(" "),
+                _vm.getAvatarUrl(n)
+                  ? _c("img", {
+                      staticClass: "avatar border rounded-circle",
+                      class: _vm.active(n),
+                      attrs: { src: _vm.getAvatarUrl(n), alt: "avatar" }
+                    })
+                  : _c("div", { staticClass: "avatar border rounded-circle" }),
+                _vm._v(" "),
+                _c("div", { staticClass: "u-name" }, [
+                  _c("a", {
+                    staticClass: "text-white",
+                    attrs: { href: _vm.getProfileLink(n), target: "_blank" },
+                    domProps: { textContent: _vm._s(_vm.getUsername(n)) }
                   })
-                ]
-              ),
-              _vm._v(" "),
-              _vm.getAvatarUrl(2)
-                ? _c("img", {
-                    staticClass: "avatar border rounded-circle",
-                    class: _vm.active(2),
-                    attrs: { src: _vm.getAvatarUrl(2), alt: "avatar" }
-                  })
-                : _c("div", { staticClass: "avatar border rounded-circle" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "u-name" }, [
-                _c("a", {
-                  staticClass: "text-white",
-                  attrs: { href: _vm.getProfileLink(2), target: "_blank" },
-                  domProps: { textContent: _vm._s(_vm.getUsername(2)) }
-                })
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              attrs: {
-                id: "player3",
-                "data-container": "body",
-                "data-toggle": "popover",
-                "data-placement": "top",
-                "data-trigger": "manual"
-              }
-            },
-            [
-              _c(
-                "div",
-                {
-                  directives: [
-                    {
-                      name: "show",
-                      rawName: "v-show",
-                      value: _vm.canKickUser(3),
-                      expression: "canKickUser(3)"
-                    }
-                  ],
-                  staticClass: "kick",
-                  attrs: { title: "გაგდება" }
-                },
-                [
-                  _c("i", {
-                    staticClass: "fas fa-times",
-                    on: {
-                      click: function($event) {
-                        return _vm.kick(3)
-                      }
-                    }
-                  })
-                ]
-              ),
-              _vm._v(" "),
-              _vm.getAvatarUrl(3)
-                ? _c("img", {
-                    staticClass: "avatar border rounded-circle",
-                    class: _vm.active(3),
-                    attrs: { src: _vm.getAvatarUrl(3), alt: "avatar" }
-                  })
-                : _c("div", { staticClass: "avatar border rounded-circle" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "u-name" }, [
-                _c("a", {
-                  staticClass: "text-white",
-                  attrs: { href: _vm.getProfileLink(3), target: "_blank" },
-                  domProps: { textContent: _vm._s(_vm.getUsername(3)) }
-                })
-              ])
-            ]
-          ),
+                ])
+              ]
+            )
+          }),
           _vm._v(" "),
           _c(
             "div",
@@ -28371,23 +27912,71 @@ var render = function() {
               _vm._v(" "),
               _c("input", {
                 staticClass: "form-control",
-                attrs: { id: "table-link" },
+                attrs: { id: "table-link", readonly: "" },
                 domProps: {
                   value:
                     _vm.url +
                     "/games/" +
                     _vm.game.id +
-                    "?p=" +
+                    "?pin=" +
                     _vm.game.password
                 }
               })
             ]
           ),
           _vm._v(" "),
-          _vm._m(3)
+          _c(
+            "div",
+            { staticClass: "bg-success d-none", attrs: { id: "game-over" } },
+            [
+              _vm._m(3),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex justify-content-center" }, [
+                _c("h5", { staticClass: "alert alert-warning" }, [
+                  _vm._v("თამაში დასრულდა!")
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "card mt-5" }, [
+                  _c(
+                    "div",
+                    { staticClass: "card-body text-center" },
+                    _vm._l([0, 1, 2, 3], function(n) {
+                      return _c(
+                        "div",
+                        {
+                          staticClass: "game-over-card",
+                          attrs: { id: "place-" + n }
+                        },
+                        [
+                          _c(
+                            "h5",
+                            { class: n > 1 ? "text-danger" : "text-success" },
+                            [
+                              _vm._v(_vm._s(n + 1) + " "),
+                              _c("i", { staticClass: "fas fa-trophy" })
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c("img", {
+                            staticClass: "avatar border rounded-circle",
+                            attrs: { src: "#", alt: "avatar" }
+                          }),
+                          _vm._v(" "),
+                          _vm._m(4, true)
+                        ]
+                      )
+                    }),
+                    0
+                  )
+                ])
+              ])
+            ]
+          )
         ],
         2
       ),
+      _vm._v(" "),
+      _c("chat", { attrs: { messages: _vm.messages, "game-id": _vm.game.id } }),
       _vm._v(" "),
       _c(
         "div",
@@ -28403,7 +27992,7 @@ var render = function() {
         [
           _c("div", { staticClass: "modal-dialog" }, [
             _c("div", { staticClass: "modal-content bg-danger" }, [
-              _vm._m(4),
+              _vm._m(5),
               _vm._v(" "),
               _c("div", { staticClass: "modal-footer" }, [
                 _c(
@@ -28420,10 +28009,6 @@ var render = function() {
           ])
         ]
       ),
-      _vm._v(" "),
-      _c("chat", {
-        attrs: { messages: _vm.messages, "game-id": this.game.id }
-      }),
       _vm._v(" "),
       _c("div", { staticClass: "close-w d-none" }, [
         _c(
@@ -28467,71 +28052,24 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "border bg-white rounded text-center d-none",
-        attrs: { id: "game-over" }
-      },
-      [
-        _c("div", { staticClass: "game-over-card", attrs: { id: "place-0" } }, [
-          _c("h5", { staticClass: "text-success" }, [
-            _vm._v("1 "),
-            _c("i", { staticClass: "fas fa-trophy" }),
-            _vm._v(">")
-          ]),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "avatar border border-success rounded-circle",
-            attrs: { src: "", alt: "avatar" }
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "u-name" })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "game-over-card", attrs: { id: "place-1" } }, [
-          _c("h5", { staticClass: "text-success" }, [
-            _vm._v("2 "),
-            _c("i", { staticClass: "fas fa-trophy" })
-          ]),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "avatar border border-success rounded-circle",
-            attrs: { src: "", alt: "avatar" }
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "u-name" })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "game-over-card", attrs: { id: "place-2" } }, [
-          _c("h5", { staticClass: "text-danger" }, [
-            _vm._v("3 "),
-            _c("i", { staticClass: "fas fa-trophy" })
-          ]),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "avatar border border-danger rounded-circle",
-            attrs: { src: "", alt: "avatar" }
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "u-name" })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "game-over-card", attrs: { id: "place-3" } }, [
-          _c("h5", { staticClass: "text-danger" }, [
-            _vm._v("4 "),
-            _c("i", { staticClass: "fas fa-trophy" })
-          ]),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "avatar border border-danger rounded-circle",
-            attrs: { src: "", alt: "avatar" }
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "u-name" })
-        ])
-      ]
-    )
+    return _c("div", { staticClass: "btn-table" }, [
+      _c(
+        "a",
+        { staticClass: "btn btn-outline-light", attrs: { href: "/lobby" } },
+        [_c("i", { staticClass: "fas fa-arrow-circle-left" })]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "u-name" }, [
+      _c("a", {
+        staticClass: "text-dark",
+        attrs: { href: "#", target: "_blank" }
+      })
+    ])
   },
   function() {
     var _vm = this
@@ -28543,6 +28081,177 @@ var staticRenderFns = [
     ])
   }
 ]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/GameView.vue?vue&type=template&id=6ab713a2&":
+/*!***********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/GameView.vue?vue&type=template&id=6ab713a2& ***!
+  \***********************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _vm.game === null
+        ? _c(
+            "div",
+            {
+              staticClass:
+                "d-flex justify-content-center align-items-center vh-100"
+            },
+            [
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: this.showPasswordForm,
+                      expression: "this.showPasswordForm"
+                    }
+                  ],
+                  staticClass: "card"
+                },
+                [
+                  _c("div", { staticClass: "card-body" }, [
+                    _c("div", { staticClass: "form-row" }, [
+                      _c("div", [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.passwordInput,
+                              expression: "passwordInput"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: _vm.errorMessage ? "is-invalid" : "",
+                          attrs: {
+                            type: "text",
+                            maxlength: "4",
+                            placeholder: "პინ-კოდი",
+                            name: "password",
+                            disabled: _vm.showLoadingBtn
+                          },
+                          domProps: { value: _vm.passwordInput },
+                          on: {
+                            keypress: _vm.joinWithEnter,
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.passwordInput = $event.target.value
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            directives: [
+                              {
+                                name: "show",
+                                rawName: "v-show",
+                                value: _vm.errorMessage,
+                                expression: "errorMessage"
+                              }
+                            ],
+                            staticClass: "invalid-feedback"
+                          },
+                          [
+                            _c("strong", {
+                              domProps: {
+                                textContent: _vm._s(_vm.errorMessage)
+                              }
+                            })
+                          ]
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "ml-2" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-success",
+                            attrs: {
+                              type: "button",
+                              disabled: _vm.showLoadingBtn
+                            },
+                            on: {
+                              click: function($event) {
+                                return _vm.join(true)
+                              }
+                            }
+                          },
+                          [
+                            _c("span", {
+                              directives: [
+                                {
+                                  name: "show",
+                                  rawName: "v-show",
+                                  value: _vm.showLoadingBtn,
+                                  expression: "showLoadingBtn"
+                                }
+                              ],
+                              staticClass: "spinner-border spinner-border-sm"
+                            }),
+                            _vm._v(
+                              "\n                            შესვლა\n                        "
+                            )
+                          ]
+                        )
+                      ])
+                    ])
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.showLoading,
+                      expression: "showLoading"
+                    }
+                  ],
+                  staticClass: "alert alert-success"
+                },
+                [
+                  _c("div", {
+                    staticClass: "spinner-border spinner-border-sm",
+                    attrs: { role: "status" }
+                  }),
+                  _vm._v(" მიმდინარეობს ჩატვირთვა...\n        ")
+                ]
+              )
+            ]
+          )
+        : _c("game", {
+            attrs: { "initial-game": _vm.game, "initial-cards": _vm.cards }
+          })
+    ],
+    1
+  )
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -28568,213 +28277,80 @@ var render = function() {
     "div",
     { staticClass: "card-body d-flex justify-content-around flex-wrap" },
     [
-      _c(
-        "div",
-        {
-          directives: [
-            {
-              name: "show",
-              rawName: "v-show",
-              value: this.games.length === 0,
-              expression: "this.games.length === 0"
-            }
-          ],
-          staticClass: "alert alert-info"
-        },
-        [_vm._v("\n        მაგიდები არ მოიძებნა.\n    ")]
-      ),
-      _vm._v(" "),
-      _vm._l(this.games, function(game) {
-        return _c(
-          "div",
-          { key: game.id, staticClass: "card card-table mb-3" },
-          [
-            _c("div", { staticClass: "card-header" }, [
-              _c("strong", [
-                _vm._v(
-                  _vm._s(game.type === 1 ? "სტანდარტული" : "9-იანები") +
-                    " | " +
-                    _vm._s(game.penalty)
-                )
-              ])
-            ]),
-            _vm._v(" "),
-            _c("ul", { staticClass: "list-group list-group-flush" }, [
-              _c("li", { staticClass: "list-group-item" }, [
+      _vm.games.length === 0
+        ? _c("div", { staticClass: "alert alert-info" }, [
+            _vm._v("\n        მაგიდები არ მოიძებნა.\n    ")
+          ])
+        : _vm._l(_vm.games, function(game) {
+            return _c(
+              "div",
+              { key: game.id, staticClass: "card card-table mb-3" },
+              [
+                _c("div", { staticClass: "card-header text-center" }, [
+                  _c("strong", [
+                    _vm._v(
+                      _vm._s(game.type === 1 ? "სტანდარტული" : "9-იანები") +
+                        " | " +
+                        _vm._s(game.penalty)
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
                 _c(
-                  "a",
-                  {
-                    staticClass: "text-dark u-link",
-                    attrs: {
-                      href: game.players[0]
-                        ? "/user/" + game.players[0].user_id
-                        : "",
-                      target: "_blank"
-                    }
-                  },
+                  "ul",
+                  { staticClass: "list-group list-group-flush" },
                   [
-                    _c("img", {
-                      directives: [
-                        {
-                          name: "show",
-                          rawName: "v-show",
-                          value: game.players[0],
-                          expression: "game.players[0]"
-                        }
-                      ],
-                      staticClass: "avatar border rounded-circle",
-                      attrs: {
-                        src: game.players[0] ? game.players[0].avatar_url : "",
-                        alt: "avatar"
-                      }
+                    _vm._l([0, 1, 2, 3], function(n) {
+                      return _c("li", { staticClass: "list-group-item" }, [
+                        game.players[n]
+                          ? _c(
+                              "a",
+                              {
+                                staticClass: "text-dark u-link",
+                                attrs: {
+                                  href: "/user/" + game.players[n].user_id,
+                                  target: "_blank"
+                                }
+                              },
+                              [
+                                _c("img", {
+                                  staticClass: "avatar border rounded-circle",
+                                  attrs: {
+                                    src: game.players[n].avatar_url,
+                                    alt: "avatar"
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c("span", {
+                                  domProps: {
+                                    textContent: _vm._s(
+                                      game.players[n].username
+                                    )
+                                  }
+                                })
+                              ]
+                            )
+                          : _c("span", [_vm._v("...")])
+                      ])
                     }),
                     _vm._v(" "),
-                    _c("span", [
-                      _vm._v(
-                        _vm._s(
-                          game.players[0] ? game.players[0].username : "..."
-                        )
-                      )
-                    ])
-                  ]
-                )
-              ]),
-              _vm._v(" "),
-              _c("li", { staticClass: "list-group-item" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "text-dark u-link",
-                    attrs: {
-                      href: game.players[1]
-                        ? "/user/" + game.players[1].user_id
-                        : "",
-                      target: "_blank"
-                    }
-                  },
-                  [
-                    _c("img", {
-                      directives: [
+                    _c("li", { staticClass: "list-group-item" }, [
+                      _c(
+                        "a",
                         {
-                          name: "show",
-                          rawName: "v-show",
-                          value: game.players[1],
-                          expression: "game.players[1]"
-                        }
-                      ],
-                      staticClass: "avatar border rounded-circle",
-                      attrs: {
-                        src: game.players[1] ? game.players[1].avatar_url : "",
-                        alt: "avatar"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("span", [
-                      _vm._v(
-                        _vm._s(
-                          game.players[1] ? game.players[1].username : "..."
-                        )
+                          staticClass: "btn btn-block btn-success",
+                          class: _vm.klas(game.players.length),
+                          attrs: { href: _vm.path(game.id) }
+                        },
+                        [_vm._v("შესვლა")]
                       )
                     ])
-                  ]
+                  ],
+                  2
                 )
-              ]),
-              _vm._v(" "),
-              _c("li", { staticClass: "list-group-item" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "text-dark u-link",
-                    attrs: {
-                      href: game.players[2]
-                        ? "/user/" + game.players[2].user_id
-                        : "",
-                      target: "_blank"
-                    }
-                  },
-                  [
-                    _c("img", {
-                      directives: [
-                        {
-                          name: "show",
-                          rawName: "v-show",
-                          value: game.players[2],
-                          expression: "game.players[2]"
-                        }
-                      ],
-                      staticClass: "avatar border rounded-circle",
-                      attrs: {
-                        src: game.players[2] ? game.players[2].avatar_url : "",
-                        alt: "avatar"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("span", [
-                      _vm._v(
-                        _vm._s(
-                          game.players[2] ? game.players[2].username : "..."
-                        )
-                      )
-                    ])
-                  ]
-                )
-              ]),
-              _vm._v(" "),
-              _c("li", { staticClass: "list-group-item" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "text-dark u-link",
-                    attrs: {
-                      href: game.players[3]
-                        ? "/user/" + game.players[3].user_id
-                        : "",
-                      target: "_blank"
-                    }
-                  },
-                  [
-                    _c("img", {
-                      directives: [
-                        {
-                          name: "show",
-                          rawName: "v-show",
-                          value: game.players[3],
-                          expression: "game.players[3]"
-                        }
-                      ],
-                      staticClass: "avatar border rounded-circle",
-                      attrs: {
-                        src: game.players[3] ? game.players[3].avatar_url : "",
-                        alt: "avatar"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("span", [
-                      _vm._v(
-                        _vm._s(
-                          game.players[3] ? game.players[3].username : "..."
-                        )
-                      )
-                    ])
-                  ]
-                )
-              ]),
-              _vm._v(" "),
-              _c("li", { staticClass: "list-group-item" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "btn btn-block btn-success",
-                    class: _vm.kl(game.players.length),
-                    attrs: { href: _vm.path(game.id) }
-                  },
-                  [_vm._v("შესვლა")]
-                )
-              ])
-            ])
-          ]
-        )
-      })
+              ]
+            )
+          })
     ],
     2
   )
@@ -28807,556 +28383,211 @@ var render = function() {
     [
       _c("table", { staticClass: "table table-bordered text-white" }, [
         _c("thead", [
-          _c("tr", { staticClass: "bg-primary" }, [
-            _c("th", { attrs: { scope: "col" } }, [_vm._v("#")]),
-            _vm._v(" "),
-            _c("th", { attrs: { scope: "col" } }, [
-              _vm._v(_vm._s(this.players[0] ? this.players[0].username : "..."))
-            ]),
-            _vm._v(" "),
-            _c("th", { attrs: { scope: "col" } }, [
-              _vm._v(_vm._s(this.players[1] ? this.players[1].username : "..."))
-            ]),
-            _vm._v(" "),
-            _c("th", { attrs: { scope: "col" } }, [
-              _vm._v(_vm._s(this.players[2] ? this.players[2].username : "..."))
-            ]),
-            _vm._v(" "),
-            _c("th", { attrs: { scope: "col" } }, [
-              _vm._v(_vm._s(this.players[3] ? this.players[3].username : "..."))
-            ])
-          ])
+          _c(
+            "tr",
+            { staticClass: "bg-primary" },
+            [
+              _c("th", { attrs: { scope: "col" } }, [_vm._v("#")]),
+              _vm._v(" "),
+              _vm._l([0, 1, 2, 3], function(p) {
+                return _c("th", {
+                  attrs: { scope: "col" },
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.players[p] ? _vm.players[p].username : "..."
+                    )
+                  }
+                })
+              })
+            ],
+            2
+          )
         ]),
         _vm._v(" "),
-        _c("tbody", [
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("1")]),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 0)) }
+        _c(
+          "tbody",
+          [
+            _vm._l([0, 1, 2, 3, 4, 5, 6, 7], function(n) {
+              return _c("tr", [
+                _c("th", { attrs: { scope: "row" } }, [_vm._v(_vm._s(n + 1))]),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(0, n)) }
+                }),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(1, n)) }
+                }),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(2, n)) }
+                }),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(3, n)) }
+                })
+              ])
             }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 0)) }
+            _c("tr", { staticClass: "bg-info" }, [
+              _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(0, 8)) }
+              }),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(1, 8)) }
+              }),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(2, 8)) }
+              }),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(3, 8)) }
+              })
+            ]),
+            _vm._v(" "),
+            _vm._l([9, 10, 11, 12], function(n) {
+              return _c("tr", [
+                _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(0, n)) }
+                }),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(1, n)) }
+                }),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(2, n)) }
+                }),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(3, n)) }
+                })
+              ])
             }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 0)) }
+            _c("tr", { staticClass: "bg-info" }, [
+              _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(0, 13)) }
+              }),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(1, 13)) }
+              }),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(2, 13)) }
+              }),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(3, 13)) }
+              })
+            ]),
+            _vm._v(" "),
+            _vm._l([14, 15, 16, 17, 18, 19, 20, 21], function(n) {
+              return _c("tr", [
+                _c("th", { attrs: { scope: "row" } }, [_vm._v(_vm._s(22 - n))]),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(0, n)) }
+                }),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(1, n)) }
+                }),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(2, n)) }
+                }),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(3, n)) }
+                })
+              ])
             }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 0)) }
-            })
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("2")]),
+            _c("tr", { staticClass: "bg-info" }, [
+              _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(0, 22)) }
+              }),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(1, 22)) }
+              }),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(2, 22)) }
+              }),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(3, 22)) }
+              })
+            ]),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 1)) }
+            _vm._l([23, 24, 25, 26], function(n) {
+              return _c("tr", [
+                _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(0, n)) }
+                }),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(1, n)) }
+                }),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(2, n)) }
+                }),
+                _vm._v(" "),
+                _c("td", {
+                  domProps: { textContent: _vm._s(_vm.showScores(3, n)) }
+                })
+              ])
             }),
             _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 1)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 1)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 1)) }
-            })
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("3")]),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 2)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 2)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 2)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 2)) }
-            })
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("4")]),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 3)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 3)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 3)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 3)) }
-            })
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("5")]),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 4)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 4)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 4)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 4)) }
-            })
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("6")]),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 5)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 5)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 5)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 5)) }
-            })
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("7")]),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 6)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 6)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 6)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 6)) }
-            })
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("8")]),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(0, 7)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(1, 7)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(2, 7)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showScores(3, 7)) }
-            })
-          ]),
-          _vm._v(" "),
-          _c("tr", { staticClass: "bg-info" }, [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showResult(0, 8)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showResult(1, 8)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showResult(2, 8)) }
-            }),
-            _vm._v(" "),
-            _c("td", {
-              domProps: { textContent: _vm._s(_vm.showResult(3, 8)) }
-            })
-          ]),
-          _vm._v(" "),
-          _vm._m(0),
-          _vm._v(" "),
-          _vm._m(1),
-          _vm._v(" "),
-          _vm._m(2),
-          _vm._v(" "),
-          _vm._m(3),
-          _vm._v(" "),
-          _vm._m(4),
-          _vm._v(" "),
-          _vm._m(5),
-          _vm._v(" "),
-          _vm._m(6),
-          _vm._v(" "),
-          _vm._m(7),
-          _vm._v(" "),
-          _vm._m(8),
-          _vm._v(" "),
-          _vm._m(9),
-          _vm._v(" "),
-          _vm._m(10),
-          _vm._v(" "),
-          _vm._m(11),
-          _vm._v(" "),
-          _vm._m(12),
-          _vm._v(" "),
-          _vm._m(13),
-          _vm._v(" "),
-          _vm._m(14),
-          _vm._v(" "),
-          _vm._m(15),
-          _vm._v(" "),
-          _vm._m(16),
-          _vm._v(" "),
-          _vm._m(17),
-          _vm._v(" "),
-          _vm._m(18)
+            _c("tr", { staticClass: "bg-info" }, [
+              _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(0, 27)) }
+              }),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(1, 27)) }
+              }),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(2, 27)) }
+              }),
+              _vm._v(" "),
+              _c("td", {
+                domProps: { textContent: _vm._s(_vm.showResult(3, 27)) }
+              })
+            ])
+          ],
+          2
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", [
+        _c("span", { staticClass: "badge badge-danger" }, [
+          _vm._v("I--I " + _vm._s(this.penalty))
         ])
       ])
     ]
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", { staticClass: "bg-info" }, [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("8")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("7")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("6")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("5")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("4")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("3")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("2")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("1")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", { staticClass: "bg-info" }, [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", { staticClass: "bg-info" }, [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -29384,358 +28615,66 @@ var render = function() {
     [
       _c("table", { staticClass: "table table-bordered text-white" }, [
         _c("thead", [
-          _c("tr", { staticClass: "bg-primary" }, [
-            _c("th", { attrs: { scope: "col" } }, [_vm._v("#")]),
-            _vm._v(" "),
-            _c("th", { attrs: { scope: "col" } }, [
-              _vm._v(_vm._s(this.players[0] ? this.players[0].username : "..."))
-            ]),
-            _vm._v(" "),
-            _c("th", { attrs: { scope: "col" } }, [
-              _vm._v(_vm._s(this.players[1] ? this.players[1].username : "..."))
-            ]),
-            _vm._v(" "),
-            _c("th", { attrs: { scope: "col" } }, [
-              _vm._v(_vm._s(this.players[2] ? this.players[2].username : "..."))
-            ]),
-            _vm._v(" "),
-            _c("th", { attrs: { scope: "col" } }, [
-              _vm._v(_vm._s(this.players[3] ? this.players[3].username : "..."))
-            ])
-          ])
+          _c(
+            "tr",
+            { staticClass: "bg-primary" },
+            [
+              _c("th", { attrs: { scope: "col" } }, [_vm._v("#")]),
+              _vm._v(" "),
+              _vm._l([0, 1, 2, 3], function(p) {
+                return _c("th", {
+                  attrs: { scope: "col" },
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.players[p] ? _vm.players[p].username : "..."
+                    )
+                  }
+                })
+              })
+            ],
+            2
+          )
         ]),
         _vm._v(" "),
-        _c("tbody", [
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(0, 0)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(1, 0)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(2, 0)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(3, 0)) } })
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(0, 1)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(1, 1)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(2, 1)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(3, 1)) } })
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(0, 2)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(1, 2)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(2, 2)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(3, 2)) } })
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(0, 3)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(1, 3)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(2, 3)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(3, 3)) } })
-          ]),
-          _vm._v(" "),
-          _c("tr", { staticClass: "bg-info" }, [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showResult(0, 4)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showResult(1, 4)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showResult(2, 4)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showResult(3, 4)) } })
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(0, 5)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(1, 5)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(2, 5)) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { innerHTML: _vm._s(_vm.showScores(3, 5)) } })
-          ]),
-          _vm._v(" "),
-          _vm._m(0),
-          _vm._v(" "),
-          _vm._m(1),
-          _vm._v(" "),
-          _vm._m(2),
-          _vm._v(" "),
-          _vm._m(3),
-          _vm._v(" "),
-          _vm._m(4),
-          _vm._v(" "),
-          _vm._m(5),
-          _vm._v(" "),
-          _vm._m(6),
-          _vm._v(" "),
-          _vm._m(7),
-          _vm._v(" "),
-          _vm._m(8),
-          _vm._v(" "),
-          _vm._m(9),
-          _vm._v(" "),
-          _vm._m(10),
-          _vm._v(" "),
-          _vm._m(11),
-          _vm._v(" "),
-          _vm._m(12),
-          _vm._v(" "),
-          _vm._m(13)
+        _c(
+          "tbody",
+          _vm._l(20, function(n) {
+            return _c(
+              "tr",
+              { class: n % 5 === 0 ? "bg-info" : "" },
+              [
+                _c("th", { attrs: { scope: "row" } }, [
+                  _vm._v(_vm._s(n % 5 === 0 ? "Σ" : 9))
+                ]),
+                _vm._v(" "),
+                _vm._l([0, 1, 2, 3], function(p) {
+                  return _c("td", {
+                    domProps: {
+                      innerHTML: _vm._s(
+                        n % 5 === 0
+                          ? _vm.showResult(p, n - 1)
+                          : _vm.showScores(p, n - 1)
+                      )
+                    }
+                  })
+                })
+              ],
+              2
+            )
+          }),
+          0
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", [
+        _c("span", { staticClass: "badge badge-danger" }, [
+          _vm._v("I--I " + _vm._s(this.penalty))
         ])
       ])
     ]
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", { staticClass: "bg-info" }, [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", { staticClass: "bg-info" }, [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", { staticClass: "bg-info" }, [
-      _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td"),
-      _vm._v(" "),
-      _c("td")
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -41897,7 +40836,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('lobby', __webpack_require__(/*! ./components/Lobby.vue */ "./resources/js/components/Lobby.vue")["default"]);
-Vue.component('game', __webpack_require__(/*! ./components/Game.vue */ "./resources/js/components/Game.vue")["default"]);
+Vue.component('game-view', __webpack_require__(/*! ./components/GameView.vue */ "./resources/js/components/GameView.vue")["default"]);
 Vue.component('flash', __webpack_require__(/*! ./components/Flash.vue */ "./resources/js/components/Flash.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -41959,8 +40898,8 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   wsPort: 6001,
   wssPort: 6001,
   enabledTransports: ['ws', 'wss'],
-  disableStats: true,
-  forceTLS: true
+  disableStats: "false",
+  forceTLS: "true"
 });
 
 /***/ }),
@@ -42185,6 +41124,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Game_vue_vue_type_template_id_3a2c79dd___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Game_vue_vue_type_template_id_3a2c79dd___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/GameView.vue":
+/*!**********************************************!*\
+  !*** ./resources/js/components/GameView.vue ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _GameView_vue_vue_type_template_id_6ab713a2___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./GameView.vue?vue&type=template&id=6ab713a2& */ "./resources/js/components/GameView.vue?vue&type=template&id=6ab713a2&");
+/* harmony import */ var _GameView_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./GameView.vue?vue&type=script&lang=js& */ "./resources/js/components/GameView.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _GameView_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _GameView_vue_vue_type_template_id_6ab713a2___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _GameView_vue_vue_type_template_id_6ab713a2___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/GameView.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/GameView.vue?vue&type=script&lang=js&":
+/*!***********************************************************************!*\
+  !*** ./resources/js/components/GameView.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GameView_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./GameView.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/GameView.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GameView_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/GameView.vue?vue&type=template&id=6ab713a2&":
+/*!*****************************************************************************!*\
+  !*** ./resources/js/components/GameView.vue?vue&type=template&id=6ab713a2& ***!
+  \*****************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_GameView_vue_vue_type_template_id_6ab713a2___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./GameView.vue?vue&type=template&id=6ab713a2& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/GameView.vue?vue&type=template&id=6ab713a2&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_GameView_vue_vue_type_template_id_6ab713a2___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_GameView_vue_vue_type_template_id_6ab713a2___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -42418,7 +41426,7 @@ __webpack_require__.r(__webpack_exports__);
     Echo["private"]('game.' + this.game.id).listen('UpdateGameEvent', function (event) {
       console.log('UpdateGameEvent');
       _this.game = event.game;
-      _this.nextTurn = event.game.turn; // ai es temaaaaaaa
+      _this.nextTurn = event.game.turn;
     }).listen('PlayerCallEvent', function (event) {
       console.log('PlayerCallEvent');
 
@@ -42440,12 +41448,32 @@ __webpack_require__.r(__webpack_exports__);
       _this.game.except = event.except;
       _this.game.turn = event.turn;
       _this.game.state = event.state;
+      _this.playState = true;
     }).listen('CardPlayEvent', function (event) {
       console.log('CardPlayEvent');
 
       _this.game.cards.push(event.card);
 
-      _this.players[event.position].cards.pop();
+      if (event.position === _this.ppm[0]) {
+        var id = 0;
+        var cards = _this.players[event.position].cards;
+
+        for (var idx in cards) {
+          if (Number(event.card.strength) > 14 || Number(event.card.strength) == 1) {
+            if (event.card.suit == cards[idx].suit) {
+              id = idx;
+            }
+          } else {
+            if (event.card.suit == cards[idx].suit && event.card.strength == cards[idx].strength) {
+              id = idx;
+            }
+          }
+        }
+
+        _this.players[event.position].cards.splice(id, 1);
+      } else {
+        _this.players[event.position].cards.pop();
+      }
 
       _this.game.players[event.position].card = event.card;
 
@@ -42512,11 +41540,12 @@ __webpack_require__.r(__webpack_exports__);
 
       _this.playerPositionsMap();
     }).listen('GameOverEvent', function (event) {
+      _this.playState = false;
       _this.game = event.game;
 
       for (var i = 0; i < 4; i++) {
         $("#place-".concat(i, " img")).attr('src', _this.game.players[event.scores[i].position].avatar_url);
-        $("#place-".concat(i, " .u-name")).text(_this.game.players[event.scores[i].position].username);
+        $("#place-".concat(i, " .u-name a")).attr('href', "/user/".concat(_this.game.players[event.scores[i].position].user_id)).text(_this.game.players[event.scores[i].position].username);
       }
 
       $('#game-over').removeClass('d-none');
@@ -42558,26 +41587,48 @@ __webpack_require__.r(__webpack_exports__);
     },
     passwordProtected: function passwordProtected() {
       return this.game.state === 'start' && this.game.password && this.game.players.length < 4;
+    },
+    botTimerActive: function botTimerActive() {
+      var states = ['trump', 'call', 'card'];
+      return this.playState && this.turn && states.indexOf(this.game.state) >= 0;
     }
   },
   created: function created() {
-    // window.addEventListener("beforeunload", event => {
-    //     if (this.game.state !== 'finished') {
-    //         axios.post('/leave/games/' + this.game.id);
-    //     }
-    // });
+    var _this = this;
+
+    window.addEventListener("beforeunload", function (event) {
+      if (_this.game.state !== 'finished') {
+        axios.post('/leave/games/' + _this.game.id);
+      }
+    });
     this.playerPositionsMap();
     this.showCards(this.initialCards, true);
   },
   mounted: function mounted() {
-    var _this = this;
+    var _this2 = this;
 
     window.onresize = function () {
-      _this.windowWidth = window.innerWidth;
+      _this2.windowWidth = window.innerWidth;
     };
 
     if (this.game.state === 'trump' && this.turn) {
       $('#suits').removeClass('d-none');
+    }
+
+    this.$watch('botTimerActive', function (active) {
+      if (active) {
+        _this2.setTimerBot();
+
+        console.log('bot timer activated');
+      } else {
+        clearTimeout(_this2.timerBot);
+        console.log('bot timer cleared');
+      }
+    });
+
+    if (this.botTimerActive) {
+      console.log('bot timer activated');
+      this.setTimerBot();
     }
   },
   // es metodi acentrebs kartebs negativ marginebit viewportis mixedvit
@@ -42693,10 +41744,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     playedCardAction: function playedCardAction(n) {
       var player = this.game.players[this.ppm[n]];
-
-      if (player && player.card != null && player.card['action'] !== undefined) {
-        return true;
-      }
+      return player && player.card != null && player.card['action'];
     },
     suitColor: function suitColor(suit) {
       if (suit === 'hearts' || suit === 'diamonds') {
@@ -42715,14 +41763,14 @@ __webpack_require__.r(__webpack_exports__);
       return false;
     },
     kick: function kick(n) {
-      var _this2 = this;
+      var _this3 = this;
 
       axios.post('/kick/games/' + this.game.id, {
         position: this.ppm[n]
       }).then(function (response) {
-        _this2.game.players = response.data;
+        _this3.game.players = response.data;
 
-        _this2.playerPositionsMap();
+        _this3.playerPositionsMap();
       });
     },
     goToLobby: function goToLobby() {
@@ -42763,6 +41811,24 @@ __webpack_require__.r(__webpack_exports__);
       link.select();
       link.setSelectionRange(0, 99999);
       document.execCommand("copy");
+    },
+    setTimerBot: function setTimerBot() {
+      var _this4 = this;
+
+      this.timerBot = setTimeout(function () {
+        _this4.playState = false;
+        if (_this4.game.state === 'trump') $('#suits').addClass('d-none');
+
+        if (_this4.game.state === 'card' && _this4.card.hasOwnProperty('card')) {
+          if (!$('#jokhigh').hasClass('d-none')) $('#jokhigh').addClass('d-none');
+          if (!$('#jokjoker').hasClass('d-none')) $('#jokjoker').addClass('d-none');
+          if (!$('#suits').hasClass('d-none')) $('#suits').addClass('d-none');
+        }
+
+        axios.post('/bot/games/' + _this4.game.id)["catch"](function (error) {
+          location.reload();
+        });
+      }, Number(App.bot_timer));
     }
   }
 });
@@ -42985,9 +42051,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           _this3.players[take].takenCards.push(1);
 
           _this3.game.cards = [];
+          _this3.playState = true;
         }, 900);
       } else {
         this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
+        this.playState = true;
       }
     },
     checkTake: function checkTake() {
@@ -43026,7 +42094,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['initialPlayers'],
+  props: ['initialPlayers', 'penalty'],
   computed: {
     players: function players() {
       return this.initialPlayers;

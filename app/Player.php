@@ -9,10 +9,11 @@ class Player extends Model
     protected $guarded = [];
     protected $with = ['scores'];
     protected $appends = ['cards_count', 'username', 'avatar_url'];
-    protected $hidden = ['cards', 'user'];
+    protected $hidden = ['cards', 'user', 'created_at', 'updated_at', 'disconnected', 'games_played', 'games_won', 'game_id'];
     protected $casts = [
         'cards' => 'array',
         'card' => 'array',
+        'position' => 'integer',
         'disconnected' => 'boolean'
     ];
 

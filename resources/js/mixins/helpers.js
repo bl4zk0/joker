@@ -16,15 +16,21 @@ export default {
 
         passwordProtected() {
             return this.game.state === 'start' && this.game.password && this.game.players.length < 4;
+        },
+
+        botTimerActive() {
+            let states = ['trump', 'call', 'card'];
+
+            return this.playState && this.turn && states.indexOf(this.game.state) >= 0;
         }
     },
 
     created() {
-        // window.addEventListener("beforeunload", event => {
-        //     if (this.game.state !== 'finished') {
-        //         axios.post('/leave/games/' + this.game.id);
-        //     }
-        // });
+        window.addEventListener("beforeunload", event => {
+            if (this.game.state !== 'finished') {
+                axios.post('/leave/games/' + this.game.id);
+            }
+        });
 
         this.playerPositionsMap();
         this.showCards(this.initialCards, true);
@@ -37,6 +43,21 @@ export default {
 
         if (this.game.state === 'trump' && this.turn) {
             $('#suits').removeClass('d-none');
+        }
+
+        this.$watch('botTimerActive', (active) => {
+            if (active) {
+                this.setTimerBot();
+                console.log('bot timer activated');
+            } else {
+                clearTimeout(this.timerBot);
+                console.log('bot timer cleared');
+            }
+        });
+
+        if (this.botTimerActive) {
+            console.log('bot timer activated');
+            this.setTimerBot();
         }
     },
 
@@ -143,9 +164,7 @@ export default {
 
         playedCardAction(n) {
             let player = this.game.players[this.ppm[n]];
-            if (player && player.card != null && player.card['action'] !== undefined) {
-                return true;
-            }
+            return player && player.card != null && player.card['action'];
         },
 
         suitColor(suit) {
@@ -216,6 +235,22 @@ export default {
             link.select();
             link.setSelectionRange(0, 99999);
             document.execCommand("copy");
+        },
+
+        setTimerBot() {
+            this.timerBot = setTimeout(() => {
+                this.playState = false;
+                if (this.game.state === 'trump') $('#suits').addClass('d-none');
+                if (this.game.state === 'card' && this.card.hasOwnProperty('card')){
+                    if (! $('#jokhigh').hasClass('d-none')) $('#jokhigh').addClass('d-none');
+                    if (! $('#jokjoker').hasClass('d-none')) $('#jokjoker').addClass('d-none');
+                    if (! $('#suits').hasClass('d-none')) $('#suits').addClass('d-none');
+                }
+                axios.post('/bot/games/' + this.game.id)
+                    .catch(error => {
+                        location.reload();
+                    });
+            }, Number(App.bot_timer));
         }
     }
 }

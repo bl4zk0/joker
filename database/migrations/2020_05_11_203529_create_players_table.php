@@ -24,8 +24,6 @@ class CreatePlayersTable extends Migration
             $table->unsignedInteger('games_won')->default(0);
             $table->boolean('disconnected')->default(false);
             $table->timestamps();
-
-            $table->foreign('game_id')->references('id')->on('games')->onDelete('set null');
         });
     }
 

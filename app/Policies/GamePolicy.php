@@ -96,14 +96,27 @@ class GamePolicy
     }
 
     /**
-     * Determine whether the user can permanently delete the model.
+     * Determine whether the user can join the game.
      *
      * @param  \App\User  $user
-     * @param  \App\Game  $game
+     * @param  $kicked_users
      * @return mixed
      */
-    public function forceDelete(User $user, Game $game)
+    public function join(User $user, Game $game)
     {
-        //
+        return ! in_array($user->id, $game->kicked_users);
+    }
+
+    /**
+     * Determine whether the user can active the bot.
+     *
+     * @param  \App\User  $user
+     * @param  $kicked_users
+     * @return mixed
+     */
+    public function bot(User $user, Game $game)
+    {
+        $states = ['trump', 'call', 'card'];
+        return $game->players->contains($user->player) && $user->player->position === $game->turn && in_array($game->state, $states);
     }
 }

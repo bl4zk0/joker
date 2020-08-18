@@ -12,8 +12,6 @@ class ExampleTest extends TestCase
     /** @test */
     public function exTest()
     {
-        $this->signIn();
-
-        $this->json('GET', '/api/user')->assertStatus(200);
+        $this->get('/')->assertOK();
     }
 }
