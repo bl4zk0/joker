@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Events\CardDealEvent;
 use App\Events\CardPlayEvent;
-use App\Events\KickUserEvent;
 use App\Events\PlayerCallEvent;
 use App\Events\GetReadyEvent;
+use App\Events\PlayerJoinLeaveEvent;
 use App\Events\UpdateGameEvent;
 use App\Events\UpdateLobbyEvent;
 use App\Events\UpdateReadyEvent;
@@ -253,6 +253,8 @@ class GamesController extends Controller
             if ($player->disconnected) {
                 $player->update(['disconnected' => false]);;
             }
+
+            broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'შემოვიდა'))->toOthers();
             return compact('game', 'cards');
         }
 
@@ -268,13 +270,13 @@ class GamesController extends Controller
 
             $game->refresh();
 
-            broadcast(new UpdateGameEvent($game));
+            broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'შემოვიდა', $game->players))->toOthers();
             broadcast(new UpdateLobbyEvent());
 
             return compact('game', 'cards');
 
         } else {
-            return response(['message' => 'You can not join table'], 409);
+            return response(['message' => 'You can not join this table'], 409);
         }
     }
 
@@ -285,15 +287,18 @@ class GamesController extends Controller
             'position' => ['required', new KickUserRule($game->players)]
         ]);
 
+        $username = $game->players[$request->position]->username;
+
         $game->kick($request->position);
 
-        broadcast(new KickUserEvent($game->id, $request->position, $game->players))->toOthers();
+        broadcast(new PlayerJoinLeaveEvent($game->id, $username, 'გავიდა', $game->players));
 
-        return $game->players;
+        return response([], 200);
     }
 
     public function leave(Game $game)
     {
+        exit;
         $this->authorize('leave', $game);
 
         if ($game->state == 'start' || $game->state == 'ready') {
@@ -302,13 +307,13 @@ class GamesController extends Controller
             if (auth()->user()->is($game->creator) && $game->players()->count() > 0) {
                 $game->update(['user_id' => $game->players[0]->user->id]);
                 $game->reposition();
-                broadcast(new UpdateGameEvent($game));
+                broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'გავიდა', $game->players, $game->user_id))->toOthers();
             } elseif ($game->players()->count() == 0) {
                 $game->delete();
                 return;
             } else {
                 $game->reposition();
-                broadcast(new UpdateGameEvent($game));
+                broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'გავიდა', $game->players))->toOthers();
             }
             broadcast(new UpdateLobbyEvent());
         } else {
@@ -318,6 +323,7 @@ class GamesController extends Controller
             }
 
             auth()->user()->player->update(['disconnected' => true]);
+            broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'გავიდა'))->toOthers();
 
             if ($game->turn == auth()->user()->player->position) {
                 PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());

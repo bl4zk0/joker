@@ -3,6 +3,11 @@
         <component :is="scoreboard" :initial-players="game.players" :penalty="game.penalty"></component>
 
         <div id="play-table">
+            <div id="mute" class="btn-table">
+                <button type="button" class="btn btn-outline-light" @click="muted = ! muted">
+                    <i class="fas" :class="muted ? 'fa-volume-mute' : 'fa-volume-up'"></i>
+                </button>
+            </div>
             <div class="btn-table" v-show="game.state === 'start'">
                 <a href="/lobby" class="btn btn-outline-light"><i class="fas fa-arrow-circle-left"></i></a>
             </div>
@@ -206,8 +211,16 @@
                        :value="url + '/games/' + game.id + '?pin=' + game.password">
             </div>
 
-            <div id="last-cards-icon" @mouseover="showLastCards = true" @mouseleave="showLastCards = false">
+            <div id="last-cards-icon"
+                 @mouseover="showLastCards = true"
+                 @mouseleave="showLastCards = false"
+                 v-show="game.state === 'card'">
                 <i class="fas fa-history text-white"></i>
+            </div>
+
+            <div id="bot-timer" v-show="showBotTimer">
+                <i class="fas fa-stopwatch"></i>
+                <span v-text="botTimer" :class="botTimer > 5 ? 'text-warning' : 'text-danger'"></span>
             </div>
 
             <div id="game-over" class="bg-success d-none">
@@ -231,7 +244,7 @@
             </div>
         </div>
 
-        <chat :messages="messages" :game-id="game.id"></chat>
+        <chat :messages="messages" :game-id="game.id" @clear-chat="messages = []"></chat>
 
         <div class="modal fade" id="kicked" data-backdrop="static" data-keyboard="false" tabindex="-1">
             <div class="modal-dialog">
@@ -251,6 +264,17 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
+
+        <!-- audios -->
+        <audio id="notification">
+            <source src="/storage/sounds/notification.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="card-play">
+            <source src="/storage/sounds/card-play.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="timer">
+            <source src="/storage/sounds/timer.mp3" type="audio/mpeg">
+        </audio>
     </div>
 </template>
 
@@ -280,7 +304,11 @@
                 card: {},
                 actions: {"magali": "მაღალი", "caigos": "წაიღოს", "mojokra": "მოჯოკრა", "kvevidan": "ქვევიდან"},
                 actionsuits: {"hearts": "♥", "clubs": "♣", "diamonds": "♦", "spades": "♠"},
-                showLastCards: false
+                messages: [{username: '[system]', message: 'ჩათის გასასუფთავებლად დაწერეთ "/clear"'}],
+                showLastCards: false,
+                botTimer: App.bot_timer / 1000,
+                showBotTimer: false,
+                muted: true
             }
         },
 
@@ -363,8 +391,6 @@
                     } else {
                         $('#jokjoker').removeClass('d-none');
                     }
-                    this.setTimerBot();
-                    console.log('bot timer activated');
                 } else {
                     if (! this.canPlay(card)) {
                         console.log('you can not play this card');
@@ -386,8 +412,6 @@
                 if (action === 'magali' || action === 'caigos') {
                     $('#jokhigh').addClass('d-none');
                     $('#suits').removeClass('d-none');
-                    this.setTimerBot();
-                    console.log('bot timer activated');
                 } else {
                     $('#jokjoker').addClass('d-none');
                     if (! this.canPlay(card)) {
@@ -395,8 +419,7 @@
                         this.playState = true;
                         return;
                     }
-                    clearTimeout(this.timerBot);
-                    console.log('bot timer cleared');
+
                     this.afterActionCard(card);
                 }
             },
@@ -411,6 +434,8 @@
                 if (this.game.state === 'trump') {
 
                     this.playState = false;
+                    this.setTrump = false;
+                    this.clearBotTimer();
 
                     axios.post('/trump/games/' + this.game.id, {trump: suit})
                         .then(response => {
@@ -418,8 +443,7 @@
                         })
                         .catch(error => {
                             location.reload();
-                        })
-                    this.setTrump = false;
+                        });
                 } else if (this.game.state === 'card') {
                     let card = {
                         strength: this.card.card.strength,
@@ -433,8 +457,7 @@
                         this.playState = true;
                         return;
                     }
-                    clearTimeout(this.timerBot);
-                    console.log('bot timer cleared');
+
                     this.afterActionCard(card);
                 } else {
                     console.log('wrong turn or state');
@@ -470,6 +493,8 @@
                     call: event.target.getAttribute('data-value')
                 }
 
+                this.clearBotTimer();
+
                 axios.post('/call/games/' + this.game.id, call)
                     .then(response => {
                         this.playState = true;
@@ -486,8 +511,53 @@
                 this.lastCardsStorage[0] = Object.create(card);
                 this.lastCardsStorage[0].z = this.game.cards.length;
 
+                this.clearBotTimer();
+                this.playSound('card-play');
+
                 this.sendCard();
                 this.hideCards(this.checkTake());
+            },
+
+            setBotTimer() {
+                console.log('bot timer activated');
+                this.showBotTimer = true;
+                this.botInterval = setInterval(() => {
+                    this.botTimer--;
+                    if (this.botTimer === 5) this.playSound('timer');
+                }, 1000);
+
+                this.botTimeout = setTimeout(() => {
+                    this.playState = false;
+
+                    if (this.game.state === 'trump') $('#suits').addClass('d-none');
+
+                    if (this.game.state === 'card' && this.card.hasOwnProperty('card')){
+                        if (! $('#jokhigh').hasClass('d-none')) $('#jokhigh').addClass('d-none');
+                        if (! $('#jokjoker').hasClass('d-none')) $('#jokjoker').addClass('d-none');
+                        if (! $('#suits').hasClass('d-none')) $('#suits').addClass('d-none');
+                    }
+
+                    clearInterval(this.botInterval);
+                    this.botTimer = App.bot_timer / 1000;
+                    this.showBotTimer = false;
+
+                    axios.post('/bot/games/' + this.game.id)
+                        .catch(error => {
+                            location.reload();
+                        });
+
+                }, Number(App.bot_timer));
+            },
+
+            clearBotTimer() {
+                console.log('bot timer cleared');
+                clearTimeout(this.botTimeout);
+                clearInterval(this.botInterval);
+                if (this.botTimer <= 5) {
+                    document.getElementById('timer').pause();
+                }
+                this.botTimer = App.bot_timer / 1000;
+                this.showBotTimer = false;
             }
         }
     }

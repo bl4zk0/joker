@@ -4,8 +4,14 @@
             <div id="messages-wrapper">
                 <div id="messages">
                     <p v-for="msg in this.messages">
-                        <strong v-text="msg.username + ': '"></strong>
-                        <span v-text="msg.message"></span>
+                        <span v-if="msg.notification">
+                            <strong class="text-warning">[შეტყობინება]:</strong>
+                            მოთამაშე <strong v-text="msg.username"></strong> {{ msg.message }}
+                        </span>
+                        <span v-else>
+                            <strong v-text="`${msg.username}: `"></strong>
+                            <span v-text="msg.message"></span>
+                        </span>
                     </p>
                 </div>
             </div>
@@ -54,6 +60,12 @@
             },
 
             sendMessage() {
+                if (this.message === '/clear') {
+                    this.$emit('clear-chat');
+                    this.message = '';
+                    return;
+                }
+
                 if (this.message) {
                     let message = {
                         username: App.user.username,

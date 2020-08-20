@@ -27,6 +27,7 @@ export default {
 
     created() {
         window.addEventListener("beforeunload", event => {
+            delete event['returnValue'];
             if (this.game.state !== 'finished') {
                 axios.post('/leave/games/' + this.game.id);
             }
@@ -47,17 +48,12 @@ export default {
 
         this.$watch('botTimerActive', (active) => {
             if (active) {
-                this.setTimerBot();
-                console.log('bot timer activated');
-            } else {
-                clearTimeout(this.timerBot);
-                console.log('bot timer cleared');
+                this.setBotTimer();
             }
         });
 
         if (this.botTimerActive) {
-            console.log('bot timer activated');
-            this.setTimerBot();
+            this.setBotTimer();
         }
     },
 
@@ -187,9 +183,8 @@ export default {
 
         kick(n) {
             axios.post('/kick/games/' + this.game.id, {position: this.ppm[n]})
-                .then(response => {
-                    this.game.players = response.data;
-                    this.playerPositionsMap();
+                .catch(error => {
+                    location.reload();
                 });
         },
 
@@ -237,20 +232,13 @@ export default {
             document.execCommand("copy");
         },
 
-        setTimerBot() {
-            this.timerBot = setTimeout(() => {
-                this.playState = false;
-                if (this.game.state === 'trump') $('#suits').addClass('d-none');
-                if (this.game.state === 'card' && this.card.hasOwnProperty('card')){
-                    if (! $('#jokhigh').hasClass('d-none')) $('#jokhigh').addClass('d-none');
-                    if (! $('#jokjoker').hasClass('d-none')) $('#jokjoker').addClass('d-none');
-                    if (! $('#suits').hasClass('d-none')) $('#suits').addClass('d-none');
-                }
-                axios.post('/bot/games/' + this.game.id)
-                    .catch(error => {
-                        location.reload();
-                    });
-            }, Number(App.bot_timer));
+        playSound(sound) {
+            if (this.muted) return;
+
+            let audio = document.getElementById(sound);
+            audio.currentTime = 0;
+            audio.muted = false;
+            audio.play();
         }
     }
 }

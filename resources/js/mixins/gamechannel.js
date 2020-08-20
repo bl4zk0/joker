@@ -1,16 +1,33 @@
 export default {
-    data() {
-        return {
-            messages: []
-        }
-    },
-
     created() {
         Echo.private('game.' + this.game.id)
             .listen('UpdateGameEvent', event => {
                 console.log('UpdateGameEvent');
                 this.game = event.game;
                 this.nextTurn = event.game.turn;
+            })
+            .listen('PlayerJoinLeaveEvent', event => {
+                console.log('PlayerJoinLeaveEvent');
+                if (App.user.username === event.username) {
+                    $('#kicked').modal({show: true});
+                    Echo.leaveChannel('game.' + this.game.id);
+                    Echo.leaveChannel('user.' + App.user.id);
+                    return;
+                }
+
+                if (event.players !== false) {
+                    this.game.players = event.players;
+                    this.playerPositionsMap();
+                    if (event.user_id) this.game.user_id = event.user_id;
+                }
+
+                let message = {
+                    username: event.username,
+                    message: event.eventName,
+                    notification: true
+                };
+                this.messages.push(message);
+                this.playSound('notification');
             })
             .listen('PlayerCallEvent', event => {
                 console.log('PlayerCallEvent');
@@ -56,6 +73,7 @@ export default {
                 }
 
                 this.game.players[event.position].card = event.card;
+                this.playSound('card-play');
 
                 this.lastCardsStorage[this.ppm.indexOf(event.position)] = Object.create(event.card);
                 this.lastCardsStorage[this.ppm.indexOf(event.position)].z = this.game.cards.length;
@@ -114,17 +132,6 @@ export default {
 
                 $('#ready th').eq(event.position).addClass(color);
             })
-            .listen('KickUserEvent', event => {
-                if (App.user.id === this.game.players[event.position].user_id) {
-                    $('#kicked').modal({show: true});
-                    Echo.leaveChannel('game.' + this.game.id);
-                    Echo.leaveChannel('user.' + App.user.id);
-                    return;
-                }
-
-                this.game.players = event.players;
-                this.playerPositionsMap();
-            })
             .listen('GameOverEvent', event => {
                 this.playState = false;
                 this.game = event.game;
@@ -136,11 +143,13 @@ export default {
                 $('#game-over').removeClass('d-none');
             })
             .listenForWhisper('message', message => {
+                message.notification = false;
                 this.messages.push(message);
+                this.playSound('notification');
                 this.$nextTick(() => {
                     let el = document.getElementById('messages');
                     el.scrollTo(0, el.scrollHeight);
                 });
             });
-    },
+    }
 }

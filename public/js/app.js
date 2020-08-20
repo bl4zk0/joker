@@ -1938,6 +1938,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['messages', 'gameId'],
   data: function data() {
@@ -1954,6 +1960,12 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     sendMessage: function sendMessage() {
+      if (this.message === '/clear') {
+        this.$emit('clear-chat');
+        this.message = '';
+        return;
+      }
+
       if (this.message) {
         var message = {
           username: App.user.username,
@@ -2291,6 +2303,30 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2335,7 +2371,14 @@ __webpack_require__.r(__webpack_exports__);
         "diamonds": "♦",
         "spades": "♠"
       },
-      showLastCards: false
+      messages: [{
+        username: '[system]',
+        message: 'ჩათის გასასუფთავებლად დაწერეთ "/clear"'
+      }],
+      showLastCards: false,
+      botTimer: App.bot_timer / 1000,
+      showBotTimer: false,
+      muted: true
     };
   },
   computed: {
@@ -2413,9 +2456,6 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           $('#jokjoker').removeClass('d-none');
         }
-
-        this.setTimerBot();
-        console.log('bot timer activated');
       } else {
         if (!this.canPlay(card)) {
           console.log('you can not play this card');
@@ -2438,8 +2478,6 @@ __webpack_require__.r(__webpack_exports__);
       if (action === 'magali' || action === 'caigos') {
         $('#jokhigh').addClass('d-none');
         $('#suits').removeClass('d-none');
-        this.setTimerBot();
-        console.log('bot timer activated');
       } else {
         $('#jokjoker').addClass('d-none');
 
@@ -2449,8 +2487,6 @@ __webpack_require__.r(__webpack_exports__);
           return;
         }
 
-        clearTimeout(this.timerBot);
-        console.log('bot timer cleared');
         this.afterActionCard(card);
       }
     },
@@ -2466,6 +2502,8 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.game.state === 'trump') {
         this.playState = false;
+        this.setTrump = false;
+        this.clearBotTimer();
         axios.post('/trump/games/' + this.game.id, {
           trump: suit
         }).then(function (response) {
@@ -2473,7 +2511,6 @@ __webpack_require__.r(__webpack_exports__);
         })["catch"](function (error) {
           location.reload();
         });
-        this.setTrump = false;
       } else if (this.game.state === 'card') {
         var card = {
           strength: this.card.card.strength,
@@ -2489,8 +2526,6 @@ __webpack_require__.r(__webpack_exports__);
           return;
         }
 
-        clearTimeout(this.timerBot);
-        console.log('bot timer cleared');
         this.afterActionCard(card);
       } else {
         console.log('wrong turn or state');
@@ -2522,6 +2557,7 @@ __webpack_require__.r(__webpack_exports__);
       var call = {
         call: event.target.getAttribute('data-value')
       };
+      this.clearBotTimer();
       axios.post('/call/games/' + this.game.id, call).then(function (response) {
         _this4.playState = true;
       })["catch"](function (error) {
@@ -2534,8 +2570,49 @@ __webpack_require__.r(__webpack_exports__);
       this.players[this.ppm[0]].cards.splice(this.cardId, 1);
       this.lastCardsStorage[0] = Object.create(card);
       this.lastCardsStorage[0].z = this.game.cards.length;
+      this.clearBotTimer();
+      this.playSound('card-play');
       this.sendCard();
       this.hideCards(this.checkTake());
+    },
+    setBotTimer: function setBotTimer() {
+      var _this5 = this;
+
+      console.log('bot timer activated');
+      this.showBotTimer = true;
+      this.botInterval = setInterval(function () {
+        _this5.botTimer--;
+        if (_this5.botTimer === 5) _this5.playSound('timer');
+      }, 1000);
+      this.botTimeout = setTimeout(function () {
+        _this5.playState = false;
+        if (_this5.game.state === 'trump') $('#suits').addClass('d-none');
+
+        if (_this5.game.state === 'card' && _this5.card.hasOwnProperty('card')) {
+          if (!$('#jokhigh').hasClass('d-none')) $('#jokhigh').addClass('d-none');
+          if (!$('#jokjoker').hasClass('d-none')) $('#jokjoker').addClass('d-none');
+          if (!$('#suits').hasClass('d-none')) $('#suits').addClass('d-none');
+        }
+
+        clearInterval(_this5.botInterval);
+        _this5.botTimer = App.bot_timer / 1000;
+        _this5.showBotTimer = false;
+        axios.post('/bot/games/' + _this5.game.id)["catch"](function (error) {
+          location.reload();
+        });
+      }, Number(App.bot_timer));
+    },
+    clearBotTimer: function clearBotTimer() {
+      console.log('bot timer cleared');
+      clearTimeout(this.botTimeout);
+      clearInterval(this.botInterval);
+
+      if (this.botTimer <= 5) {
+        document.getElementById('timer').pause();
+      }
+
+      this.botTimer = App.bot_timer / 1000;
+      this.showBotTimer = false;
     }
   }
 });
@@ -27175,11 +27252,28 @@ var render = function() {
             { attrs: { id: "messages" } },
             _vm._l(this.messages, function(msg) {
               return _c("p", [
-                _c("strong", {
-                  domProps: { textContent: _vm._s(msg.username + ": ") }
-                }),
-                _vm._v(" "),
-                _c("span", { domProps: { textContent: _vm._s(msg.message) } })
+                msg.notification
+                  ? _c("span", [
+                      _c("strong", { staticClass: "text-warning" }, [
+                        _vm._v("[შეტყობინება]:")
+                      ]),
+                      _vm._v("\n                        მოთამაშე "),
+                      _c("strong", {
+                        domProps: { textContent: _vm._s(msg.username) }
+                      }),
+                      _vm._v(
+                        " " + _vm._s(msg.message) + "\n                    "
+                      )
+                    ])
+                  : _c("span", [
+                      _c("strong", {
+                        domProps: { textContent: _vm._s(msg.username + ": ") }
+                      }),
+                      _vm._v(" "),
+                      _c("span", {
+                        domProps: { textContent: _vm._s(msg.message) }
+                      })
+                    ])
               ])
             }),
             0
@@ -27337,6 +27431,27 @@ var render = function() {
         "div",
         { attrs: { id: "play-table" } },
         [
+          _c("div", { staticClass: "btn-table", attrs: { id: "mute" } }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-light",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    _vm.muted = !_vm.muted
+                  }
+                }
+              },
+              [
+                _c("i", {
+                  staticClass: "fas",
+                  class: _vm.muted ? "fa-volume-mute" : "fa-volume-up"
+                })
+              ]
+            )
+          ]),
+          _vm._v(" "),
           _c(
             "div",
             {
@@ -28023,6 +28138,14 @@ var render = function() {
           _c(
             "div",
             {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.game.state === "card",
+                  expression: "game.state === 'card'"
+                }
+              ],
               attrs: { id: "last-cards-icon" },
               on: {
                 mouseover: function($event) {
@@ -28034,6 +28157,29 @@ var render = function() {
               }
             },
             [_c("i", { staticClass: "fas fa-history text-white" })]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.showBotTimer,
+                  expression: "showBotTimer"
+                }
+              ],
+              attrs: { id: "bot-timer" }
+            },
+            [
+              _c("i", { staticClass: "fas fa-stopwatch" }),
+              _vm._v(" "),
+              _c("span", {
+                class: _vm.botTimer > 5 ? "text-warning" : "text-danger",
+                domProps: { textContent: _vm._s(_vm.botTimer) }
+              })
+            ]
           ),
           _vm._v(" "),
           _c(
@@ -28087,7 +28233,14 @@ var render = function() {
         2
       ),
       _vm._v(" "),
-      _c("chat", { attrs: { messages: _vm.messages, "game-id": _vm.game.id } }),
+      _c("chat", {
+        attrs: { messages: _vm.messages, "game-id": _vm.game.id },
+        on: {
+          "clear-chat": function($event) {
+            _vm.messages = []
+          }
+        }
+      }),
       _vm._v(" "),
       _c(
         "div",
@@ -28131,7 +28284,13 @@ var render = function() {
           },
           [_c("i", { staticClass: "fas fa-times" })]
         )
-      ])
+      ]),
+      _vm._v(" "),
+      _vm._m(6),
+      _vm._v(" "),
+      _vm._m(7),
+      _vm._v(" "),
+      _vm._m(8)
     ],
     1
   )
@@ -28189,6 +28348,36 @@ var staticRenderFns = [
     return _c("div", { staticClass: "modal-body text-white" }, [
       _c("i", { staticClass: "fas fa-exclamation-triangle" }),
       _vm._v(" თქვენ გამოგაგდეს მაგიდიდან!\n                ")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("audio", { attrs: { id: "notification" } }, [
+      _c("source", {
+        attrs: { src: "/storage/sounds/notification.mp3", type: "audio/mpeg" }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("audio", { attrs: { id: "card-play" } }, [
+      _c("source", {
+        attrs: { src: "/storage/sounds/card-play.mp3", type: "audio/mpeg" }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("audio", { attrs: { id: "timer" } }, [
+      _c("source", {
+        attrs: { src: "/storage/sounds/timer.mp3", type: "audio/mpeg" }
+      })
     ])
   }
 ]
@@ -41175,14 +41364,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************************!*\
   !*** ./resources/js/components/Game.vue ***!
   \******************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Game_vue_vue_type_template_id_3a2c79dd___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Game.vue?vue&type=template&id=3a2c79dd& */ "./resources/js/components/Game.vue?vue&type=template&id=3a2c79dd&");
 /* harmony import */ var _Game_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Game.vue?vue&type=script&lang=js& */ "./resources/js/components/Game.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Game_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Game_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -41212,7 +41402,7 @@ component.options.__file = "resources/js/components/Game.vue"
 /*!*******************************************************************!*\
   !*** ./resources/js/components/Game.vue?vue&type=script&lang=js& ***!
   \*******************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -41526,11 +41716,6 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  data: function data() {
-    return {
-      messages: []
-    };
-  },
   created: function created() {
     var _this = this;
 
@@ -41538,6 +41723,35 @@ __webpack_require__.r(__webpack_exports__);
       console.log('UpdateGameEvent');
       _this.game = event.game;
       _this.nextTurn = event.game.turn;
+    }).listen('PlayerJoinLeaveEvent', function (event) {
+      console.log('PlayerJoinLeaveEvent');
+
+      if (App.user.username === event.username) {
+        $('#kicked').modal({
+          show: true
+        });
+        Echo.leaveChannel('game.' + _this.game.id);
+        Echo.leaveChannel('user.' + App.user.id);
+        return;
+      }
+
+      if (event.players !== false) {
+        _this.game.players = event.players;
+
+        _this.playerPositionsMap();
+
+        if (event.user_id) _this.game.user_id = event.user_id;
+      }
+
+      var message = {
+        username: event.username,
+        message: event.eventName,
+        notification: true
+      };
+
+      _this.messages.push(message);
+
+      _this.playSound('notification');
     }).listen('PlayerCallEvent', function (event) {
       console.log('PlayerCallEvent');
 
@@ -41588,6 +41802,9 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       _this.game.players[event.position].card = event.card;
+
+      _this.playSound('card-play');
+
       _this.lastCardsStorage[_this.ppm.indexOf(event.position)] = Object.create(event.card);
       _this.lastCardsStorage[_this.ppm.indexOf(event.position)].z = _this.game.cards.length;
 
@@ -41640,19 +41857,6 @@ __webpack_require__.r(__webpack_exports__);
     }).listen('UpdateReadyEvent', function (event) {
       var color = event.ready === '1' ? 'bg-success' : 'bg-danger';
       $('#ready th').eq(event.position).addClass(color);
-    }).listen('KickUserEvent', function (event) {
-      if (App.user.id === _this.game.players[event.position].user_id) {
-        $('#kicked').modal({
-          show: true
-        });
-        Echo.leaveChannel('game.' + _this.game.id);
-        Echo.leaveChannel('user.' + App.user.id);
-        return;
-      }
-
-      _this.game.players = event.players;
-
-      _this.playerPositionsMap();
     }).listen('GameOverEvent', function (event) {
       _this.playState = false;
       _this.game = event.game;
@@ -41664,7 +41868,11 @@ __webpack_require__.r(__webpack_exports__);
 
       $('#game-over').removeClass('d-none');
     }).listenForWhisper('message', function (message) {
+      message.notification = false;
+
       _this.messages.push(message);
+
+      _this.playSound('notification');
 
       _this.$nextTick(function () {
         var el = document.getElementById('messages');
@@ -41711,6 +41919,8 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     window.addEventListener("beforeunload", function (event) {
+      delete event['returnValue'];
+
       if (_this.game.state !== 'finished') {
         axios.post('/leave/games/' + _this.game.id);
       }
@@ -41731,18 +41941,12 @@ __webpack_require__.r(__webpack_exports__);
 
     this.$watch('botTimerActive', function (active) {
       if (active) {
-        _this2.setTimerBot();
-
-        console.log('bot timer activated');
-      } else {
-        clearTimeout(_this2.timerBot);
-        console.log('bot timer cleared');
+        _this2.setBotTimer();
       }
     });
 
     if (this.botTimerActive) {
-      console.log('bot timer activated');
-      this.setTimerBot();
+      this.setBotTimer();
     }
   },
   // es metodi acentrebs kartebs negativ marginebit viewportis mixedvit
@@ -41877,14 +42081,10 @@ __webpack_require__.r(__webpack_exports__);
       return false;
     },
     kick: function kick(n) {
-      var _this3 = this;
-
       axios.post('/kick/games/' + this.game.id, {
         position: this.ppm[n]
-      }).then(function (response) {
-        _this3.game.players = response.data;
-
-        _this3.playerPositionsMap();
+      })["catch"](function (error) {
+        location.reload();
       });
     },
     goToLobby: function goToLobby() {
@@ -41926,23 +42126,12 @@ __webpack_require__.r(__webpack_exports__);
       link.setSelectionRange(0, 99999);
       document.execCommand("copy");
     },
-    setTimerBot: function setTimerBot() {
-      var _this4 = this;
-
-      this.timerBot = setTimeout(function () {
-        _this4.playState = false;
-        if (_this4.game.state === 'trump') $('#suits').addClass('d-none');
-
-        if (_this4.game.state === 'card' && _this4.card.hasOwnProperty('card')) {
-          if (!$('#jokhigh').hasClass('d-none')) $('#jokhigh').addClass('d-none');
-          if (!$('#jokjoker').hasClass('d-none')) $('#jokjoker').addClass('d-none');
-          if (!$('#suits').hasClass('d-none')) $('#suits').addClass('d-none');
-        }
-
-        axios.post('/bot/games/' + _this4.game.id)["catch"](function (error) {
-          location.reload();
-        });
-      }, Number(App.bot_timer));
+    playSound: function playSound(sound) {
+      if (this.muted) return;
+      var audio = document.getElementById(sound);
+      audio.currentTime = 0;
+      audio.muted = false;
+      audio.play();
     }
   }
 });
@@ -42173,7 +42362,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
           _this3.game.cards = [];
           _this3.playState = true;
-        }, 900);
+        }, 1000);
       } else {
         this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
         this.playState = true;

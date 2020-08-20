@@ -17308,6 +17308,15 @@ readers do not read off random characters that represent icons */
   color: #ffc107 !important;
 }
 
+#bot-timer {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  margin-left: -90px;
+  font-size: 20px;
+  color: #fff;
+}
+
 .last-cards-wrapper {
   position: relative;
   width: 165px;

@@ -181,7 +181,7 @@ export default {
                     this.players[take].takenCards.push(1);
                     this.game.cards = [];
                     this.playState = true;
-                }, 900);
+                }, 1000);
             } else {
                 this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
                 this.playState = true;
