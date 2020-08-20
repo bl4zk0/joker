@@ -34,6 +34,7 @@ export default {
                 console.log('CardPlayEvent');
                 this.game.cards.push(event.card);
 
+                //es check aris tu karti itamasha botma da movida serveridan timeout is shemdeg
                 if (event.position === this.ppm[0]) {
                     let id = 0;
                     let cards = this.players[event.position].cards;
@@ -55,6 +56,10 @@ export default {
                 }
 
                 this.game.players[event.position].card = event.card;
+
+                this.lastCardsStorage[this.ppm.indexOf(event.position)] = Object.create(event.card);
+                this.lastCardsStorage[this.ppm.indexOf(event.position)].z = this.game.cards.length;
+
                 this.hideCards(event.take);
             })
             .listen('StartGameEvent', event => {

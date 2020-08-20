@@ -34,6 +34,10 @@ class GamesController extends Controller
             abort(406, 'Not enough players');
         }
 
+        $game->start();
+
+        return response([], 200);
+
         $game->update(['state' => 'ready', 'ready' => ['players' => [auth()->id()], 'count' => 1]]);
 
         ResetGameStartJob::dispatch($game)->delay(now()->addSeconds(12));

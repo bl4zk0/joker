@@ -3,6 +3,8 @@ export default {
         return {
             dealtCards: [],
             setTrump: false,
+            lastCards: [],
+            lastCardsStorage: []
         }
     },
 
@@ -12,8 +14,10 @@ export default {
                 console.log('CardDealEvent');
                 this.dealtCards = event.cards;
                 this.setTrump = event.trump;
+
                 setTimeout(()=> {
                     this.showCards(this.dealtCards, false);
+                    this.lastCards = [];
                 }, 1000);
             });
     },
@@ -168,6 +172,8 @@ export default {
             if (take !== false) {
                 this.nextTurn = take;
                 setTimeout(() => {
+                    this.lastCards = this.lastCardsStorage;
+                    this.lastCardsStorage = [];
                     for (let player of this.game.players) {
                         player.card = null;
                     }

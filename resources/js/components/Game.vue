@@ -36,6 +36,26 @@
                 </div>
             </div>
 
+            <!-- last played cards -->
+            <div id="last-cards" class="border rounded bg-success shadow" v-show="showLastCards">
+                <div class="last-cards-wrapper">
+                    <div v-for="(card, idx) in lastCards"
+                         :id="`player${idx}-last-card`"
+                         class="p-card"
+                         :class="card.suit + card.strength"
+                         :style="'z-index:' + card.z">
+                        <div v-if="card.action" class="card-action">
+                            <div>
+                                <span v-text="actions[card['action']]"></span>
+                                <span v-text="actionsuits[card['actionsuit']]"
+                                      style="font-size:24px"
+                                      :class="suitColor(card['actionsuit'])"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- player0 cards -->
             <div v-for="(card, index) in players[ppm[0]].cards"
                  :class="'p-card p0-card ' + card.suit + card.strength"
@@ -186,6 +206,10 @@
                        :value="url + '/games/' + game.id + '?pin=' + game.password">
             </div>
 
+            <div id="last-cards-icon" @mouseover="showLastCards = true" @mouseleave="showLastCards = false">
+                <i class="fas fa-history text-white"></i>
+            </div>
+
             <div id="game-over" class="bg-success d-none">
                 <div class="btn-table">
                     <a href="/lobby" class="btn btn-outline-light"><i class="fas fa-arrow-circle-left"></i></a>
@@ -255,7 +279,8 @@
                 ],
                 card: {},
                 actions: {"magali": "მაღალი", "caigos": "წაიღოს", "mojokra": "მოჯოკრა", "kvevidan": "ქვევიდან"},
-                actionsuits: {"hearts": "♥", "clubs": "♣", "diamonds": "♦", "spades": "♠"}
+                actionsuits: {"hearts": "♥", "clubs": "♣", "diamonds": "♦", "spades": "♠"},
+                showLastCards: false
             }
         },
 
@@ -338,6 +363,8 @@
                     } else {
                         $('#jokjoker').removeClass('d-none');
                     }
+                    this.setTimerBot();
+                    console.log('bot timer activated');
                 } else {
                     if (! this.canPlay(card)) {
                         console.log('you can not play this card');
@@ -359,6 +386,8 @@
                 if (action === 'magali' || action === 'caigos') {
                     $('#jokhigh').addClass('d-none');
                     $('#suits').removeClass('d-none');
+                    this.setTimerBot();
+                    console.log('bot timer activated');
                 } else {
                     $('#jokjoker').addClass('d-none');
                     if (! this.canPlay(card)) {
@@ -366,12 +395,14 @@
                         this.playState = true;
                         return;
                     }
+                    clearTimeout(this.timerBot);
+                    console.log('bot timer cleared');
                     this.afterActionCard(card);
                 }
             },
 
             actionSuit(event) {
-                if (! this.turn || ! this.playState) {
+                if (! this.turn) {
                     console.log('wrong turn or state');
                     return;
                 }
@@ -402,6 +433,8 @@
                         this.playState = true;
                         return;
                     }
+                    clearTimeout(this.timerBot);
+                    console.log('bot timer cleared');
                     this.afterActionCard(card);
                 } else {
                     console.log('wrong turn or state');
@@ -412,8 +445,6 @@
             },
 
             sendCard() {
-                this.players[this.ppm[0]].cards.splice(this.cardId, 1);
-
                 axios.post('/card/games/' + this.game.id, this.card)
                     .then(response => {
                         this.card = {};
@@ -451,6 +482,10 @@
             afterActionCard(card) {
                 this.game.cards.push(card);
                 this.game.players[this.ppm[0]].card = card;
+                this.players[this.ppm[0]].cards.splice(this.cardId, 1);
+                this.lastCardsStorage[0] = Object.create(card);
+                this.lastCardsStorage[0].z = this.game.cards.length;
+
                 this.sendCard();
                 this.hideCards(this.checkTake());
             }

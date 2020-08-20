@@ -7,31 +7,31 @@
 }
 
 #player0card:hover, #player1card:hover,
-#player2card:hover, #player3card:hover, {
-    z-index: 100 !important;
+#player2card:hover, #player3card:hover {
+    z-index: 101 !important;
 }
 
-#player0card {
+#player0card, #player0-last-card {
     left: 50%;
     top: 50%;
     margin-left: -34.5px;
     margin-top: -5px;
 }
 
-#player1card {
+#player1card, #player1-last-card {
     right: 50%;
     top: 50%;
     margin-top: -47px;
 }
 
-#player2card {
+#player2card, #player2-last-card {
     left: 50%;
     bottom: 50%;
     margin-left: -34.5px;
     margin-bottom: -5px;
 }
 
-#player3card {
+#player3card, #player3-last-card {
     left: 50%;
     top: 50%;
     margin-top: -47px;
@@ -288,6 +288,30 @@
 
 #scoreboard .table td {
     min-width: 60px;
+}
+
+#last-cards {
+    position: absolute;
+    right: 35px;
+    bottom: 35px;
+    z-index: 100;
+}
+
+#last-cards-icon {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    font-size: 20px;
+}
+
+#last-cards-icon:hover i {
+    color: $warning !important;
+}
+
+.last-cards-wrapper {
+    position: relative;
+    width: 165px;
+    height: 200px;
 }
 
 .game-over-card {

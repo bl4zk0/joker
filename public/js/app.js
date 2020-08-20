@@ -2267,6 +2267,30 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2310,7 +2334,8 @@ __webpack_require__.r(__webpack_exports__);
         "clubs": "♣",
         "diamonds": "♦",
         "spades": "♠"
-      }
+      },
+      showLastCards: false
     };
   },
   computed: {
@@ -2388,6 +2413,9 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           $('#jokjoker').removeClass('d-none');
         }
+
+        this.setTimerBot();
+        console.log('bot timer activated');
       } else {
         if (!this.canPlay(card)) {
           console.log('you can not play this card');
@@ -2410,6 +2438,8 @@ __webpack_require__.r(__webpack_exports__);
       if (action === 'magali' || action === 'caigos') {
         $('#jokhigh').addClass('d-none');
         $('#suits').removeClass('d-none');
+        this.setTimerBot();
+        console.log('bot timer activated');
       } else {
         $('#jokjoker').addClass('d-none');
 
@@ -2419,13 +2449,15 @@ __webpack_require__.r(__webpack_exports__);
           return;
         }
 
+        clearTimeout(this.timerBot);
+        console.log('bot timer cleared');
         this.afterActionCard(card);
       }
     },
     actionSuit: function actionSuit(event) {
       var _this2 = this;
 
-      if (!this.turn || !this.playState) {
+      if (!this.turn) {
         console.log('wrong turn or state');
         return;
       }
@@ -2457,6 +2489,8 @@ __webpack_require__.r(__webpack_exports__);
           return;
         }
 
+        clearTimeout(this.timerBot);
+        console.log('bot timer cleared');
         this.afterActionCard(card);
       } else {
         console.log('wrong turn or state');
@@ -2468,7 +2502,6 @@ __webpack_require__.r(__webpack_exports__);
     sendCard: function sendCard() {
       var _this3 = this;
 
-      this.players[this.ppm[0]].cards.splice(this.cardId, 1);
       axios.post('/card/games/' + this.game.id, this.card).then(function (response) {
         _this3.card = {};
         _this3.cardId = null;
@@ -2498,6 +2531,9 @@ __webpack_require__.r(__webpack_exports__);
     afterActionCard: function afterActionCard(card) {
       this.game.cards.push(card);
       this.game.players[this.ppm[0]].card = card;
+      this.players[this.ppm[0]].cards.splice(this.cardId, 1);
+      this.lastCardsStorage[0] = Object.create(card);
+      this.lastCardsStorage[0].z = this.game.cards.length;
       this.sendCard();
       this.hideCards(this.checkTake());
     }
@@ -27419,6 +27455,65 @@ var render = function() {
             )
           }),
           _vm._v(" "),
+          _c(
+            "div",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.showLastCards,
+                  expression: "showLastCards"
+                }
+              ],
+              staticClass: "border rounded bg-success shadow",
+              attrs: { id: "last-cards" }
+            },
+            [
+              _c(
+                "div",
+                { staticClass: "last-cards-wrapper" },
+                _vm._l(_vm.lastCards, function(card, idx) {
+                  return _c(
+                    "div",
+                    {
+                      staticClass: "p-card",
+                      class: card.suit + card.strength,
+                      style: "z-index:" + card.z,
+                      attrs: { id: "player" + idx + "-last-card" }
+                    },
+                    [
+                      card.action
+                        ? _c("div", { staticClass: "card-action" }, [
+                            _c("div", [
+                              _c("span", {
+                                domProps: {
+                                  textContent: _vm._s(
+                                    _vm.actions[card["action"]]
+                                  )
+                                }
+                              }),
+                              _vm._v(" "),
+                              _c("span", {
+                                class: _vm.suitColor(card["actionsuit"]),
+                                staticStyle: { "font-size": "24px" },
+                                domProps: {
+                                  textContent: _vm._s(
+                                    _vm.actionsuits[card["actionsuit"]]
+                                  )
+                                }
+                              })
+                            ])
+                          ])
+                        : _vm._e()
+                    ]
+                  )
+                }),
+                0
+              )
+            ]
+          ),
+          _vm._v(" "),
           _vm._l(_vm.players[_vm.ppm[0]].cards, function(card, index) {
             return _c("div", {
               key: index,
@@ -27927,6 +28022,22 @@ var render = function() {
           _vm._v(" "),
           _c(
             "div",
+            {
+              attrs: { id: "last-cards-icon" },
+              on: {
+                mouseover: function($event) {
+                  _vm.showLastCards = true
+                },
+                mouseleave: function($event) {
+                  _vm.showLastCards = false
+                }
+              }
+            },
+            [_c("i", { staticClass: "fas fa-history text-white" })]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
             { staticClass: "bg-success d-none", attrs: { id: "game-over" } },
             [
               _vm._m(3),
@@ -28412,19 +28523,19 @@ var render = function() {
                 _c("th", { attrs: { scope: "row" } }, [_vm._v(_vm._s(n + 1))]),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(0, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(0, n)) }
                 }),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(1, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(1, n)) }
                 }),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(2, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(2, n)) }
                 }),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(3, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(3, n)) }
                 })
               ])
             }),
@@ -28433,19 +28544,19 @@ var render = function() {
               _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(0, 8)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(0, 8)) }
               }),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(1, 8)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(1, 8)) }
               }),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(2, 8)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(2, 8)) }
               }),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(3, 8)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(3, 8)) }
               })
             ]),
             _vm._v(" "),
@@ -28454,19 +28565,19 @@ var render = function() {
                 _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(0, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(0, n)) }
                 }),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(1, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(1, n)) }
                 }),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(2, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(2, n)) }
                 }),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(3, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(3, n)) }
                 })
               ])
             }),
@@ -28475,19 +28586,19 @@ var render = function() {
               _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(0, 13)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(0, 13)) }
               }),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(1, 13)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(1, 13)) }
               }),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(2, 13)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(2, 13)) }
               }),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(3, 13)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(3, 13)) }
               })
             ]),
             _vm._v(" "),
@@ -28496,19 +28607,19 @@ var render = function() {
                 _c("th", { attrs: { scope: "row" } }, [_vm._v(_vm._s(22 - n))]),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(0, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(0, n)) }
                 }),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(1, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(1, n)) }
                 }),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(2, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(2, n)) }
                 }),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(3, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(3, n)) }
                 })
               ])
             }),
@@ -28517,19 +28628,19 @@ var render = function() {
               _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(0, 22)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(0, 22)) }
               }),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(1, 22)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(1, 22)) }
               }),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(2, 22)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(2, 22)) }
               }),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(3, 22)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(3, 22)) }
               })
             ]),
             _vm._v(" "),
@@ -28538,19 +28649,19 @@ var render = function() {
                 _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(0, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(0, n)) }
                 }),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(1, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(1, n)) }
                 }),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(2, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(2, n)) }
                 }),
                 _vm._v(" "),
                 _c("td", {
-                  domProps: { textContent: _vm._s(_vm.showScores(3, n)) }
+                  domProps: { innerHTML: _vm._s(_vm.showScores(3, n)) }
                 })
               ])
             }),
@@ -28559,19 +28670,19 @@ var render = function() {
               _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(0, 27)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(0, 27)) }
               }),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(1, 27)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(1, 27)) }
               }),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(2, 27)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(2, 27)) }
               }),
               _vm._v(" "),
               _c("td", {
-                domProps: { textContent: _vm._s(_vm.showResult(3, 27)) }
+                domProps: { innerHTML: _vm._s(_vm.showResult(3, 27)) }
               })
             ])
           ],
@@ -41452,7 +41563,8 @@ __webpack_require__.r(__webpack_exports__);
     }).listen('CardPlayEvent', function (event) {
       console.log('CardPlayEvent');
 
-      _this.game.cards.push(event.card);
+      _this.game.cards.push(event.card); //es check aris tu karti itamasha botma da movida serveridan timeout is shemdeg
+
 
       if (event.position === _this.ppm[0]) {
         var id = 0;
@@ -41476,6 +41588,8 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       _this.game.players[event.position].card = event.card;
+      _this.lastCardsStorage[_this.ppm.indexOf(event.position)] = Object.create(event.card);
+      _this.lastCardsStorage[_this.ppm.indexOf(event.position)].z = _this.game.cards.length;
 
       _this.hideCards(event.take);
     }).listen('StartGameEvent', function (event) {
@@ -41854,7 +41968,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   data: function data() {
     return {
       dealtCards: [],
-      setTrump: false
+      setTrump: false,
+      lastCards: [],
+      lastCardsStorage: []
     };
   },
   created: function created() {
@@ -41866,6 +41982,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       _this.setTrump = event.trump;
       setTimeout(function () {
         _this.showCards(_this.dealtCards, false);
+
+        _this.lastCards = [];
       }, 1000);
     });
   },
@@ -42032,6 +42150,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       if (take !== false) {
         this.nextTurn = take;
         setTimeout(function () {
+          _this3.lastCards = _this3.lastCardsStorage;
+          _this3.lastCardsStorage = [];
+
           var _iterator3 = _createForOfIteratorHelper(_this3.game.players),
               _step3;
 
