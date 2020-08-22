@@ -40,12 +40,14 @@ export default {
                         $('#player' + p).popover('hide');
                     }, 3000);
                 }
-                this.callSum += event.score.call;
-                this.game.players[event.position].scores.push(event.score);
+
+                this.game.scores[event.position].data[`q_${this.game.quarter}`].push(event.score);
                 this.game.except = event.except;
+                this.game.to_fill = event.to_fill;
                 this.game.turn = event.turn;
                 this.game.state = event.state;
                 this.playState = true;
+                this.showCallboard();
             })
             .listen('CardPlayEvent', event => {
                 console.log('CardPlayEvent');
@@ -94,8 +96,12 @@ export default {
                         .css('z-index', i)
                         .removeClass()
                         .addClass(cards[i].suit + cards[i].strength);
+
+                    this.playSound('card-play');
+
                     p = p === 3 ? 0 : p + 1;
                     i++;
+
                     if (i === cards.length) {
                         clearInterval(ace_ing);
                         setTimeout(() => {
@@ -132,6 +138,11 @@ export default {
 
                 $('#ready th').eq(event.position).addClass(color);
             })
+            .listen('UpdateTrumpEvent', event => {
+                this.game.trump = event.trump;
+                this.playState = true;
+                this.game.state = 'call';
+            })
             .listen('GameOverEvent', event => {
                 this.playState = false;
                 this.game = event.game;
@@ -142,9 +153,9 @@ export default {
                 }
                 $('#game-over').removeClass('d-none');
             })
-            .listenForWhisper('message', message => {
-                message.notification = false;
-                this.messages.push(message);
+            .listen('ChatMessageEvent', event => {
+                event.message.notification = false;
+                this.messages.push(event.message);
                 this.playSound('notification');
                 this.$nextTick(() => {
                     let el = document.getElementById('messages');

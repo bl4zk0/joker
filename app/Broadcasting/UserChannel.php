@@ -14,6 +14,6 @@ class UserChannel
      */
     public function join(User $user, $user_id)
     {
-        return $user->id == $user_id;
+        return $user->id === (int) $user_id;
     }
 }

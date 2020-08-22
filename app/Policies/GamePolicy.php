@@ -99,7 +99,7 @@ class GamePolicy
      * Determine whether the user can join the game.
      *
      * @param  \App\User  $user
-     * @param  $kicked_users
+     * @param  Game $game
      * @return mixed
      */
     public function join(User $user, Game $game)
@@ -111,12 +111,24 @@ class GamePolicy
      * Determine whether the user can active the bot.
      *
      * @param  \App\User  $user
-     * @param  $kicked_users
+     * @param Game $game
      * @return mixed
      */
     public function bot(User $user, Game $game)
     {
         $states = ['trump', 'call', 'card'];
         return $game->players->contains($user->player) && $user->player->position === $game->turn && in_array($game->state, $states);
+    }
+
+    /**
+     * Determine whether the user can broadcast a message.
+     *
+     * @param \App\User $user
+     * @param Game $game
+     * @return mixed
+     */
+    public function message(User $user, Game $game)
+    {
+        return $game->players->contains($user->player);
     }
 }

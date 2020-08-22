@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Events\CardDealEvent;
 use App\Events\CardPlayEvent;
+use App\Events\ChatMessageEvent;
 use App\Events\PlayerCallEvent;
 use App\Events\GetReadyEvent;
 use App\Events\PlayerJoinLeaveEvent;
 use App\Events\UpdateGameEvent;
 use App\Events\UpdateLobbyEvent;
 use App\Events\UpdateReadyEvent;
+use App\Events\UpdateTrumpEvent;
 use App\Game;
 use App\Jobs\PlayerBotJob;
 use App\Jobs\ResetGameStartJob;
@@ -33,10 +35,6 @@ class GamesController extends Controller
         if (! ($game->players()->count() === 4)) {
             abort(406, 'Not enough players');
         }
-
-        $game->start();
-
-        return response([], 200);
 
         $game->update(['state' => 'ready', 'ready' => ['players' => [auth()->id()], 'count' => 1]]);
 
@@ -78,18 +76,21 @@ class GamesController extends Controller
         ]);
 
         $strength = $request->trump == 'bez' ? 16 : 14;
-        $trump = $request->trump == 'bez' ? 'black_joker' : $request->trump;
+        $suit = $request->trump == 'bez' ? 'black_joker' : $request->trump;
+
+        $trump = ['suit' => $suit, 'strength' => $strength];
 
         $game->update([
             'state' => 'call',
-            'trump' => ['suit' => $trump, 'strength' => $strength]
+            'trump' => $trump
         ]);
 
+        broadcast(new UpdateTrumpEvent($game->id, $trump));
+
         $game->players->each(function ($player) {
-            broadcast(new CardDealEvent($player->user->id, $player->cards));
+            broadcast(new CardDealEvent($player->user_id, $player->cards));
         });
 
-        broadcast(new UpdateGameEvent($game));
 
         return response([], 200);
     }
@@ -109,12 +110,10 @@ class GamesController extends Controller
         $request->validate([
             'call' => ['required', 'integer', 'min:0', "max:$max", "not_in:$except"]
         ]);
+
         $player = auth()->user()->player;
-        $score = $player->scores()->create([
-            'quarter' => $game->quarter,
-            'call' => $request->call,
-            'color' => 'white'
-        ]);
+
+        $score = $game->scores[$player->position]->createCall($game->quarter, $request->call);
 
         $game->updateTurn();
         $game->updateCallCount();
@@ -163,6 +162,7 @@ class GamesController extends Controller
 
         $card = $game->addCard($card, $player);
         $checkTake = $game->checkTake();
+
         broadcast (new CardPlayEvent($game->id, $player->position, $card, $checkTake))->toOthers();
 
         if ($checkTake !== false) {
@@ -226,6 +226,8 @@ class GamesController extends Controller
      */
     public function show(Request $request, Game $game)
     {
+        if ($game->state == 'finished') abort(404);
+
         $pin = null;
 
         if ($game->password != null) {
@@ -329,6 +331,19 @@ class GamesController extends Controller
                 PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());
             }
         }
+    }
+
+    public function message(Request $request, Game $game)
+    {
+        $this->authorize('message', $game);
+
+        $request->validate([
+            'message' => ['required', 'string']
+        ]);
+
+        $message = ['username' => auth()->user()->username, 'message' => $request->message];
+
+        broadcast(new ChatMessageEvent($game->id, $message))->toOthers();
     }
 
     public function bot(Game $game)

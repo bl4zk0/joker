@@ -1,6 +1,9 @@
 <template>
     <div class="d-flex justify-content-center">
-        <component :is="scoreboard" :initial-players="game.players" :penalty="game.penalty"></component>
+        <component :is="scoreboard"
+                   :initial-players="game.players"
+                   :initial-scores="game.scores"
+                   :penalty="game.penalty"></component>
 
         <div id="play-table">
             <div id="mute" class="btn-table">
@@ -44,7 +47,8 @@
             <!-- last played cards -->
             <div id="last-cards" class="border rounded bg-success shadow" v-show="showLastCards">
                 <div class="last-cards-wrapper">
-                    <div v-for="(card, idx) in lastCards"
+                    <div v-if="lastCards.length ===4"
+                         v-for="(card, idx) in lastCards"
                          :id="`player${idx}-last-card`"
                          class="p-card"
                          :class="card.suit + card.strength"
@@ -148,11 +152,9 @@
                 </button>
             </div>
 
-            <div id="callboard"
-                 class="bg-white border rounded shadow pt-1 pl-1"
-                 v-show="game.state === 'call' && turn">
-
-                <button class="btn btn-light mb-1 mr-1"
+            <div id="callboard" class="bg-white border rounded shadow pt-1 pl-1 d-none">
+                <button class="btn mb-1 mr-1"
+                        :class="idx === Number(game.to_fill) ? 'btn-success': 'btn-light'"
                         v-for="idx in callboard"
                         v-text="idx === 0 ? '-' : idx"
                         :data-value="idx"
@@ -228,9 +230,9 @@
                     <a href="/lobby" class="btn btn-outline-light"><i class="fas fa-arrow-circle-left"></i></a>
                 </div>
                 <div class="d-flex justify-content-center">
-                    <h5 class="alert alert-warning">თამაში დასრულდა!</h5>
                     <div class="card mt-5">
                         <div class="card-body text-center">
+                            <h5 class="alert alert-warning">თამაში დასრულდა!</h5>
                             <div v-for="n in [0,1,2,3]" :id="`place-${n}`" class="game-over-card">
                                 <h5 :class="n > 1 ? 'text-danger' : 'text-success'">{{ n+1 }} <i class="fas fa-trophy"></i></h5>
                                 <img src="#" class="avatar border rounded-circle" alt="avatar">
@@ -304,7 +306,7 @@
                 card: {},
                 actions: {"magali": "მაღალი", "caigos": "წაიღოს", "mojokra": "მოჯოკრა", "kvevidan": "ქვევიდან"},
                 actionsuits: {"hearts": "♥", "clubs": "♣", "diamonds": "♦", "spades": "♠"},
-                messages: [{username: '[system]', message: 'ჩათის გასასუფთავებლად დაწერეთ "/clear"'}],
+                messages: [{username: '[system]', message: 'ჩათის გასასუფთავებლად დაწერეთ "clear"'}],
                 showLastCards: false,
                 botTimer: App.bot_timer / 1000,
                 showBotTimer: false,
@@ -322,6 +324,8 @@
 
                 if (this.game.quarter % 2 === 0 || this.game.type === 9) {
                     max = 10;
+                } else if (this.game.quarter === 3 && this.game.type === 1) {
+                    max = 10 - this.game.hand_count;
                 } else {
                     max = this.game.hand_count + 1;
                 }
@@ -438,9 +442,6 @@
                     this.clearBotTimer();
 
                     axios.post('/trump/games/' + this.game.id, {trump: suit})
-                        .then(response => {
-                            this.playState = true;
-                        })
                         .catch(error => {
                             location.reload();
                         });
@@ -485,20 +486,16 @@
                     return;
                 }
 
+                $('#callboard').addClass('d-none');
                 this.playState = false;
-
+                this.clearBotTimer();
                 this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
 
                 let call = {
                     call: event.target.getAttribute('data-value')
                 }
 
-                this.clearBotTimer();
-
                 axios.post('/call/games/' + this.game.id, call)
-                    .then(response => {
-                        this.playState = true;
-                    })
                     .catch(error => {
                         location.reload();
                     });
@@ -518,7 +515,14 @@
                 this.hideCards(this.checkTake());
             },
 
-            setBotTimer() {
+            setBotTimer(ms = false) {
+                if (App.bot_disabled) return;
+                if (! ms) {
+                    ms = App.bot_timer;
+                } else {
+                    this.botTimer = ms / 1000;
+                }
+
                 console.log('bot timer activated');
                 this.showBotTimer = true;
                 this.botInterval = setInterval(() => {
@@ -530,8 +534,9 @@
                     this.playState = false;
 
                     if (this.game.state === 'trump') $('#suits').addClass('d-none');
+                    if (this.game.state === 'call') $('#callboard').addClass('d-none');
 
-                    if (this.game.state === 'card' && this.card.hasOwnProperty('card')){
+                    if (this.game.state === 'card' && this.card.hasOwnProperty('action')){
                         if (! $('#jokhigh').hasClass('d-none')) $('#jokhigh').addClass('d-none');
                         if (! $('#jokjoker').hasClass('d-none')) $('#jokjoker').addClass('d-none');
                         if (! $('#suits').hasClass('d-none')) $('#suits').addClass('d-none');
@@ -546,7 +551,7 @@
                             location.reload();
                         });
 
-                }, Number(App.bot_timer));
+                }, Number(ms));
             },
 
             clearBotTimer() {

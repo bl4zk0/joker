@@ -16,11 +16,9 @@ class CreateScoresTable extends Migration
         Schema::create('scores', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('player_id');
-            $table->unsignedTinyInteger('quarter');
-            $table->unsignedTinyInteger('call')->nullable();
-            $table->unsignedTinyInteger('take')->default(0);
-            $table->integer('result')->nullable();
-            $table->string('color')->default('white');
+            $table->unsignedTinyInteger('position');
+            $table->unsignedBigInteger('game_id');
+            $table->text('data');
             $table->timestamps();
         });
     }

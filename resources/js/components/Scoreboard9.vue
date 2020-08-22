@@ -8,9 +8,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="n in 20" :class="n % 5 === 0 ? 'bg-info' : ''">
-                    <th scope="row">{{ n % 5 === 0 ? '&Sigma;' : 9 }}</th>
-                    <td v-for="p in [0,1,2,3]" v-html="n % 5 === 0 ? showResult(p , n - 1) : showScores(p , n - 1)"></td>
+                <tr v-for="(n,idx) in [0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0,1,2,3,4]" :class="n === 4 ? 'bg-info' : ''">
+                    <th scope="row">{{ n === 4 ? '&Sigma;' : 9 }}</th>
+                    <td v-for="p in [0,1,2,3]" v-html="n === 4 ? showResult(p , Math.ceil((idx + 1) / 5), n) : showScores(p , Math.ceil((idx + 1) / 5), n )"></td>
                 </tr>
             </tbody>
         </table>

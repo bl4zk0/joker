@@ -24,7 +24,7 @@ export default {
 
     methods: {
         showCards(cards, initial) {
-            if (this.game.state === 'void' || this.game.state === 'ready' || this.game.state === 'start') return;
+            if (this.game.state === 'ready' || this.game.state === 'start') return;
 
             cards = cards === null ? [] : cards;
             cards.sort( (a, b) => {
@@ -35,8 +35,8 @@ export default {
             let player = this.players[this.ppm[0]];
             player.cards = cards;
             if (this.game.state === 'card') {
-                let scoresL = this.game.players[this.ppm[0]].scores.length - 1;
-                let take = this.game.players[this.ppm[0]].scores[scoresL].take;
+                let scoresL = this.game.scores[this.ppm[0]].data[`q_${this.game.quarter}`].length - 1;
+                let take = this.game.scores[this.ppm[0]].data[`q_${this.game.quarter}`][scoresL].take;
                 player.takenCards = Array.from(new Array(take).keys());
 
             } else {
@@ -50,8 +50,8 @@ export default {
                     cardsL = this.game.players[this.ppm[i]].cards_count;
                     cardsL = this.game.state === 'trump' ? 3 : cardsL;
                     if (this.game.state === 'card') {
-                        scoresLL = this.game.players[this.ppm[i]].scores.length - 1;
-                        let takee = this.game.players[this.ppm[i]].scores[scoresLL].take;
+                        scoresLL = this.game.scores[this.ppm[i]].data[`q_${this.game.quarter}`].length - 1;
+                        let takee = this.game.scores[this.ppm[i]].data[`q_${this.game.quarter}`][scoresLL].take;
                         this.players[this.ppm[i]].takenCards = Array.from(new Array(takee).keys());
                     }
                 } else {
@@ -61,8 +61,10 @@ export default {
                 this.players[this.ppm[i]].cards = Array.from(new Array(cardsL).keys());
             }
 
-            if (this.setTrump) {
-                $('#suits').removeClass('d-none');
+            if (! initial) {
+                this.showCallboard();
+
+                if (this.setTrump) $('#suits').removeClass('d-none');
             }
 
             this.dealtCards = [];

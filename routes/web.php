@@ -43,4 +43,5 @@ Route::group(['middleware' => ['auth', 'disconnected']], function () {
     Route::post('/kick/games/{game}', 'GamesController@kick');
     Route::post('/leave/games/{game}', 'GamesController@leave');
     Route::post('/bot/games/{game}', 'GamesController@bot');
+    Route::post('/message/games/{game}', 'GamesController@message')->middleware('throttle:15,1');
 });

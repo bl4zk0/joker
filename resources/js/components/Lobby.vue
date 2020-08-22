@@ -24,7 +24,7 @@
                 </li>
 
                 <li class="list-group-item">
-                    <a :href="path(game.id)" class="btn btn-block btn-success" :class="klas(game.players.length)">შესვლა</a>
+                    <a :href="path(game.id)" class="btn btn-block btn-success" :class="klas(game.players.length, game.kicked_users)">შესვლა</a>
                 </li>
             </ul>
         </div>
@@ -53,8 +53,8 @@
             path(id) {
                 return '/games/' + id;
             },
-            klas(n) {
-                return n === 4 ? 'disabled' : '';
+            klas(len, kicked_users) {
+                return (len === 4 || kicked_users.indexOf(App.user.id) >= 0) ? 'disabled' : '';
             }
         }
     }

@@ -8,14 +8,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
-
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="16x16">
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script>
         window.App = {!! json_encode([
             'user' => Auth::user(),
             'url' => env('APP_URL'),
-            'bot_timer' => env('BOT_TIMER')
+            'bot_timer' => env('BOT_TIMER'),
+            'bot_disabled' => env('BOT_DISABLED')
         ]) !!};
     </script>
 

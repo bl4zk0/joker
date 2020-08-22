@@ -42,6 +42,8 @@ export default {
             this.windowWidth = window.innerWidth
         };
 
+        this.showCallboard();
+
         if (this.game.state === 'trump' && this.turn) {
             $('#suits').removeClass('d-none');
         }
@@ -53,7 +55,7 @@ export default {
         });
 
         if (this.botTimerActive) {
-            this.setBotTimer();
+            this.setBotTimer(6000);
         }
     },
 
@@ -239,6 +241,12 @@ export default {
             audio.currentTime = 0;
             audio.muted = false;
             audio.play();
+        },
+
+        showCallboard() {
+            if (this.turn && this.game.state === 'call') {
+                $('#callboard').removeClass('d-none');
+            }
         }
     }
 }

@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Events\CardDealEvent;
-use App\Events\CardPlayEvent;
 use App\Events\GameOverEvent;
 use App\Events\StartGameEvent;
 use App\Events\UpdateGameEvent;
@@ -13,16 +12,17 @@ use Illuminate\Database\Eloquent\Model;
 class Game extends Model
 {
     protected $guarded = [];
-    protected $with = ['creator', 'players'];
-    protected $hidden = ['password', 'ready', 'kicked_users', 'created_at', 'updated_at', 'creator', 'call_count'];
-    protected $appends = ['except'];
+    protected $with = ['players', 'scores'];
+    protected $hidden = ['password', 'ready', 'created_at', 'updated_at', 'creator', 'call_count'];
+    protected $appends = ['except', 'to_fill'];
     protected $casts = [
         'cards' => 'array',
         'kicked_users' => 'array',
         'trump' => 'array',
         'ready' => 'array',
         'turn' => 'integer',
-        'quarter' => 'integer'
+        'quarter' => 'integer',
+        'hand_count' => 'integer'
     ];
 
     protected static function boot()
@@ -30,8 +30,9 @@ class Game extends Model
         parent::boot();
 
         static::deleting(function($game) {
+            $game->scores()->delete();
+
             $game->players->each(function ($player) {
-                $player->scores()->delete();
                 $player->update([
                     'game_id' => null,
                     'position' => null,
@@ -43,9 +44,26 @@ class Game extends Model
         });
     }
 
+    public function players()
+    {
+        return $this->hasMany(Player::class)->orderBy('position');
+    }
+
+    public function scores()
+    {
+        return $this->hasMany(Score::class)->orderBy('position');
+    }
+
     public function start()
     {
         $cards = $this->setPositions();
+
+        $this->players->each(function ($player) {
+            $this->scores()->create([
+                'player_id' => $player->id,
+                'position' => $player->position
+            ]);
+        });
 
         $this->deal();
 
@@ -102,7 +120,8 @@ class Game extends Model
             $position = -1;
             foreach ($this->players as $player) {
                 if ($player->card == $highestCard) {
-                    $player->scores()->latest()->first()->increment('take');
+                    //$player->scores()->latest()->first()->increment('take');
+                    $this->scores[$player->position]->incrementTake($this->quarter);
                     $this->update(['turn' => $player->position]);
                     $position = $player->position;
                 }
@@ -202,12 +221,13 @@ class Game extends Model
 
     public function finishGame()
     {
-        $scores = $this->scores()->latest()->limit(4)->get()->sortByDesc('result');
-        $scores->each(function ($s) {
-            $s->append('position');
+        $scores = $this->scores;
+
+        $scores = $scores->map(function ($score) {
+            return ['position' => $score->position, 'result' => $score->getData('result', 4, 5)];
         });
 
-        $scores = $scores->toArray();
+        $scores = $scores->sortByDesc('result')->values()->all();
 
         for ($i = 0; $i < 4; $i++) {
             if ($i == 0 || $i == 1) {
@@ -222,7 +242,15 @@ class Game extends Model
 
         broadcast(new GameOverEvent($this, $scores));
 
-        $this->delete();
+        $this->players->each(function ($player) {
+            $player->update([
+                'game_id' => null,
+                'position' => null,
+                'card' => null,
+                'cards' => null,
+                'disconnected' => false
+            ]);
+        });
     }
 
     public function calcScoresAfterHand()
@@ -230,18 +258,8 @@ class Game extends Model
         $all = $this->numCardsToDeal();
         $penalty = $this->penalty;
 
-        $this->players->each(function ($player) use($all, $penalty) {
-            $score = $player->scores()->latest()->first();
-
-            if ($score->call == $score->take && $score->call == $all) {
-                $score->update(['result' => $score->call * 100]);
-            } elseif ($score->call == $score->take) {
-                $score->update(['result' => $score->call * 50 + 50]);
-            } elseif ($score->take == 0) {
-                $score->update(['result' => $penalty]);
-            } else {
-                $score->update(['result' => $score->take * 10]);
-            }
+        $this->scores->each(function ($score) use ($all, $penalty) {
+            $score->calcHandResult($this->quarter, $all, $penalty);
         });
     }
 
@@ -251,60 +269,47 @@ class Game extends Model
 
         switch ($perfectNum) {
             case 1:
-                foreach($this->players as $player)
-                {
-                    $sum = $player->scores()->where('quarter', $this->quarter)->sum('result');
-                    $max = $player->scores()->where('quarter', $this->quarter)->max('result');
-                    if ($player->scores()->where('quarter', $this->quarter)->whereColumn('call', 'take')->count() == $this->hand_count) {
+                foreach($this->scores as $score) {
+                    $sum = $score->sumResult($this->quarter);
+                    $max = $score->maxResult($this->quarter);
+                    if ($score->perfectResults($this->quarter)) {
                         $result = $sum + $max;
-                        $player
-                            ->scores()
-                            ->where([['quarter', $this->quarter], ['result', $max]])
-                            ->first()
-                            ->update(['color' => 'yellow']);
+                        $color = 'y';
                     } else {
                         $result = $sum - $max;
-                        $player
-                            ->scores()
-                            ->where([['quarter', $this->quarter], ['result', $max]])
-                            ->first()
-                            ->update(['color' => 'red']);
+                        $color = 'r';
                     }
 
-                    $this->createResult($player, $result);
+                    $score->updateColor($this->quarter, $color, $max);
+                    $this->createResult($score, $result);
                 }
                 break;
             case 2:
-                foreach($this->players as $player)
-                {
-                    $sum = $player->scores()->where('quarter', $this->quarter)->sum('result');
-                    $max = $player->scores()->where('quarter', $this->quarter)->max('result');
-                    if ($player->scores()->where('quarter', $this->quarter)->whereColumn('call', 'take')->count() == $this->hand_count) {
+                foreach($this->scores as $score) {
+                    $sum = $score->sumResult($this->quarter);
+                    $max = $score->maxResult($this->quarter);
+                    if ($score->perfectResults($this->quarter)) {
                         $result = $sum + $max;
-                        $player
-                            ->scores()
-                            ->where([['quarter', $this->quarter], ['result', $max]])
-                            ->first()
-                            ->update(['color' => 'yellow']);
+                        $color = 'y';
                     } else {
                         $result = $sum;
                     }
 
-                    $this->createResult($player, $result);
+                    $score->updateColor($this->quarter, $color, $max);
+                    $this->createResult($score, $result);
                 }
                 break;
             default:
-                foreach($this->players as $player)
-                {
-                    $result = $player->scores()->where('quarter', $this->quarter)->sum('result');
+                foreach($this->scores as $score) {
+                    $result = $score->sumResult($this->quarter);
 
-                    $this->createResult($player, $result);
+                    $this->createResult($score, $result);
                 }
                 break;
         }
     }
 
-    public function deal($start = false)
+    public function deal()
     {
         $deck = new Deck;
         $num = $this->numCardsToDeal();
@@ -343,15 +348,15 @@ class Game extends Model
         if ($num != 9) {
             $this->update(['state' => 'call', 'trump' => $card]);
             $this->players->each(function ($player) {
-                broadcast(new CardDealEvent($player->user->id, $player->cards));
+                broadcast(new CardDealEvent($player->user_id, $player->cards));
             });
         } else {
             $this->update(['state' => 'trump']);
             $this->players->each(function ($player) {
                 if ($this->turn == $player->position) {
-                    broadcast(new CardDealEvent($player->user->id, array_slice($player->cards, 0, 3), true));
+                    broadcast(new CardDealEvent($player->user_id, array_slice($player->cards, 0, 3), true));
                 } else {
-                    broadcast(new CardDealEvent($player->user->id, array_slice($player->cards, 0, 3)));
+                    broadcast(new CardDealEvent($player->user_id, array_slice($player->cards, 0, 3)));
                 }
             });
         }
@@ -364,7 +369,8 @@ class Game extends Model
 
     public function numCardsToDeal()
     {
-        if ($this->type == 9 || $this->quarter % 2 == 0) return 9;
+        if ($this->quarter % 2 == 0 || $this->type == 9) return 9;
+        if ($this->quarter == 3 && $this->type == 1) return 9 - $this->hand_count;
 
         return $this->hand_count;
     }
@@ -372,11 +378,9 @@ class Game extends Model
     public function numPerfectInScores()
     {
         $count = 0;
-        foreach($this->players as $player)
+        foreach($this->scores as $score)
         {
-            if ($player->scores()->where('quarter', $this->quarter)->whereColumn('call', 'take')->count() == $this->hand_count) {
-                $count++;
-            }
+            if ($score->perfectResults($this->quarter)) $count++;
         }
 
         return $count;
@@ -408,11 +412,6 @@ class Game extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'user_id');
-    }
-
-    public function players()
-    {
-        return $this->hasMany(Player::class)->orderBy('position', 'asc');
     }
 
     public function addPlayer(User $user)
@@ -488,16 +487,25 @@ class Game extends Model
         }
     }
 
-    public function scores()
-    {
-        return $this->hasManyThrough(Score::class, Player::class);
-    }
-
     public function exceptCall()
     {
         if ($this->call_count != 3) return -1;
 
-        $sum = $this->scores()->latest()->limit(3)->get()->sum('call');
+        $sum = $this->scores->sum(function ($score) {
+            return $score->getData('call', $this->quarter, $this->hand_count);
+        });
+        $max = $this->numCardsToDeal();
+
+        return $max - $sum;
+    }
+
+    public function getToFillAttribute()
+    {
+        if ($this->call_count >= 3) return -1;
+
+        $sum = $this->scores->sum(function ($score) {
+            return $score->getData('call', $this->quarter, $this->hand_count);
+        });
         $max = $this->numCardsToDeal();
 
         return $max - $sum;
@@ -539,13 +547,19 @@ class Game extends Model
         $this->reposition();
     }
 
-    public function createResult($player, $result)
+    public function createResult($score, $result)
     {
         if ($this->quarter > 1) {
-            $prevResult = $player->scores()->where([['quarter', $this->quarter - 1], ['call', null]])->max('result');
+            $prevResult = $score->maxResult($this->quarter - 1);
             $result += $prevResult;
         }
 
-        $player->scores()->create(['quarter' => $this->quarter, 'result' => $result]);
+        $score->createResult($this->quarter, $result);
+    }
+
+    // for admin purposes
+    public function botPlay()
+    {
+        PlayerBotJob::dispatch($this->players[$this->turn], $this)->delay(now()->addSecond());
     }
 }

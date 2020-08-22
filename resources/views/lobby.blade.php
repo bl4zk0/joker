@@ -59,7 +59,7 @@
                             <input type="checkbox" class="form-check-input" id="pwd" name="password">
                             <label class="form-check-label" for="pwd">პინ-კოდი</label>
                         </div>
-                        <button class="btn btn-primary btn-block">მაგიდის შექმნა</button>
+                        <button class="btn btn-primary btn-block" onclick="Echo.leave('lobby')">მაგიდის შექმნა</button>
                     </form>
                 </div>
             </div>

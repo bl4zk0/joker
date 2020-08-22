@@ -8,6 +8,7 @@ use App\Events\CardDealEvent;
 use App\Events\CardPlayEvent;
 use App\Events\PlayerCallEvent;
 use App\Events\UpdateGameEvent;
+use App\Events\UpdateTrumpEvent;
 use App\Jobs\PlayerBotJob;
 
 class PlayerBot
@@ -26,15 +27,19 @@ class PlayerBot
 
     public function trump()
     {
-        $this->game->update(['state' => 'call', 'trump' => ['strength' => 16, 'suit' => 'black_joker']]);
+        $trump = ['strength' => 16, 'suit' => 'black_joker'];
+
+        $this->game->update(['state' => 'call', 'trump' => $trump]);
+
+        broadcast(new UpdateTrumpEvent($this->game->id, $trump));
+
         $this->game->players->each(function ($player) {
             broadcast(new CardDealEvent($player->user_id, $player->cards));
         });
 
-        broadcast(new UpdateGameEvent($this->game));
-
-        PlayerBotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSecond());
-
+        if ($this->game->players[$this->game->turn]->disconnected) {
+            PlayerBotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSecond());
+        }
     }
 
     public function call()
@@ -49,11 +54,7 @@ class PlayerBot
             $call = $except == 0 ? 1 : 0;
         }
 
-        $score = $this->player->scores()->create([
-            'quarter' => $this->game->quarter,
-            'call' => $call,
-            'color' => 'white'
-        ]);
+        $score = $this->game->scores[$this->player->position]->createCall($this->game->quarter, $call);
 
         $this->game->updateTurn();
         $this->game->updateCallCount();

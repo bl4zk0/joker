@@ -60,7 +60,7 @@
             },
 
             sendMessage() {
-                if (this.message === '/clear') {
+                if (this.message === 'clear') {
                     this.$emit('clear-chat');
                     this.message = '';
                     return;
@@ -73,8 +73,12 @@
                     };
 
                     this.messages.push(message);
-                    Echo.private('game.' + this.gameId)
-                        .whisper('message', message);
+
+                    axios.post('/message/games/' + this.gameId, {message: this.message})
+                        .catch(error => {
+                            console.log('თქვენ ძალიან ბევრს წერთ, ჯობია ითამაშოთ!');
+                        });
+
                     this.message = '';
                     this.dEmojis = false;
                     this.$nextTick(() => {

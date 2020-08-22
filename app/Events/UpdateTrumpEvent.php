@@ -8,34 +8,23 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class PlayerCallEvent implements ShouldBroadcastNow
+class UpdateTrumpEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     private $gameId;
-    public $turn;
-    public $state;
-    public $score;
-    public $position;
-    public $except;
-    public $to_fill;
+    public $trump;
 
     /**
      * Create a new event instance.
      *
-     * @param $game
-     * @param $score
-     * @param $position
+     * @param $gameId
+     * @param $trump
      */
-    public function __construct($game, $score, $position)
+    public function __construct($gameId, $trump)
     {
-        $this->gameId = $game->id;
-        $this->except = $game->except;
-        $this->to_fill = $game->to_fill;
-        $this->turn = $game->turn;
-        $this->state = $game->state;
-        $this->score = $score;
-        $this->position = $position;
+        $this->gameId = $gameId;
+        $this->trump = $trump;
     }
 
     /**

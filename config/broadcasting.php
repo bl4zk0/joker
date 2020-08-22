@@ -38,6 +38,7 @@ return [
             'options' => [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
                 'useTLS' => env('PUSHER_FORCE_TLS'),
+                // for laravel-websockets
                 'host' => '127.0.0.1',
                 'port' => 6001,
                 'scheme' => 'https',

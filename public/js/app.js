@@ -1960,7 +1960,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     sendMessage: function sendMessage() {
-      if (this.message === '/clear') {
+      if (this.message === 'clear') {
         this.$emit('clear-chat');
         this.message = '';
         return;
@@ -1972,7 +1972,11 @@ __webpack_require__.r(__webpack_exports__);
           message: this.message
         };
         this.messages.push(message);
-        Echo["private"]('game.' + this.gameId).whisper('message', message);
+        axios.post('/message/games/' + this.gameId, {
+          message: this.message
+        })["catch"](function (error) {
+          console.log('თქვენ ძალიან ბევრს წერთ, ჯობია ითამაშოთ!');
+        });
         this.message = '';
         this.dEmojis = false;
         this.$nextTick(function () {
@@ -2327,6 +2331,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -2373,7 +2379,7 @@ __webpack_require__.r(__webpack_exports__);
       },
       messages: [{
         username: '[system]',
-        message: 'ჩათის გასასუფთავებლად დაწერეთ "/clear"'
+        message: 'ჩათის გასასუფთავებლად დაწერეთ "clear"'
       }],
       showLastCards: false,
       botTimer: App.bot_timer / 1000,
@@ -2390,6 +2396,8 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.game.quarter % 2 === 0 || this.game.type === 9) {
         max = 10;
+      } else if (this.game.quarter === 3 && this.game.type === 1) {
+        max = 10 - this.game.hand_count;
       } else {
         max = this.game.hand_count + 1;
       }
@@ -2491,8 +2499,6 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     actionSuit: function actionSuit(event) {
-      var _this2 = this;
-
       if (!this.turn) {
         console.log('wrong turn or state');
         return;
@@ -2506,8 +2512,6 @@ __webpack_require__.r(__webpack_exports__);
         this.clearBotTimer();
         axios.post('/trump/games/' + this.game.id, {
           trump: suit
-        }).then(function (response) {
-          _this2.playState = true;
         })["catch"](function (error) {
           location.reload();
         });
@@ -2535,32 +2539,29 @@ __webpack_require__.r(__webpack_exports__);
       $('#suits').addClass('d-none');
     },
     sendCard: function sendCard() {
-      var _this3 = this;
+      var _this2 = this;
 
       axios.post('/card/games/' + this.game.id, this.card).then(function (response) {
-        _this3.card = {};
-        _this3.cardId = null;
+        _this2.card = {};
+        _this2.cardId = null;
       })["catch"](function (error) {
         location.reload();
       });
     },
     call: function call(event) {
-      var _this4 = this;
-
       if (!this.turn || this.game.state !== 'call' || !this.playState) {
         console.log('wrong turn or state');
         return;
       }
 
+      $('#callboard').addClass('d-none');
       this.playState = false;
+      this.clearBotTimer();
       this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
       var call = {
         call: event.target.getAttribute('data-value')
       };
-      this.clearBotTimer();
-      axios.post('/call/games/' + this.game.id, call).then(function (response) {
-        _this4.playState = true;
-      })["catch"](function (error) {
+      axios.post('/call/games/' + this.game.id, call)["catch"](function (error) {
         location.reload();
       });
     },
@@ -2576,31 +2577,41 @@ __webpack_require__.r(__webpack_exports__);
       this.hideCards(this.checkTake());
     },
     setBotTimer: function setBotTimer() {
-      var _this5 = this;
+      var _this3 = this;
+
+      var ms = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      if (App.bot_disabled) return;
+
+      if (!ms) {
+        ms = App.bot_timer;
+      } else {
+        this.botTimer = ms / 1000;
+      }
 
       console.log('bot timer activated');
       this.showBotTimer = true;
       this.botInterval = setInterval(function () {
-        _this5.botTimer--;
-        if (_this5.botTimer === 5) _this5.playSound('timer');
+        _this3.botTimer--;
+        if (_this3.botTimer === 5) _this3.playSound('timer');
       }, 1000);
       this.botTimeout = setTimeout(function () {
-        _this5.playState = false;
-        if (_this5.game.state === 'trump') $('#suits').addClass('d-none');
+        _this3.playState = false;
+        if (_this3.game.state === 'trump') $('#suits').addClass('d-none');
+        if (_this3.game.state === 'call') $('#callboard').addClass('d-none');
 
-        if (_this5.game.state === 'card' && _this5.card.hasOwnProperty('card')) {
+        if (_this3.game.state === 'card' && _this3.card.hasOwnProperty('action')) {
           if (!$('#jokhigh').hasClass('d-none')) $('#jokhigh').addClass('d-none');
           if (!$('#jokjoker').hasClass('d-none')) $('#jokjoker').addClass('d-none');
           if (!$('#suits').hasClass('d-none')) $('#suits').addClass('d-none');
         }
 
-        clearInterval(_this5.botInterval);
-        _this5.botTimer = App.bot_timer / 1000;
-        _this5.showBotTimer = false;
-        axios.post('/bot/games/' + _this5.game.id)["catch"](function (error) {
+        clearInterval(_this3.botInterval);
+        _this3.botTimer = App.bot_timer / 1000;
+        _this3.showBotTimer = false;
+        axios.post('/bot/games/' + _this3.game.id)["catch"](function (error) {
           location.reload();
         });
-      }, Number(App.bot_timer));
+      }, Number(ms));
     },
     clearBotTimer: function clearBotTimer() {
       console.log('bot timer cleared');
@@ -2800,8 +2811,8 @@ __webpack_require__.r(__webpack_exports__);
     path: function path(id) {
       return '/games/' + id;
     },
-    klas: function klas(n) {
-      return n === 4 ? 'disabled' : '';
+    klas: function klas(len, kicked_users) {
+      return len === 4 || kicked_users.indexOf(App.user.id) >= 0 ? 'disabled' : '';
     }
   }
 });
@@ -2818,46 +2829,6 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_scoreboard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/scoreboard */ "./resources/js/mixins/scoreboard.js");
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -27423,6 +27394,7 @@ var render = function() {
         tag: "component",
         attrs: {
           "initial-players": _vm.game.players,
+          "initial-scores": _vm.game.scores,
           penalty: _vm.game.penalty
         }
       }),
@@ -27589,40 +27561,42 @@ var render = function() {
                 "div",
                 { staticClass: "last-cards-wrapper" },
                 _vm._l(_vm.lastCards, function(card, idx) {
-                  return _c(
-                    "div",
-                    {
-                      staticClass: "p-card",
-                      class: card.suit + card.strength,
-                      style: "z-index:" + card.z,
-                      attrs: { id: "player" + idx + "-last-card" }
-                    },
-                    [
-                      card.action
-                        ? _c("div", { staticClass: "card-action" }, [
-                            _c("div", [
-                              _c("span", {
-                                domProps: {
-                                  textContent: _vm._s(
-                                    _vm.actions[card["action"]]
-                                  )
-                                }
-                              }),
-                              _vm._v(" "),
-                              _c("span", {
-                                class: _vm.suitColor(card["actionsuit"]),
-                                staticStyle: { "font-size": "24px" },
-                                domProps: {
-                                  textContent: _vm._s(
-                                    _vm.actionsuits[card["actionsuit"]]
-                                  )
-                                }
-                              })
-                            ])
-                          ])
-                        : _vm._e()
-                    ]
-                  )
+                  return _vm.lastCards.length === 4
+                    ? _c(
+                        "div",
+                        {
+                          staticClass: "p-card",
+                          class: card.suit + card.strength,
+                          style: "z-index:" + card.z,
+                          attrs: { id: "player" + idx + "-last-card" }
+                        },
+                        [
+                          card.action
+                            ? _c("div", { staticClass: "card-action" }, [
+                                _c("div", [
+                                  _c("span", {
+                                    domProps: {
+                                      textContent: _vm._s(
+                                        _vm.actions[card["action"]]
+                                      )
+                                    }
+                                  }),
+                                  _vm._v(" "),
+                                  _c("span", {
+                                    class: _vm.suitColor(card["actionsuit"]),
+                                    staticStyle: { "font-size": "24px" },
+                                    domProps: {
+                                      textContent: _vm._s(
+                                        _vm.actionsuits[card["actionsuit"]]
+                                      )
+                                    }
+                                  })
+                                ])
+                              ])
+                            : _vm._e()
+                        ]
+                      )
+                    : _vm._e()
                 }),
                 0
               )
@@ -27839,20 +27813,16 @@ var render = function() {
           _c(
             "div",
             {
-              directives: [
-                {
-                  name: "show",
-                  rawName: "v-show",
-                  value: _vm.game.state === "call" && _vm.turn,
-                  expression: "game.state === 'call' && turn"
-                }
-              ],
-              staticClass: "bg-white border rounded shadow pt-1 pl-1",
+              staticClass: "bg-white border rounded shadow pt-1 pl-1 d-none",
               attrs: { id: "callboard" }
             },
             _vm._l(_vm.callboard, function(idx) {
               return _c("button", {
-                staticClass: "btn btn-light mb-1 mr-1",
+                staticClass: "btn mb-1 mr-1",
+                class:
+                  idx === Number(_vm.game.to_fill)
+                    ? "btn-success"
+                    : "btn-light",
                 attrs: { "data-value": idx, disabled: _vm.game.except === idx },
                 domProps: { textContent: _vm._s(idx === 0 ? "-" : idx) },
                 on: { click: _vm.call }
@@ -28189,41 +28159,43 @@ var render = function() {
               _vm._m(3),
               _vm._v(" "),
               _c("div", { staticClass: "d-flex justify-content-center" }, [
-                _c("h5", { staticClass: "alert alert-warning" }, [
-                  _vm._v("თამაში დასრულდა!")
-                ]),
-                _vm._v(" "),
                 _c("div", { staticClass: "card mt-5" }, [
                   _c(
                     "div",
                     { staticClass: "card-body text-center" },
-                    _vm._l([0, 1, 2, 3], function(n) {
-                      return _c(
-                        "div",
-                        {
-                          staticClass: "game-over-card",
-                          attrs: { id: "place-" + n }
-                        },
-                        [
-                          _c(
-                            "h5",
-                            { class: n > 1 ? "text-danger" : "text-success" },
-                            [
-                              _vm._v(_vm._s(n + 1) + " "),
-                              _c("i", { staticClass: "fas fa-trophy" })
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _c("img", {
-                            staticClass: "avatar border rounded-circle",
-                            attrs: { src: "#", alt: "avatar" }
-                          }),
-                          _vm._v(" "),
-                          _vm._m(4, true)
-                        ]
-                      )
-                    }),
-                    0
+                    [
+                      _c("h5", { staticClass: "alert alert-warning" }, [
+                        _vm._v("თამაში დასრულდა!")
+                      ]),
+                      _vm._v(" "),
+                      _vm._l([0, 1, 2, 3], function(n) {
+                        return _c(
+                          "div",
+                          {
+                            staticClass: "game-over-card",
+                            attrs: { id: "place-" + n }
+                          },
+                          [
+                            _c(
+                              "h5",
+                              { class: n > 1 ? "text-danger" : "text-success" },
+                              [
+                                _vm._v(_vm._s(n + 1) + " "),
+                                _c("i", { staticClass: "fas fa-trophy" })
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c("img", {
+                              staticClass: "avatar border rounded-circle",
+                              attrs: { src: "#", alt: "avatar" }
+                            }),
+                            _vm._v(" "),
+                            _vm._m(4, true)
+                          ]
+                        )
+                      })
+                    ],
+                    2
                   )
                 ])
               ])
@@ -28639,7 +28611,10 @@ var render = function() {
                         "a",
                         {
                           staticClass: "btn btn-block btn-success",
-                          class: _vm.klas(game.players.length),
+                          class: _vm.klas(
+                            game.players.length,
+                            game.kicked_users
+                          ),
                           attrs: { href: _vm.path(game.id) }
                         },
                         [_vm._v("შესვლა")]
@@ -28707,173 +28682,105 @@ var render = function() {
         _c(
           "tbody",
           [
-            _vm._l([0, 1, 2, 3, 4, 5, 6, 7], function(n) {
-              return _c("tr", [
-                _c("th", { attrs: { scope: "row" } }, [_vm._v(_vm._s(n + 1))]),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(0, n)) }
-                }),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(1, n)) }
-                }),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(2, n)) }
-                }),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(3, n)) }
-                })
-              ])
+            _vm._l([0, 1, 2, 3, 4, 5, 6, 7, 8], function(n) {
+              return _c(
+                "tr",
+                { class: n === 8 ? "bg-info" : "" },
+                [
+                  _c("th", { attrs: { scope: "row" } }, [
+                    _vm._v(_vm._s(n === 8 ? "Σ" : n + 1))
+                  ]),
+                  _vm._v(" "),
+                  _vm._l([0, 1, 2, 3], function(p) {
+                    return _c("td", {
+                      domProps: {
+                        innerHTML: _vm._s(
+                          n === 8
+                            ? _vm.showResult(p, 1, n)
+                            : _vm.showScores(p, 1, n)
+                        )
+                      }
+                    })
+                  })
+                ],
+                2
+              )
             }),
             _vm._v(" "),
-            _c("tr", { staticClass: "bg-info" }, [
-              _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(0, 8)) }
-              }),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(1, 8)) }
-              }),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(2, 8)) }
-              }),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(3, 8)) }
-              })
-            ]),
-            _vm._v(" "),
-            _vm._l([9, 10, 11, 12], function(n) {
-              return _c("tr", [
-                _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(0, n)) }
-                }),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(1, n)) }
-                }),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(2, n)) }
-                }),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(3, n)) }
-                })
-              ])
+            _vm._l([0, 1, 2, 3, 4], function(n) {
+              return _c(
+                "tr",
+                { class: n === 4 ? "bg-info" : "" },
+                [
+                  _c("th", { attrs: { scope: "row" } }, [
+                    _vm._v(_vm._s(n === 4 ? "Σ" : 9))
+                  ]),
+                  _vm._v(" "),
+                  _vm._l([0, 1, 2, 3], function(p) {
+                    return _c("td", {
+                      domProps: {
+                        innerHTML: _vm._s(
+                          n === 4
+                            ? _vm.showResult(p, 2, n)
+                            : _vm.showScores(p, 2, n)
+                        )
+                      }
+                    })
+                  })
+                ],
+                2
+              )
             }),
             _vm._v(" "),
-            _c("tr", { staticClass: "bg-info" }, [
-              _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(0, 13)) }
-              }),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(1, 13)) }
-              }),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(2, 13)) }
-              }),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(3, 13)) }
-              })
-            ]),
-            _vm._v(" "),
-            _vm._l([14, 15, 16, 17, 18, 19, 20, 21], function(n) {
-              return _c("tr", [
-                _c("th", { attrs: { scope: "row" } }, [_vm._v(_vm._s(22 - n))]),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(0, n)) }
-                }),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(1, n)) }
-                }),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(2, n)) }
-                }),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(3, n)) }
-                })
-              ])
+            _vm._l([0, 1, 2, 3, 4, 5, 6, 7, 8], function(n) {
+              return _c(
+                "tr",
+                { class: n === 8 ? "bg-info" : "" },
+                [
+                  _c("th", { attrs: { scope: "row" } }, [
+                    _vm._v(_vm._s(n === 8 ? "Σ" : 8 - n))
+                  ]),
+                  _vm._v(" "),
+                  _vm._l([0, 1, 2, 3], function(p) {
+                    return _c("td", {
+                      domProps: {
+                        innerHTML: _vm._s(
+                          n === 8
+                            ? _vm.showResult(p, 3, n)
+                            : _vm.showScores(p, 3, n)
+                        )
+                      }
+                    })
+                  })
+                ],
+                2
+              )
             }),
             _vm._v(" "),
-            _c("tr", { staticClass: "bg-info" }, [
-              _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(0, 22)) }
-              }),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(1, 22)) }
-              }),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(2, 22)) }
-              }),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(3, 22)) }
-              })
-            ]),
-            _vm._v(" "),
-            _vm._l([23, 24, 25, 26], function(n) {
-              return _c("tr", [
-                _c("th", { attrs: { scope: "row" } }, [_vm._v("9")]),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(0, n)) }
-                }),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(1, n)) }
-                }),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(2, n)) }
-                }),
-                _vm._v(" "),
-                _c("td", {
-                  domProps: { innerHTML: _vm._s(_vm.showScores(3, n)) }
-                })
-              ])
-            }),
-            _vm._v(" "),
-            _c("tr", { staticClass: "bg-info" }, [
-              _c("th", { attrs: { scope: "row" } }, [_vm._v("Σ")]),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(0, 27)) }
-              }),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(1, 27)) }
-              }),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(2, 27)) }
-              }),
-              _vm._v(" "),
-              _c("td", {
-                domProps: { innerHTML: _vm._s(_vm.showResult(3, 27)) }
-              })
-            ])
+            _vm._l([0, 1, 2, 3, 4], function(n) {
+              return _c(
+                "tr",
+                { class: n === 4 ? "bg-info" : "" },
+                [
+                  _c("th", { attrs: { scope: "row" } }, [
+                    _vm._v(_vm._s(n === 4 ? "Σ" : 9))
+                  ]),
+                  _vm._v(" "),
+                  _vm._l([0, 1, 2, 3], function(p) {
+                    return _c("td", {
+                      domProps: {
+                        innerHTML: _vm._s(
+                          n === 4
+                            ? _vm.showResult(p, 4, n)
+                            : _vm.showScores(p, 4, n)
+                        )
+                      }
+                    })
+                  })
+                ],
+                2
+              )
+            })
           ],
           2
         )
@@ -28938,30 +28845,33 @@ var render = function() {
         _vm._v(" "),
         _c(
           "tbody",
-          _vm._l(20, function(n) {
-            return _c(
-              "tr",
-              { class: n % 5 === 0 ? "bg-info" : "" },
-              [
-                _c("th", { attrs: { scope: "row" } }, [
-                  _vm._v(_vm._s(n % 5 === 0 ? "Σ" : 9))
-                ]),
-                _vm._v(" "),
-                _vm._l([0, 1, 2, 3], function(p) {
-                  return _c("td", {
-                    domProps: {
-                      innerHTML: _vm._s(
-                        n % 5 === 0
-                          ? _vm.showResult(p, n - 1)
-                          : _vm.showScores(p, n - 1)
-                      )
-                    }
+          _vm._l(
+            [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4],
+            function(n, idx) {
+              return _c(
+                "tr",
+                { class: n === 4 ? "bg-info" : "" },
+                [
+                  _c("th", { attrs: { scope: "row" } }, [
+                    _vm._v(_vm._s(n === 4 ? "Σ" : 9))
+                  ]),
+                  _vm._v(" "),
+                  _vm._l([0, 1, 2, 3], function(p) {
+                    return _c("td", {
+                      domProps: {
+                        innerHTML: _vm._s(
+                          n === 4
+                            ? _vm.showResult(p, Math.ceil((idx + 1) / 5), n)
+                            : _vm.showScores(p, Math.ceil((idx + 1) / 5), n)
+                        )
+                      }
+                    })
                   })
-                })
-              ],
-              2
-            )
-          }),
+                ],
+                2
+              )
+            }
+          ),
           0
         )
       ]),
@@ -41192,14 +41102,15 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
-  key: "6b252d137909e98b47e00",
+  key: "6b252d137909e98b47e0",
   cluster: "eu",
+  forceTLS: "true",
+  // for laravel-websockets
   wsHost: window.location.hostname,
   wsPort: 6001,
   wssPort: 6001,
   enabledTransports: ['ws', 'wss'],
-  disableStats: "false",
-  forceTLS: "true"
+  disableStats: "false"
 });
 
 /***/ }),
@@ -41364,15 +41275,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************************!*\
   !*** ./resources/js/components/Game.vue ***!
   \******************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Game_vue_vue_type_template_id_3a2c79dd___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Game.vue?vue&type=template&id=3a2c79dd& */ "./resources/js/components/Game.vue?vue&type=template&id=3a2c79dd&");
 /* harmony import */ var _Game_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Game.vue?vue&type=script&lang=js& */ "./resources/js/components/Game.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Game_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Game_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -41402,7 +41312,7 @@ component.options.__file = "resources/js/components/Game.vue"
 /*!*******************************************************************!*\
   !*** ./resources/js/components/Game.vue?vue&type=script&lang=js& ***!
   \*******************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -41766,14 +41676,15 @@ __webpack_require__.r(__webpack_exports__);
         }, 3000);
       }
 
-      _this.callSum += event.score.call;
-
-      _this.game.players[event.position].scores.push(event.score);
+      _this.game.scores[event.position].data["q_".concat(_this.game.quarter)].push(event.score);
 
       _this.game.except = event.except;
+      _this.game.to_fill = event.to_fill;
       _this.game.turn = event.turn;
       _this.game.state = event.state;
       _this.playState = true;
+
+      _this.showCallboard();
     }).listen('CardPlayEvent', function (event) {
       console.log('CardPlayEvent');
 
@@ -41819,6 +41730,9 @@ __webpack_require__.r(__webpack_exports__);
 
       var ace = function ace() {
         $('#player' + p + 'card').css('z-index', i).removeClass().addClass(cards[i].suit + cards[i].strength);
+
+        _this.playSound('card-play');
+
         p = p === 3 ? 0 : p + 1;
         i++;
 
@@ -41857,6 +41771,10 @@ __webpack_require__.r(__webpack_exports__);
     }).listen('UpdateReadyEvent', function (event) {
       var color = event.ready === '1' ? 'bg-success' : 'bg-danger';
       $('#ready th').eq(event.position).addClass(color);
+    }).listen('UpdateTrumpEvent', function (event) {
+      _this.game.trump = event.trump;
+      _this.playState = true;
+      _this.game.state = 'call';
     }).listen('GameOverEvent', function (event) {
       _this.playState = false;
       _this.game = event.game;
@@ -41867,10 +41785,10 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       $('#game-over').removeClass('d-none');
-    }).listenForWhisper('message', function (message) {
-      message.notification = false;
+    }).listen('ChatMessageEvent', function (event) {
+      event.message.notification = false;
 
-      _this.messages.push(message);
+      _this.messages.push(event.message);
 
       _this.playSound('notification');
 
@@ -41935,6 +41853,8 @@ __webpack_require__.r(__webpack_exports__);
       _this2.windowWidth = window.innerWidth;
     };
 
+    this.showCallboard();
+
     if (this.game.state === 'trump' && this.turn) {
       $('#suits').removeClass('d-none');
     }
@@ -41946,7 +41866,7 @@ __webpack_require__.r(__webpack_exports__);
     });
 
     if (this.botTimerActive) {
-      this.setBotTimer();
+      this.setBotTimer(6000);
     }
   },
   // es metodi acentrebs kartebs negativ marginebit viewportis mixedvit
@@ -42132,6 +42052,11 @@ __webpack_require__.r(__webpack_exports__);
       audio.currentTime = 0;
       audio.muted = false;
       audio.play();
+    },
+    showCallboard: function showCallboard() {
+      if (this.turn && this.game.state === 'call') {
+        $('#callboard').removeClass('d-none');
+      }
     }
   }
 });
@@ -42180,7 +42105,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     showCards: function showCards(cards, initial) {
       var _this2 = this;
 
-      if (this.game.state === 'void' || this.game.state === 'ready' || this.game.state === 'start') return;
+      if (this.game.state === 'ready' || this.game.state === 'start') return;
       cards = cards === null ? [] : cards;
       cards.sort(function (a, b) {
         var aValue = _this2.cardSortValue(a);
@@ -42193,8 +42118,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       player.cards = cards;
 
       if (this.game.state === 'card') {
-        var scoresL = this.game.players[this.ppm[0]].scores.length - 1;
-        var take = this.game.players[this.ppm[0]].scores[scoresL].take;
+        var scoresL = this.game.scores[this.ppm[0]].data["q_".concat(this.game.quarter)].length - 1;
+        var take = this.game.scores[this.ppm[0]].data["q_".concat(this.game.quarter)][scoresL].take;
         player.takenCards = Array.from(new Array(take).keys());
       } else {
         player.takenCards = [];
@@ -42209,8 +42134,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           cardsL = this.game.state === 'trump' ? 3 : cardsL;
 
           if (this.game.state === 'card') {
-            scoresLL = this.game.players[this.ppm[i]].scores.length - 1;
-            var takee = this.game.players[this.ppm[i]].scores[scoresLL].take;
+            scoresLL = this.game.scores[this.ppm[i]].data["q_".concat(this.game.quarter)].length - 1;
+            var takee = this.game.scores[this.ppm[i]].data["q_".concat(this.game.quarter)][scoresLL].take;
             this.players[this.ppm[i]].takenCards = Array.from(new Array(takee).keys());
           }
         } else {
@@ -42221,8 +42146,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         this.players[this.ppm[i]].cards = Array.from(new Array(cardsL).keys());
       }
 
-      if (this.setTrump) {
-        $('#suits').removeClass('d-none');
+      if (!initial) {
+        this.showCallboard();
+        if (this.setTrump) $('#suits').removeClass('d-none');
       }
 
       this.dealtCards = [];
@@ -42404,23 +42330,26 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['initialPlayers', 'penalty'],
+  props: ['initialPlayers', 'initialScores', 'penalty'],
   computed: {
     players: function players() {
       return this.initialPlayers;
+    },
+    scores: function scores() {
+      return this.initialScores;
     }
   },
   methods: {
-    showScores: function showScores(p, n) {
-      if (this.players[p] && this.players[p].scores[n]) {
-        var call = this.players[p].scores[n].call === 0 ? '-' : this.players[p].scores[n].call;
-        var result = this.players[p].scores[n].result ? this.players[p].scores[n].result : '';
+    showScores: function showScores(p, q, n) {
+      if (this.scores[p] && this.scores[p].data["q_".concat(q)][n]) {
+        var call = Number(this.scores[p].data["q_".concat(q)][n].call) === 0 ? '-' : this.scores[p].data["q_".concat(q)][n].call;
+        var result = this.scores[p].data["q_".concat(q)][n].result ? this.scores[p].data["q_".concat(q)][n].result : '';
         result = result < 0 ? 'I--I' : result;
-        var txt = call + ' ' + result;
+        var txt = "".concat(call, " ").concat(result);
 
-        if (this.players[p].scores[n].color === 'red') {
+        if (this.scores[p].data["q_".concat(q)][n].c === 'r') {
           return "<s class=\"text-danger\">".concat(txt, "</s>");
-        } else if (this.players[p].scores[n].color === 'yellow') {
+        } else if (this.scores[p].data["q_".concat(q)][n].c === 'y') {
           return "<span class=\"text-warning\">".concat(txt, "</span>");
         } else {
           return txt;
@@ -42429,9 +42358,9 @@ __webpack_require__.r(__webpack_exports__);
         return '';
       }
     },
-    showResult: function showResult(p, n) {
-      if (this.players[p] && this.players[p].scores[n]) {
-        var result = this.players[p].scores[n].result;
+    showResult: function showResult(p, q, n) {
+      if (this.scores[p] && this.scores[p].data["q_".concat(q)][n]) {
+        var result = this.scores[p].data["q_".concat(q)][n].result;
         result = (result / 100).toFixed(1);
         return "<strong>".concat(result, "</strong>");
       } else {
