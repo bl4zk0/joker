@@ -89,7 +89,7 @@
                  class="p-card p3-card card_back card_back_size"
                  :style="'margin-top: ' + (getMargin(3) + (index * marginStep())) + 'px'"></div>
 
-            <!-- players cards -->
+            <!-- end players cards -->
 
             <!-- taken cards-->
             <div class="p0-tc taken-card card_back"
@@ -128,7 +128,7 @@
                  :id="`player${n}`"
                  data-container="body"
                  data-toggle="popover"
-                 data-placement="top"
+                 :data-placement="n === 2 ? 'right' : 'top'"
                  data-trigger="manual">
                 <div class="kick" title="გაგდება" v-show="canKickUser(n)">
                     <i class="fas fa-times" @click="kick(n)"></i>

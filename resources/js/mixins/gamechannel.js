@@ -6,14 +6,28 @@ export default {
                 this.game = event.game;
                 this.nextTurn = event.game.turn;
             })
-            .listen('PlayerJoinLeaveEvent', event => {
-                console.log('PlayerJoinLeaveEvent');
+            .listen('PlayerKickedEvent', event => {
+                console.log('PlayerKickedEvent');
                 if (App.user.username === event.username) {
                     $('#kicked').modal({show: true});
                     Echo.leaveChannel('game.' + this.game.id);
                     Echo.leaveChannel('user.' + App.user.id);
                     return;
                 }
+
+                this.game.players = event.players;
+                this.playerPositionsMap();
+
+                let message = {
+                    username: event.username,
+                    message: 'გავიდა',
+                    notification: true
+                };
+                this.messages.push(message);
+                this.playSound('notification');
+            })
+            .listen('PlayerJoinLeaveEvent', event => {
+                console.log('PlayerJoinLeaveEvent');
 
                 if (event.players !== false) {
                     this.game.players = event.players;
@@ -146,12 +160,16 @@ export default {
             .listen('GameOverEvent', event => {
                 this.playState = false;
                 this.game = event.game;
+
                 for (let i = 0; i < 4; i++) {
                     $(`#place-${i} img`).attr('src', this.game.players[event.scores[i].position].avatar_url);
                     $(`#place-${i} .u-name a`).attr('href', `/user/${this.game.players[event.scores[i].position].user_id}`)
                         .text(this.game.players[event.scores[i].position].username);
                 }
-                $('#game-over').removeClass('d-none');
+
+                setTimeout(() => {
+                    $('#game-over').removeClass('d-none');
+                }, 1000);
             })
             .listen('ChatMessageEvent', event => {
                 event.message.notification = false;

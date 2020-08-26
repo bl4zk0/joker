@@ -1,6 +1,6 @@
 @component('mail::message')
     # Contact
-    From: {{ $name . '-' . $email }}
+    From: {!! "\"$name\"<$email>" !!}}
 
     {{ $message }}
 @endcomponent

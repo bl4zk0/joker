@@ -160,15 +160,17 @@ class Game extends Model
         if (isset($cards[0]['action'])) {
             if ($this->trumpInCards() && $cards[0]['actionsuit'] != $this->trump['suit']) {
                 array_shift($cards);
+                $suit = $this->trump['suit'];
             } else if ($cards[0]['action'] == 'caigos' && $this->suitInCards($cards[0]['actionsuit'])) {
-                array_shift($cards);
+                $card = array_shift($cards);
+                $suit = $card['actionsuit'];
             }
-        }
-
-        if ($this->trump['strength'] != 16 && $this->trumpInCards()) {
-            $suit = $this->trump['suit'];
         } else {
-            $suit = $cards[0]['suit'];
+            if ($this->trump['strength'] != 16 && $this->trumpInCards()) {
+                $suit = $this->trump['suit'];
+            } else {
+                $suit = $cards[0]['suit'];
+            }
         }
 
         $cards = array_filter($cards, function($card) use ($suit){

@@ -9,7 +9,7 @@ export default {
     },
 
     created() {
-        Echo.private('user.' + App.user.id)
+        Echo.join('user.' + App.user.id)
             .listen('CardDealEvent', event => {
                 console.log('CardDealEvent');
                 this.dealtCards = event.cards;
@@ -113,15 +113,17 @@ export default {
             if (cards[0].hasOwnProperty('action')) {
                 if (this.suitInGameCards(trump['suit']) && cards[0]['actionsuit'] != trump['suit']) {
                     cards.shift();
+                    suit = trump['suit'];
                 } else if (cards[0]['action'] == 'caigos' && this.suitInGameCards(cards[0]['actionsuit'])) {
-                    cards.shift();
+                    let card = cards.shift();
+                    suit = card['actionsuit'];
                 }
-            }
-
-            if (trump['strength'] != 16 && this.suitInGameCards(trump['suit'])) {
-                suit = trump['suit'];
             } else {
-                suit = cards[0]['suit'];
+                if (trump['strength'] != 16 && this.suitInGameCards(trump['suit'])) {
+                    suit = trump['suit'];
+                } else {
+                    suit = cards[0]['suit'];
+                }
             }
 
             cards = cards.filter(function(c) {

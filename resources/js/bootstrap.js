@@ -39,9 +39,9 @@ window.Echo = new Echo({
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
     forceTLS: process.env.MIX_PUSHER_FORCE_TLS,
     // for laravel-websockets
-    wsHost: window.location.hostname,
-    wsPort: 6001,
-    wssPort: 6001,
-    enabledTransports: ['ws', 'wss'],
-    disableStats: process.env.MIX_PUSHER_ENABLE_STATS
+    // wsHost: window.location.hostname,
+    // wsPort: 6001,
+    // wssPort: 6001,
+    // enabledTransports: ['ws', 'wss'],
+    // disableStats: process.env.MIX_PUSHER_ENABLE_STATS
 });

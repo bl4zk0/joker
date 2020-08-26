@@ -8,6 +8,7 @@ use App\Events\ChatMessageEvent;
 use App\Events\PlayerCallEvent;
 use App\Events\GetReadyEvent;
 use App\Events\PlayerJoinLeaveEvent;
+use App\Events\PlayerKickedEvent;
 use App\Events\UpdateGameEvent;
 use App\Events\UpdateLobbyEvent;
 use App\Events\UpdateReadyEvent;
@@ -35,6 +36,9 @@ class GamesController extends Controller
         if (! ($game->players()->count() === 4)) {
             abort(406, 'Not enough players');
         }
+
+//        $game->start();
+//        return response([], 200);
 
         $game->update(['state' => 'ready', 'ready' => ['players' => [auth()->id()], 'count' => 1]]);
 
@@ -256,7 +260,7 @@ class GamesController extends Controller
                 $player->update(['disconnected' => false]);;
             }
 
-            broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'შემოვიდა'))->toOthers();
+            broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'შემოვიდა', $game->players))->toOthers();
             return compact('game', 'cards');
         }
 
@@ -293,44 +297,9 @@ class GamesController extends Controller
 
         $game->kick($request->position);
 
-        broadcast(new PlayerJoinLeaveEvent($game->id, $username, 'გავიდა', $game->players));
+        broadcast(new PlayerKickedEvent($game->id, $username, $game->players));
 
         return response([], 200);
-    }
-
-    public function leave(Game $game)
-    {
-        exit;
-        $this->authorize('leave', $game);
-
-        if ($game->state == 'start' || $game->state == 'ready') {
-            auth()->user()->player->update(['game_id' => null, 'position' => null]);
-            $game->refresh();
-            if (auth()->user()->is($game->creator) && $game->players()->count() > 0) {
-                $game->update(['user_id' => $game->players[0]->user->id]);
-                $game->reposition();
-                broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'გავიდა', $game->players, $game->user_id))->toOthers();
-            } elseif ($game->players()->count() == 0) {
-                $game->delete();
-                return;
-            } else {
-                $game->reposition();
-                broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'გავიდა', $game->players))->toOthers();
-            }
-            broadcast(new UpdateLobbyEvent());
-        } else {
-            if ($game->players()->where('disconnected', true)->count() == 3) {
-                $game->delete();
-                return;
-            }
-
-            auth()->user()->player->update(['disconnected' => true]);
-            broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'გავიდა'))->toOthers();
-
-            if ($game->turn == auth()->user()->player->position) {
-                PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());
-            }
-        }
     }
 
     public function message(Request $request, Game $game)

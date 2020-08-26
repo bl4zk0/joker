@@ -10,10 +10,12 @@ class UserChannel
      * Authenticate the user's access to the channel.
      *
      * @param  User  $user
-     * @return bool
+     * @return array
      */
     public function join(User $user, $user_id)
     {
-        return $user->id === (int) $user_id;
+        if ($user->id === (int) $user_id) {
+            return ['id' => $user->id, 'name' => $user->username];
+        }
     }
 }

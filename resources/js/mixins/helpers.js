@@ -26,13 +26,6 @@ export default {
     },
 
     created() {
-        window.addEventListener("beforeunload", event => {
-            delete event['returnValue'];
-            if (this.game.state !== 'finished') {
-                axios.post('/leave/games/' + this.game.id);
-            }
-        });
-
         this.playerPositionsMap();
         this.showCards(this.initialCards, true);
     },

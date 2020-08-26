@@ -27733,7 +27733,7 @@ var render = function() {
                   id: "player" + n,
                   "data-container": "body",
                   "data-toggle": "popover",
-                  "data-placement": "top",
+                  "data-placement": n === 2 ? "right" : "top",
                   "data-trigger": "manual"
                 }
               },
@@ -41104,13 +41104,13 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
   key: "6b252d137909e98b47e0",
   cluster: "eu",
-  forceTLS: "true",
-  // for laravel-websockets
-  wsHost: window.location.hostname,
-  wsPort: 6001,
-  wssPort: 6001,
-  enabledTransports: ['ws', 'wss'],
-  disableStats: "false"
+  forceTLS: "true" // for laravel-websockets
+  // wsHost: window.location.hostname,
+  // wsPort: 6001,
+  // wssPort: 6001,
+  // enabledTransports: ['ws', 'wss'],
+  // disableStats: process.env.MIX_PUSHER_ENABLE_STATS
+
 });
 
 /***/ }),
@@ -41633,8 +41633,8 @@ __webpack_require__.r(__webpack_exports__);
       console.log('UpdateGameEvent');
       _this.game = event.game;
       _this.nextTurn = event.game.turn;
-    }).listen('PlayerJoinLeaveEvent', function (event) {
-      console.log('PlayerJoinLeaveEvent');
+    }).listen('PlayerKickedEvent', function (event) {
+      console.log('PlayerKickedEvent');
 
       if (App.user.username === event.username) {
         $('#kicked').modal({
@@ -41644,6 +41644,22 @@ __webpack_require__.r(__webpack_exports__);
         Echo.leaveChannel('user.' + App.user.id);
         return;
       }
+
+      _this.game.players = event.players;
+
+      _this.playerPositionsMap();
+
+      var message = {
+        username: event.username,
+        message: 'გავიდა',
+        notification: true
+      };
+
+      _this.messages.push(message);
+
+      _this.playSound('notification');
+    }).listen('PlayerJoinLeaveEvent', function (event) {
+      console.log('PlayerJoinLeaveEvent');
 
       if (event.players !== false) {
         _this.game.players = event.players;
@@ -41784,7 +41800,9 @@ __webpack_require__.r(__webpack_exports__);
         $("#place-".concat(i, " .u-name a")).attr('href', "/user/".concat(_this.game.players[event.scores[i].position].user_id)).text(_this.game.players[event.scores[i].position].username);
       }
 
-      $('#game-over').removeClass('d-none');
+      setTimeout(function () {
+        $('#game-over').removeClass('d-none');
+      }, 1000);
     }).listen('ChatMessageEvent', function (event) {
       event.message.notification = false;
 
@@ -41834,23 +41852,14 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   created: function created() {
-    var _this = this;
-
-    window.addEventListener("beforeunload", function (event) {
-      delete event['returnValue'];
-
-      if (_this.game.state !== 'finished') {
-        axios.post('/leave/games/' + _this.game.id);
-      }
-    });
     this.playerPositionsMap();
     this.showCards(this.initialCards, true);
   },
   mounted: function mounted() {
-    var _this2 = this;
+    var _this = this;
 
     window.onresize = function () {
-      _this2.windowWidth = window.innerWidth;
+      _this.windowWidth = window.innerWidth;
     };
 
     this.showCallboard();
@@ -41861,7 +41870,7 @@ __webpack_require__.r(__webpack_exports__);
 
     this.$watch('botTimerActive', function (active) {
       if (active) {
-        _this2.setBotTimer();
+        _this.setBotTimer();
       }
     });
 
@@ -42090,7 +42099,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   created: function created() {
     var _this = this;
 
-    Echo["private"]('user.' + App.user.id).listen('CardDealEvent', function (event) {
+    Echo.join('user.' + App.user.id).listen('CardDealEvent', function (event) {
       console.log('CardDealEvent');
       _this.dealtCards = event.cards;
       _this.setTrump = event.trump;
@@ -42192,15 +42201,17 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       if (cards[0].hasOwnProperty('action')) {
         if (this.suitInGameCards(trump['suit']) && cards[0]['actionsuit'] != trump['suit']) {
           cards.shift();
+          suit = trump['suit'];
         } else if (cards[0]['action'] == 'caigos' && this.suitInGameCards(cards[0]['actionsuit'])) {
-          cards.shift();
+          var card = cards.shift();
+          suit = card['actionsuit'];
         }
-      }
-
-      if (trump['strength'] != 16 && this.suitInGameCards(trump['suit'])) {
-        suit = trump['suit'];
       } else {
-        suit = cards[0]['suit'];
+        if (trump['strength'] != 16 && this.suitInGameCards(trump['suit'])) {
+          suit = trump['suit'];
+        } else {
+          suit = cards[0]['suit'];
+        }
       }
 
       cards = cards.filter(function (c) {

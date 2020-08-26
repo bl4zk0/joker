@@ -21,14 +21,14 @@ Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCall
 Route::view('/', 'home')->name('home')->middleware('disconnected');
 Route::get('/contact', 'ContactMeController@index');
 Route::post('/contact', 'ContactMeController@store')->name('contact');
-Route::get('/user/{user}', 'ProfilesController@show');
+Route::get('/user/{user}', 'UsersController@show');
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/lobby', 'GamesController@index')->name('lobby')->middleware('verified');
-    Route::get('/email/change', 'ProfilesController@emailChangeForm')->middleware('password.confirm');
-    Route::post('/email/change', 'ProfilesController@emailChange')->middleware('password.confirm');
-    Route::get('/password/change', 'ProfilesController@passwordChangeForm')->middleware('password.confirm');
-    Route::post('/password/change', 'ProfilesController@passwordChange')->middleware('password.confirm');
+    Route::get('/email/change', 'UsersController@emailChangeForm')->middleware('password.confirm');
+    Route::post('/email/change', 'UsersController@emailChange')->middleware('password.confirm');
+    Route::get('/password/change', 'UsersController@passwordChangeForm')->middleware('password.confirm');
+    Route::post('/password/change', 'UsersController@passwordChange')->middleware('password.confirm');
 });
 
 Route::group(['middleware' => ['auth', 'disconnected']], function () {

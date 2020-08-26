@@ -33,7 +33,6 @@ class PlayerJoinLeaveEvent implements ShouldBroadcastNow
         $this->username = $username;
         $this->eventName = $eventName;
         $this->players = $players;
-        $this->players = $players;
         $this->user_id = $user_id;
     }
 
