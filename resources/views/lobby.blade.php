@@ -1,9 +1,5 @@
 @extends('layouts.app')
 
-@section('style')
-    <link href="{{ asset('css/style2.css') }}" rel="stylesheet">
-@endsection
-
 @section('content')
     <div class="lobby-wrapper">
         <div class="container">
