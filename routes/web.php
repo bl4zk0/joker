@@ -29,6 +29,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/email/change', 'UsersController@emailChange')->middleware('password.confirm');
     Route::get('/password/change', 'UsersController@passwordChangeForm')->middleware('password.confirm');
     Route::post('/password/change', 'UsersController@passwordChange')->middleware('password.confirm');
+    Route::post('/admin/start/games/{game}', 'AdminsController@start');
+    Route::post('/admin/cards/games/{game}', 'AdminsController@cards');
 });
 
 Route::group(['middleware' => ['auth', 'disconnected']], function () {

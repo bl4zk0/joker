@@ -33,7 +33,7 @@ class GamesController extends Controller
     {
         $this->authorize('start', $game);
 
-        if (! ($game->players()->count() === 4)) {
+        if (! ($game->players->count() === 4)) {
             abort(406, 'Not enough players');
         }
 

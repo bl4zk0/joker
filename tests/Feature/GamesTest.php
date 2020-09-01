@@ -195,4 +195,30 @@ class GamesTest extends TestCase
         $this->assertEquals(50, $game->fresh()->players[2]->scores[0]->result);
         $this->assertEquals(-200, $game->fresh()->players[3]->scores[0]->result);
     }
+
+    /** @test */
+    public function admin_can_deal_specific_cards_for_next_deal()
+    {
+        $admin = factory('App\User')->create(['email' => 'admin@mojokre.dev']);
+
+        $game = factory('App\Game')->create(['type' => 9]);
+        $game->addPlayer($game->creator);
+        $game->addPlayer(factory('App\User')->create());
+        $game->addPlayer(factory('App\User')->create());
+        $game->addPlayer(factory('App\User')->create());
+
+        $this->signIn($admin);
+
+        $this->postJson('/admin/cards/games/1', [
+            'position' => 1,
+            'cards' => [['strength' => 16, 'suit' => 'black_joker'], ['strength' => 14, 'suit' => 'hearts']]
+        ])->assertOK();
+
+        $game->refresh();
+        Event::fake();
+
+        $game->deal();
+
+        $this->assertContains(['strength' => 14, 'suit' => 'hearts'], $game->players[1]->cards);
+    }
 }

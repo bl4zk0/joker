@@ -66,4 +66,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->socialite_account ? $this->socialite->avatar_url : $avatar_url;
     }
+
+    public function getIsAdminAttribute()
+    {
+        $admins = ['admin@mojokre.dev'];
+
+        return in_array($this->email, $admins);
+    }
 }

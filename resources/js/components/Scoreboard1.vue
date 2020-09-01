@@ -26,7 +26,7 @@
                 </tr>
             </tbody>
         </table>
-        <div><span class="badge badge-danger">I--I {{ this.penalty }}</span></div>
+        <div><span class="badge badge-danger" style="font-size: 14px">I--I {{ this.penalty }}</span></div>
     </div>
 </template>
 

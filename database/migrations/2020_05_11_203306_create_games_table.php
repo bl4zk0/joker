@@ -28,6 +28,7 @@ class CreateGamesTable extends Migration
             $table->unsignedSmallInteger('password')->nullable();
             $table->string('kicked_users')->default(json_encode([]));
             $table->string('ready')->default(json_encode(['players' => [], 'count' => 0]));
+            $table->text('admin_cards')->nullable();
             $table->timestamps();
         });
     }

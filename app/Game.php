@@ -13,7 +13,7 @@ class Game extends Model
 {
     protected $guarded = [];
     protected $with = ['players', 'scores'];
-    protected $hidden = ['password', 'ready', 'created_at', 'updated_at', 'creator', 'call_count'];
+    protected $hidden = ['password', 'ready', 'created_at', 'updated_at', 'creator', 'call_count', 'admin_cards'];
     protected $appends = ['except', 'to_fill'];
     protected $casts = [
         'cards' => 'array',
@@ -22,7 +22,8 @@ class Game extends Model
         'ready' => 'array',
         'turn' => 'integer',
         'quarter' => 'integer',
-        'hand_count' => 'integer'
+        'hand_count' => 'integer',
+        'admin_cards' => 'array'
     ];
 
     protected static function boot()
@@ -318,11 +319,6 @@ class Game extends Model
         $max = $num * 4;
         $cards = [[], [], [], []];
 
-        for ($i = 0, $j = 0; $i < $max; $i++) {
-            array_push($cards[$j], $deck->cards[$i]);
-            $j = $j == 3 ? 0 : $j + 1;
-        }
-
         switch ($this->turn) {
             case 0:
                 $positions = [0, 1, 2, 3];
@@ -336,6 +332,38 @@ class Game extends Model
             default:
                 $positions = [1, 2, 3, 0];
                 break;
+        }
+
+        if ($this->admin_cards != null) {
+            if (count($this->admin_cards['cards']) > $num) {
+                $admin_cards = array_slice($this->admin_cards['cards'], 0, $num);
+            } else {
+                $admin_cards = $this->admin_cards['cards'];
+            }
+
+            $cards[$positions[$this->admin_cards['position']]] = $admin_cards;
+            $max = $max - count($admin_cards);
+
+            for ($i = 0, $j = 0; $i < $max; $i++) {
+                if (in_array($deck->cards[$i], $admin_cards)) {
+                    $max++;
+                    continue;
+                }
+                if (count($cards[$j]) != $num) {
+                    array_push($cards[$j], $deck->cards[$i]);
+                } else {
+                    $i--;
+                }
+
+                $j = $j == 3 ? 0 : $j + 1;
+            }
+
+            $this->admin_cards = null;
+        } else {
+            for ($i = 0, $j = 0; $i < $max; $i++) {
+                array_push($cards[$j], $deck->cards[$i]);
+                $j = $j == 3 ? 0 : $j + 1;
+            }
         }
 
         $this->players->each(function ($player, $pos) use ($cards, $positions) {
