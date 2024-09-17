@@ -38,8 +38,8 @@ class DatabaseSeeder extends Seeder
 
         factory('App\User')->create([
             'username' => 'Admin',
-            'email' => 'admin@mojokre.dev',
-            'avatar_url' => Gravatar::url('admin@mojokre.dev')
+            'email' => 'admin@joker.local',
+            'avatar_url' => Gravatar::url('admin@joker.local')
         ]);
     }
 }

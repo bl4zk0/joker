@@ -41496,15 +41496,16 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
-  key: "6b252d137909e98b47e0",
+  key: "jokerkey101010",
   cluster: "eu",
-  forceTLS: "true" // for laravel-websockets
-  // wsHost: window.location.hostname,
-  // wsPort: 6001,
-  // wssPort: 6001,
-  // enabledTransports: ['ws', 'wss'],
-  // disableStats: process.env.MIX_PUSHER_ENABLE_STATS
-
+  forceTLS: false,
+  // for laravel-websockets
+  wsHost: window.location.hostname,
+  wsPort: 6001,
+  //wssPort: 6001,
+  enabledTransports: ['ws'],
+  // 'wss'
+  disableStats: "false"
 });
 
 /***/ }),
@@ -42882,8 +42883,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\krek4\code\joker\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\krek4\code\joker\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /var/www/joker/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /var/www/joker/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
