@@ -13,9 +13,9 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         factory('App\User')->create([
-            'username' => 'Ako',
-            'email' => 'ako@example.com',
-            'avatar_url' => Gravatar::url('ako@example.com')
+            'username' => 'user',
+            'email' => 'user@example.com',
+            'avatar_url' => Gravatar::url('user@example.com')
         ]);
 
         factory('App\User')->create([

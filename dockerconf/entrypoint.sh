@@ -12,6 +12,7 @@ ln -s /etc/nginx/sites-available/joker.local /etc/nginx/sites-enabled/joker.loca
 mkdir -p /run/mysqld && mkdir -p /run/php
 chown mysql:mysql /run/mysqld && chown www-data:www-data /run/php
 
+sed -i 's/^bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
 sed -i 's/display_errors = Off/display_errors = On/' /etc/php/7.4/fpm/php.ini
 sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' /etc/php/7.4/fpm/php.ini
 
@@ -24,5 +25,6 @@ mysql -u root -e 'CREATE DATABASE joker;'
 mysql -u root -e 'ALTER USER root@localhost IDENTIFIED VIA mysql_native_password;'
 mysql -u root -e 'FLUSH PRIVILEGES;'
 php /var/www/joker/artisan migrate
+php /var/www/joker/artisan db:seed
 
 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf

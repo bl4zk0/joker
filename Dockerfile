@@ -10,6 +10,7 @@ RUN go get github.com/mailhog/MailHog
 
 # copy files
 COPY . /var/www/joker
+COPY dockerconf/bashrc /root/.bashrc
 COPY dockerconf/supervisord.conf /etc/supervisor/supervisord.conf
 COPY --chown=root:root dockerconf/entrypoint.sh /entrypoint.sh
 
@@ -20,6 +21,7 @@ EXPOSE 80
 EXPOSE 443
 EXPOSE 6001
 EXPOSE 8025
+EXPOSE 3306
 
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT /entrypoint.sh

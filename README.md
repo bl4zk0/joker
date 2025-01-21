@@ -11,14 +11,15 @@ Multiplayer online card game powered by Laravel and Bootstrap.
 3. `cp .env.example .env`
 4. `php artisan storage:link`
 5. `php artisan migrate`
-6. `php artisan queue:listen`
-7. `php artisan websockets:serve`
-8. Register and Play!
+6. `php artisan db:seed` [users](database/seeds/DatabaseSeeder.php) password is _password_
+7. `php artisan queue:listen`
+8. `php artisan websockets:serve`
+9. Step 6, or register, confirm links on localhost:8025 and Play!
 
 or use docker:
 ```
 $ docker build --tag=joker .
-$ docker run -it -p 80:80 -p 443:443 -p 6001:6001 -p 8025:8025 --rm --name=joker joker
+$ docker run -it -p 80:80 -p 443:443 -p 6001:6001 -p 8025:8025 -p 33060:3306--rm --name=joker joker
 ```
 ## Credits
 
