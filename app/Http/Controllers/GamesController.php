@@ -299,7 +299,7 @@ class GamesController extends Controller
 
         broadcast(new PlayerKickedEvent($game->id, $username, $game->players));
 
-        return response([], 200);
+        return response(["status" => "OK"], 200);
     }
 
     public function message(Request $request, Game $game)
@@ -323,6 +323,6 @@ class GamesController extends Controller
         $method = $game->state;
         $bot->$method();
 
-        return response([], 200);
+        return response(["status" => "OK"], 200);
     }
 }

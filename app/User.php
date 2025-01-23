@@ -67,6 +67,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->socialite_account ? $this->socialite->avatar_url : $avatar_url;
     }
 
+    // TODO
     public function getIsAdminAttribute()
     {
         $admins = ['admin@joker.local'];

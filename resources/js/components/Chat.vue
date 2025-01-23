@@ -20,7 +20,7 @@
                     <span v-for="emoji in emojis" v-text="emoji" @click="smile"></span>
                 </div>
                 <div class="input-group">
-                    <input type="text" class="form-control" v-model="message" @keypress="sendMsgWithEnter">
+                    <input id="msgInput" type="text" class="form-control" v-model="message" @keypress="sendMsgWithEnter">
                     <div class="input-group-prepend">
                         <button class="btn btn-light"
                                 type="button" @click="toggleEmojis"><i class="far fa-smile"></i></button>

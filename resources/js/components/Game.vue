@@ -189,18 +189,26 @@
                 <button class="btn btn-light text-dark mb-1" data-suit="clubs" @click="actionSuit">&clubs;</button>
                 <button class="btn btn-light text-danger mb-1" data-suit="diamonds" @click="actionSuit">&diams;</button>
                 <button class="btn btn-light text-dark mb-1" data-suit="spades" @click="actionSuit">&spades;</button>
+                <button class="btn btn-dark btn-block mb-1" @click="cancelJok('#suits')"
+                        v-show="game.state !== 'trump'"><i class="fas fa-times"></i></button>
                 <button class="btn btn-light text-dark btn-block mb-1" data-suit="bez" @click="actionSuit"
                         v-show="game.state === 'trump'">ბეზი</button>
             </div>
 
             <div id="jokhigh" class="d-none border bg-white rounded shadow p-1">
                 <button class="btn btn-light" data-action="magali" @click="actionJoker">მაღალი</button>
-                <button class="btn btn-danger" data-action="caigos" @click="actionJoker">წაიღოს</button>
+                <button class="btn btn-warning" data-action="caigos" @click="actionJoker">წაიღოს</button>
+                <button type="button" class="btn btn-dark float-right" @click="cancelJok('#jokhigh')">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
 
-            <div id="jokjoker" class="d-none border bg-white rounded shadow p-1" style="width: 202px;">
+            <div id="jokjoker" class="d-none border bg-white rounded shadow p-1">
                 <button class="btn btn-light" data-action="mojokra" @click="actionJoker">მოჯოკრა</button>
-                <button class="btn btn-danger" data-action="kvevidan" @click="actionJoker">ქვევიდან</button>
+                <button class="btn btn-warning" data-action="kvevidan" @click="actionJoker">ქვევიდან</button>
+                <button type="button" class="btn btn-dark float-right" @click="cancelJok('#jokjoker')">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
 
             <div id="password-card" class="border bg-white rounded shadow p-1" v-show="passwordProtected">
@@ -310,6 +318,7 @@
                 showLastCards: false,
                 botTimer: App.bot_timer / 1000,
                 showBotTimer: false,
+                jokerCardCancelled: false,
                 muted: true
             }
         },
@@ -336,7 +345,6 @@
             turn() {
                 return this.game.turn === this.game.players[this.ppm[0]].position;
             }
-
         },
 
         methods: {
@@ -359,7 +367,7 @@
                 // post start
                 axios.post('/start/games/' + this.game.id)
                     .catch(error => {
-                        location.reload();
+                        console.log(error.message);
                     });
             },
 
@@ -375,11 +383,12 @@
             },
 
             actionCard(event) {
-                if (! this.turn || this.game.state !== 'card' || ! this.playState) {
+                if (! this.turn || this.game.state !== 'card' || 
+                ! this.playState || ! this.botTimer > 1) {
                     console.log('wrong turn or state');
                     return;
                 }
-                // es aris state roca karts daacher sxva kartebze rom vegar daachiro da itamasho sanam es karti ar gaigzavneba
+                // checking state if player can play a card
                 this.playState = false;
 
                 let strength = event.target.getAttribute('data-strength');
@@ -443,7 +452,7 @@
 
                     axios.post('/trump/games/' + this.game.id, {trump: suit})
                         .catch(error => {
-                            location.reload();
+                            console.log(error.message);
                         });
                 } else if (this.game.state === 'card') {
                     let card = {
@@ -475,7 +484,7 @@
                         this.cardId = null;
                     })
                     .catch(error => {
-                        location.reload();
+                        console.log(error.message);
                     });
             },
 
@@ -497,7 +506,7 @@
 
                 axios.post('/call/games/' + this.game.id, call)
                     .catch(error => {
-                        location.reload();
+                        console.log(error.message);
                     });
             },
 
@@ -548,7 +557,7 @@
 
                     axios.post('/bot/games/' + this.game.id)
                         .catch(error => {
-                            location.reload();
+                            console.log(error.message);
                         });
 
                 }, Number(ms));
@@ -563,6 +572,25 @@
                 }
                 this.botTimer = App.bot_timer / 1000;
                 this.showBotTimer = false;
+                this.jokerCardCancelled = false;
+            },
+
+            // ppm = player position map?
+            // TODO: change admin check logic
+            canKickUser(n) {
+                if (App.user.id === this.game.user_id || App.user.username.toLowerCase() === 'admin') {
+                    if (this.game.state === 'start' && this.game.players[this.ppm[n]] !== undefined) {
+                        return true;
+                    }
+                }
+                return false;
+            },
+
+            cancelJok(t) {
+                $(t).addClass('d-none');
+                this.playState = true;
+                this.card = {};
+                this.jokerCardCancelled = true;
             }
         }
     }

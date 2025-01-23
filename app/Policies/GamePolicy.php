@@ -92,7 +92,7 @@ class GamePolicy
      */
     public function kick(User $user, Game $game)
     {
-        return $user->is($game->creator) && $game->state === 'start';
+        return ($user->is($game->creator) || $user->isAdmin) && $game->state === 'start';
     }
 
     /**
@@ -108,7 +108,7 @@ class GamePolicy
     }
 
     /**
-     * Determine whether the user can active the bot.
+     * Determine whether the user can activate the bot.???
      *
      * @param  \App\User  $user
      * @param Game $game

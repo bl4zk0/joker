@@ -13,27 +13,27 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         factory('App\User')->create([
-            'username' => 'user',
-            'email' => 'user@example.com',
-            'avatar_url' => Gravatar::url('user@example.com')
+            'username' => 'bot1',
+            'email' => 'bot1@jokerbot.local',
+            'avatar_url' => Gravatar::url('bot1@joker.local')
         ]);
 
         factory('App\User')->create([
-            'username' => 'Sally',
-            'email' => 'sally@example.com',
-            'avatar_url' => Gravatar::url('sally@example.com')
+            'username' => 'bot2',
+            'email' => 'bot2@jokerbot.local',
+            'avatar_url' => Gravatar::url('bot2@joker.local')
         ]);
 
         factory('App\User')->create([
-            'username' => 'John',
-            'email' => 'john@example.com',
-            'avatar_url' => Gravatar::url('john@example.com')
+            'username' => 'bot3',
+            'email' => 'bot3@jokerbot.local',
+            'avatar_url' => Gravatar::url('bot3@joker.local')
         ]);
 
         factory('App\User')->create([
-            'username' => 'Jane',
-            'email' => 'jane@example.com',
-            'avatar_url' => Gravatar::url('jane@example.com')
+            'username' => 'bot',
+            'email' => 'bot@jokerbot.local',
+            'avatar_url' => Gravatar::url('bot@joker.local')
         ]);
 
         factory('App\User')->create([
@@ -41,5 +41,6 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@joker.local',
             'avatar_url' => Gravatar::url('admin@joker.local')
         ]);
+
     }
 }

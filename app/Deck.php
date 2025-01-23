@@ -42,13 +42,6 @@ class Deck
         return array_slice($this->cards, 0, $num);
     }
 
-    /**
-     * [pos] = bolo motamashes pozicia (0 aris bolo anu 3 pozicia)
-     *
-     * [cards] = asatuzi kartebi
-     *
-     * @return array
-     */
     public function lastPlayer()
     {
         $deck = [];

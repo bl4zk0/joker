@@ -23,20 +23,26 @@ class UsersController extends Controller
     {
         return view('profile', compact('user'));
     }
-
+    
+    // for Pusher web hooks, the same is implemented for laravel-websockets
+    // in JokerWebSocketHandler onClose method
     public function disconnected()
     {
         // environmental variable must be set
         $app_secret = env('PUSHER_APP_SECRET');
 
-        $app_key = $_SERVER['HTTP_X_PUSHER_KEY'];
-        $webhook_signature = $_SERVER ['HTTP_X_PUSHER_SIGNATURE'];
+        $app_key = isset($_SERVER['HTTP_X_PUSHER_KEY']) ?: null;
+        $webhook_signature = isset($_SERVER ['HTTP_X_PUSHER_SIGNATURE']) ?: null;
+        
+        if ($app_key === null or $webhook_signature === null) {
+            return response('', 401);
+        }
 
         $body = file_get_contents('php://input');
 
         $expected_signature = hash_hmac( 'sha256', $body, $app_secret, false );
 
-        if($webhook_signature == $expected_signature) {
+        if($webhook_signature === $expected_signature) {
             // decode as associative array
             $payload = json_decode( $body, true );
             foreach($payload['events'] as &$event) {
@@ -45,7 +51,7 @@ class UsersController extends Controller
                     $player = $user->player;
                     $game = $player->game;
 
-                    if ($game == null) {
+                    if ($game === null) {
                         return response('', 200);
                     }
 

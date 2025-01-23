@@ -1951,6 +1951,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['gameId'],
   data: function data() {
@@ -1985,7 +1986,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       axios.post('/admin/start/games/' + this.id).then(function (response) {
         console.log('OK');
       })["catch"](function (error) {
-        console.log('error');
+        console.log(error.message);
+      });
+    },
+    addBot: function addBot() {
+      axios.post('/admin/addbot/games/' + this.id).then(function (response) {
+        console.log('OK');
+      })["catch"](function (error) {
+        console.log(error.message);
       });
     },
     sendCards: function sendCards() {
@@ -2011,7 +2019,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       axios.post('/admin/cards/games/' + this.id, data).then(function (response) {
         console.log('OK');
       })["catch"](function (error) {
-        console.log('error');
+        console.log(error.message);
       });
     }
   }
@@ -2453,6 +2461,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2504,6 +2520,7 @@ __webpack_require__.r(__webpack_exports__);
       showLastCards: false,
       botTimer: App.bot_timer / 1000,
       showBotTimer: false,
+      jokerCardCancelled: false,
       muted: true
     };
   },
@@ -2548,7 +2565,7 @@ __webpack_require__.r(__webpack_exports__);
       }, 1000); // post start
 
       axios.post('/start/games/' + this.game.id)["catch"](function (error) {
-        location.reload();
+        console.log(error.message);
       });
     },
     actionReady: function actionReady(event) {
@@ -2562,10 +2579,10 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     actionCard: function actionCard(event) {
-      if (!this.turn || this.game.state !== 'card' || !this.playState) {
+      if (!this.turn || this.game.state !== 'card' || !this.playState || !this.botTimer > 1) {
         console.log('wrong turn or state');
         return;
-      } // es aris state roca karts daacher sxva kartebze rom vegar daachiro da itamasho sanam es karti ar gaigzavneba
+      } // checking state if player can play a card
 
 
       this.playState = false;
@@ -2633,7 +2650,7 @@ __webpack_require__.r(__webpack_exports__);
         axios.post('/trump/games/' + this.game.id, {
           trump: suit
         })["catch"](function (error) {
-          location.reload();
+          console.log(error.message);
         });
       } else if (this.game.state === 'card') {
         var card = {
@@ -2665,7 +2682,7 @@ __webpack_require__.r(__webpack_exports__);
         _this2.card = {};
         _this2.cardId = null;
       })["catch"](function (error) {
-        location.reload();
+        console.log(error.message);
       });
     },
     call: function call(event) {
@@ -2682,7 +2699,7 @@ __webpack_require__.r(__webpack_exports__);
         call: event.target.getAttribute('data-value')
       };
       axios.post('/call/games/' + this.game.id, call)["catch"](function (error) {
-        location.reload();
+        console.log(error.message);
       });
     },
     afterActionCard: function afterActionCard(card) {
@@ -2729,7 +2746,7 @@ __webpack_require__.r(__webpack_exports__);
         _this3.botTimer = App.bot_timer / 1000;
         _this3.showBotTimer = false;
         axios.post('/bot/games/' + _this3.game.id)["catch"](function (error) {
-          location.reload();
+          console.log(error.message);
         });
       }, Number(ms));
     },
@@ -2744,6 +2761,24 @@ __webpack_require__.r(__webpack_exports__);
 
       this.botTimer = App.bot_timer / 1000;
       this.showBotTimer = false;
+      this.jokerCardCancelled = false;
+    },
+    // ppm = player position map?
+    // TODO: change admin check logic
+    canKickUser: function canKickUser(n) {
+      if (App.user.id === this.game.user_id || App.user.username.toLowerCase() === 'admin') {
+        if (this.game.state === 'start' && this.game.players[this.ppm[n]] !== undefined) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    cancelJok: function cancelJok(t) {
+      $(t).addClass('d-none');
+      this.playState = true;
+      this.card = {};
+      this.jokerCardCancelled = true;
     }
   }
 });
@@ -7568,7 +7603,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.panel-wrapper[data-v-8a230bc0] {\n    position: fixed;\n    bottom: 8px;\n    left: 8px;\n    width: 250px;\n}\n", ""]);
+exports.push([module.i, "\n.panel-wrapper[data-v-8a230bc0] {\n    position: fixed;\n    bottom: 8px;\n    left: 8px;\n    width: 250px;\n    z-index: 1000;\n}\n", ""]);
 
 // exports
 
@@ -27434,7 +27469,7 @@ var render = function() {
         _c(
           "button",
           {
-            staticClass: "btn btn-light float-right mb-2",
+            staticClass: "btn btn-dark float-right mb-2",
             attrs: { type: "button" },
             on: {
               click: function($event) {
@@ -27443,6 +27478,16 @@ var render = function() {
             }
           },
           [_c("i", { staticClass: "fas fa-times" })]
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-warning mb-2",
+            attrs: { type: "button" },
+            on: { click: _vm.addBot }
+          },
+          [_vm._v("bot++")]
         ),
         _vm._v(" "),
         _c(
@@ -27471,6 +27516,7 @@ var render = function() {
                     }
                   ],
                   staticClass: "custom-select",
+                  attrs: { id: "position" },
                   on: {
                     change: function($event) {
                       var $$selectedVal = Array.prototype.filter
@@ -27669,7 +27715,7 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "text" },
+              attrs: { id: "msgInput", type: "text" },
               domProps: { value: _vm.message },
               on: {
                 keypress: _vm.sendMsgWithEnter,
@@ -28368,6 +28414,27 @@ var render = function() {
                     {
                       name: "show",
                       rawName: "v-show",
+                      value: _vm.game.state !== "trump",
+                      expression: "game.state !== 'trump'"
+                    }
+                  ],
+                  staticClass: "btn btn-dark btn-block mb-1",
+                  on: {
+                    click: function($event) {
+                      return _vm.cancelJok("#suits")
+                    }
+                  }
+                },
+                [_c("i", { staticClass: "fas fa-times" })]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
                       value: _vm.game.state === "trump",
                       expression: "game.state === 'trump'"
                     }
@@ -28401,11 +28468,25 @@ var render = function() {
               _c(
                 "button",
                 {
-                  staticClass: "btn btn-danger",
+                  staticClass: "btn btn-warning",
                   attrs: { "data-action": "caigos" },
                   on: { click: _vm.actionJoker }
                 },
                 [_vm._v("წაიღოს")]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-dark float-right",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      return _vm.cancelJok("#jokhigh")
+                    }
+                  }
+                },
+                [_c("i", { staticClass: "fas fa-times" })]
               )
             ]
           ),
@@ -28414,7 +28495,6 @@ var render = function() {
             "div",
             {
               staticClass: "d-none border bg-white rounded shadow p-1",
-              staticStyle: { width: "202px" },
               attrs: { id: "jokjoker" }
             },
             [
@@ -28431,11 +28511,25 @@ var render = function() {
               _c(
                 "button",
                 {
-                  staticClass: "btn btn-danger",
+                  staticClass: "btn btn-warning",
                   attrs: { "data-action": "kvevidan" },
                   on: { click: _vm.actionJoker }
                 },
                 [_vm._v("ქვევიდან")]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-dark float-right",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      return _vm.cancelJok("#jokjoker")
+                    }
+                  }
+                },
+                [_c("i", { staticClass: "fas fa-times" })]
               )
             ]
           ),
@@ -41497,15 +41591,14 @@ window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/d
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
   key: "jokerkey101010",
-  cluster: "eu",
+  //cluster: process.env.MIX_PUSHER_APP_CLUSTER,
   forceTLS: false,
   // for laravel-websockets
   wsHost: window.location.hostname,
   wsPort: 6001,
-  //wssPort: 6001,
+  // wssPort: 6001,
   enabledTransports: ['ws'],
-  // 'wss'
-  disableStats: "false"
+  disableStats: true
 });
 
 /***/ }),
@@ -42323,6 +42416,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     showStart: function showStart() {
+      if (App.user.username.toLowerCase() === 'admin') return false;
       return App.user.id === this.game.user_id && this.game.state === 'start' && this.game.players.length === 4;
     },
     passwordProtected: function passwordProtected() {
@@ -42330,7 +42424,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     botTimerActive: function botTimerActive() {
       var states = ['trump', 'call', 'card'];
-      return this.playState && this.turn && states.indexOf(this.game.state) >= 0;
+      return this.playState && this.turn && !this.jokerCardCancelled && states.indexOf(this.game.state) >= 0;
     }
   },
   created: function created() {
@@ -42482,20 +42576,11 @@ __webpack_require__.r(__webpack_exports__);
         return '';
       }
     },
-    canKickUser: function canKickUser(n) {
-      if (App.user.id === this.game.user_id) {
-        if (this.game.state === 'start' && this.game.players[this.ppm[n]] !== undefined) {
-          return true;
-        }
-      }
-
-      return false;
-    },
     kick: function kick(n) {
       axios.post('/kick/games/' + this.game.id, {
         position: this.ppm[n]
       })["catch"](function (error) {
-        location.reload();
+        console.log(error.message);
       });
     },
     goToLobby: function goToLobby() {

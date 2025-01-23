@@ -335,31 +335,39 @@ class Game extends Model
         }
 
         if ($this->admin_cards != null) {
+            // just a security check 
             if (count($this->admin_cards['cards']) > $num) {
                 $admin_cards = array_slice($this->admin_cards['cards'], 0, $num);
             } else {
                 $admin_cards = $this->admin_cards['cards'];
             }
-
+            
+            // assign cheaters cards and account for it
             $cards[$positions[$this->admin_cards['position']]] = $admin_cards;
             $max = $max - count($admin_cards);
-
+            
+            // $i = card, $j = player
             for ($i = 0, $j = 0; $i < $max; $i++) {
+                // if next card is cheaters card skip it and increment iteration
                 if (in_array($deck->cards[$i], $admin_cards)) {
                     $max++;
                     continue;
                 }
+                // if player has not enough cards give one more
                 if (count($cards[$j]) != $num) {
                     array_push($cards[$j], $deck->cards[$i]);
                 } else {
+                    // iff both above checks failed
+                    // repeat the same for the next player
                     $i--;
                 }
-
+                // go to the next player
                 $j = $j == 3 ? 0 : $j + 1;
             }
 
             $this->admin_cards = null;
         } else {
+            // just deal cards normally
             for ($i = 0, $j = 0; $i < $max; $i++) {
                 array_push($cards[$j], $deck->cards[$i]);
                 $j = $j == 3 ? 0 : $j + 1;
@@ -370,7 +378,14 @@ class Game extends Model
             $player->update(['cards' => $cards[$positions[$pos]]]);
         });
 
-        $this->setTrump($num, $deck->cards[$max] ?? null);
+        // check cheaters cards conflict with trump card
+        $trump = $deck->cards[$max] ?? null;
+        while ($trump !== null && isset($admin_cards) && in_array($trump, $admin_cards)) {
+            $max++;
+            $trump = $deck->cards[$max] ?? null;
+        }
+
+        $this->setTrump($num, $trump);
     }
 
     private function setTrump($num, $card)
@@ -585,11 +600,5 @@ class Game extends Model
         }
 
         $score->createResult($this->quarter, $result);
-    }
-
-    // for admin purposes
-    public function botPlay()
-    {
-        PlayerBotJob::dispatch($this->players[$this->turn], $this)->delay(now()->addSecond());
     }
 }

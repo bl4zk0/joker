@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+WebSocketsRouter::webSocket('/', \App\JokerWebSocketHandler::class);
 Auth::routes(['verify' => true]);
 
 Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider')->where('provider','facebook|google');
@@ -31,6 +32,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/password/change', 'UsersController@passwordChange')->middleware('password.confirm');
     Route::post('/admin/start/games/{game}', 'AdminsController@start');
     Route::post('/admin/cards/games/{game}', 'AdminsController@cards');
+    Route::post('/admin/addbot/games/{game}', 'AdminsController@addbot');
 });
 
 Route::group(['middleware' => ['auth', 'disconnected']], function () {

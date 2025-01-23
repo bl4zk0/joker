@@ -24,4 +24,4 @@ EXPOSE 8025
 EXPOSE 3306
 
 RUN chmod +x /entrypoint.sh
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

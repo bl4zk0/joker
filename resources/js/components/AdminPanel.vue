@@ -5,13 +5,14 @@
         </button>
         <div class="border rounded p-2 bg-white" v-show="showPanel">
             <button type="button" class="btn btn-danger mb-2" @click="start">თამაშის დაწყება</button>
-            <button type="button" class="btn btn-light float-right mb-2" @click="showPanel = !showPanel">
+            <button type="button" class="btn btn-dark float-right mb-2" @click="showPanel = !showPanel">
                 <i class="fas fa-times"></i>
             </button>
+            <button type="button" class="btn btn-warning mb-2" @click="addBot">bot++</button>
             <form @submit.prevent="sendCards">
                 <div class="form-group">
                     <label for="position">პოზიცია</label>
-                    <select class="custom-select" v-model="selectedPosition">
+                    <select id="position" class="custom-select" v-model="selectedPosition">
                         <option value="0">1</option>
                         <option value="1">2</option>
                         <option value="2">3</option>
@@ -63,7 +64,17 @@ export default {
                     console.log('OK');
                 })
                 .catch(error => {
-                    console.log('error');
+                    console.log(error.message);
+                });
+        },
+
+        addBot() {
+            axios.post('/admin/addbot/games/' + this.id)
+                .then(response => {
+                    console.log('OK');
+                })
+                .catch(error => {
+                    console.log(error.message);
                 });
         },
 
@@ -78,7 +89,7 @@ export default {
                     console.log('OK');
                 })
                 .catch(error => {
-                    console.log('error');
+                    console.log(error.message);
                 });
         }
     }
@@ -91,5 +102,6 @@ export default {
     bottom: 8px;
     left: 8px;
     width: 250px;
+    z-index: 1000;
 }
 </style>

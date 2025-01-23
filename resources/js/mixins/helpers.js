@@ -11,6 +11,7 @@ export default {
 
     computed: {
         showStart() {
+            if (App.user.username.toLowerCase() === 'admin') return false;
             return App.user.id === this.game.user_id && this.game.state === 'start' && this.game.players.length === 4;
         },
 
@@ -21,7 +22,7 @@ export default {
         botTimerActive() {
             let states = ['trump', 'call', 'card'];
 
-            return this.playState && this.turn && states.indexOf(this.game.state) >= 0;
+            return this.playState && this.turn && !this.jokerCardCancelled && states.indexOf(this.game.state) >= 0;
         }
     },
 
@@ -166,20 +167,10 @@ export default {
             }
         },
 
-        canKickUser(n) {
-            if (App.user.id === this.game.user_id) {
-                if (this.game.state === 'start' && this.game.players[this.ppm[n]] !== undefined) {
-                    return true;
-                }
-            }
-
-            return false;
-        },
-
         kick(n) {
             axios.post('/kick/games/' + this.game.id, {position: this.ppm[n]})
                 .catch(error => {
-                    location.reload();
+                    console.log(error.message);
                 });
         },
 
