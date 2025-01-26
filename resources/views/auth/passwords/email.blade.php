@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-4">
             <div class="card mt-3">
-                <div class="card-header"><i class="fas fa-key"></i> პაროლის აღდგენა</div>
+                <div class="card-header"><i class="fas fa-key"></i> <b>@lang('Reset password')</b></div>
 
                 <div class="card-body">
                     @if (session('status'))
@@ -18,7 +18,7 @@
                         @csrf
 
                         <div class="form-group">
-                            <label for="email">ელ-ფოსტა</label>
+                            <label for="email">@lang('Email')</label>
 
                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
 
@@ -31,7 +31,7 @@
 
                         <div class="form-group mb-0">
                                 <button type="submit" class="btn btn-success btn-block">
-                                    აღდგენა
+                                    @lang('Send email')
                                 </button>
                         </div>
                     </form>

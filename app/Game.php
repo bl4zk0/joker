@@ -349,7 +349,7 @@ class Game extends Model
             // $i = card, $j = player
             for ($i = 0, $j = 0; $i < $max; $i++) {
                 // if next card is cheaters card skip it and increment iteration
-                if (in_array($deck->cards[$i], $admin_cards)) {
+                if (in_array($deck->cards[$i], $admin_cards, true)) {
                     $max++;
                     continue;
                 }
@@ -380,7 +380,7 @@ class Game extends Model
 
         // check cheaters cards conflict with trump card
         $trump = $deck->cards[$max] ?? null;
-        while ($trump !== null && isset($admin_cards) && in_array($trump, $admin_cards)) {
+        while ($trump !== null && isset($admin_cards) && in_array($trump, $admin_cards, true)) {
             $max++;
             $trump = $deck->cards[$max] ?? null;
         }
@@ -512,7 +512,7 @@ class Game extends Model
         $positions = $this->players()->pluck('position')->toArray();
 
         for ($position = 1; $position < 4; $position++) {
-            if (! in_array($position, $positions)) return $position;
+            if (! in_array($position, $positions, true)) return $position;
         }
     }
 

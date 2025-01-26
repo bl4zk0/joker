@@ -72,6 +72,6 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $admins = ['admin@joker.local'];
 
-        return in_array($this->email, $admins);
+        return in_array($this->email, $admins, true);
     }
 }

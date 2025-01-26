@@ -9,9 +9,9 @@
 
             <main role="main" class="inner cover text-center">
                 <h1 class="cover-heading"><img src="{{ asset('storage/imgs/logo.png') }}" alt="logo"></h1>
-                <p class="lead">კეთილი იყოს თქვენი მობრძანება ჯოკერის პორტალზე! ითამაშეთ და გაერთეთ 🙂</p>
+                <p class="lead">@lang('Welcome on Joker portal! Game on and GLHF!')</p>
                 <p class="lead">
-                    <a href="{{ route('lobby') }}" class="btn btn-lg btn-success btn-main">თამაშის დაწყება</a>
+                    <a href="{{ route('lobby') }}" class="btn btn-lg btn-success btn-main">@lang('Play Now')</a>
                 </p>
             </main>
         </div>

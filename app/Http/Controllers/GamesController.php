@@ -22,6 +22,7 @@ use App\Rules\GamePasswordRule;
 use App\Rules\KickUserRule;
 use Illuminate\Http\Request;
 
+// bad design move front-end calls to websockets and reinvent botplay...
 class GamesController extends Controller
 {
     /**
@@ -36,9 +37,6 @@ class GamesController extends Controller
         if (! ($game->players->count() === 4)) {
             abort(406, 'Not enough players');
         }
-
-//        $game->start();
-//        return response([], 200);
 
         $game->update(['state' => 'ready', 'ready' => ['players' => [auth()->id()], 'count' => 1]]);
 
@@ -260,7 +258,7 @@ class GamesController extends Controller
                 $player->update(['disconnected' => false]);;
             }
 
-            broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'შემოვიდა', $game->players))->toOthers();
+            broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'Joined', $game->players))->toOthers();
             return compact('game', 'cards');
         }
 
@@ -276,7 +274,7 @@ class GamesController extends Controller
 
             $game->refresh();
 
-            broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'შემოვიდა', $game->players))->toOthers();
+            broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'Joined', $game->players))->toOthers();
             broadcast(new UpdateLobbyEvent());
 
             return compact('game', 'cards');

@@ -65,7 +65,7 @@ class Player extends Model
     public function canPlay($card, $gameCards, $trump)
     {
         if (empty($gameCards)) {
-            if($card['strength'] != 16 || (isset($card['action']) && in_array($card['action'], ['magali', 'caigos']))) {
+            if($card['strength'] != 16 || (isset($card['action']) && in_array($card['action'], ['magali', 'caigos'], true))) {
                 return true;
             } else {
                 return false;
@@ -78,7 +78,7 @@ class Player extends Model
                 if ($this->isHighestSuitInCards($card, $suit)) return true;
             } else if ($card['suit'] == $suit) return true;
 
-            if (isset($card['action']) && in_array($card['action'], ['mojokra', 'kvevidan'])) return true;
+            if (isset($card['action']) && in_array($card['action'], ['mojokra', 'kvevidan'], true)) return true;
 
             if ($this->suitNotInCards($suit) && ($card['suit'] == $trump)) return true;
 

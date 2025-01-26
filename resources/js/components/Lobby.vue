@@ -1,12 +1,12 @@
 <template>
     <div class="card-body d-flex justify-content-around flex-wrap">
         <div v-if="games.length === 0" class="alert alert-info">
-            მაგიდები არ მოიძებნა.
+            {{ lang('No table found') }}
         </div>
 
         <div v-else class="card card-table mb-3" v-for="game in games" :key="game.id">
             <div class="card-header text-center">
-                <strong>{{ game.type === 1 ? 'სტანდარტული' : '9-იანები' }} | {{ game.penalty }}</strong>
+                <strong>{{ game.type === 1 ? lang('Standard') : lang('Only 9') }} | {{ game.penalty }}</strong>
             </div>
             <ul class="list-group list-group-flush">
 
@@ -24,7 +24,7 @@
                 </li>
 
                 <li class="list-group-item">
-                    <a :href="path(game.id)" class="btn btn-block btn-success" :class="klas(game.players.length, game.kicked_users)">შესვლა</a>
+                    <a :href="path(game.id)" class="btn btn-block btn-success" :class="klas(game.players.length, game.kicked_users)">{{ lang('Join') }}</a>
                 </li>
             </ul>
         </div>
@@ -32,8 +32,11 @@
 </template>
 
 <script>
+    import translate from '../mixins/translate';
+    
     export default {
         props: ['initialGames'],
+        mixins: [translate],
 
         data() {
             return {

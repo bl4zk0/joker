@@ -45,3 +45,6 @@ window.Echo = new Echo({
     enabledTransports: ['ws'],
     disableStats: true
 });
+
+// fix flashing on refresh. happens because of vuejs script defer??
+document.body.style.display = 'block';

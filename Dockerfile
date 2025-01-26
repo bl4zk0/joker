@@ -15,7 +15,8 @@ COPY dockerconf/supervisord.conf /etc/supervisor/supervisord.conf
 COPY --chown=root:root dockerconf/entrypoint.sh /entrypoint.sh
 
 WORKDIR /var/www/joker
-RUN cp .env.example .env && composer install && php /var/www/joker/artisan storage:link
+RUN cp .env.example .env && composer install &&\
+    php /var/www/joker/artisan storage:link && npm install
 
 EXPOSE 80
 EXPOSE 443

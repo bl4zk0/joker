@@ -37,6 +37,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
         factory('App\User')->create([
+            'username' => 'user',
+            'email' => 'user@joker.local',
+            'avatar_url' => Gravatar::url('user@joker.local')
+        ]);
+
+        factory('App\User')->create([
             'username' => 'Admin',
             'email' => 'admin@joker.local',
             'avatar_url' => Gravatar::url('admin@joker.local')

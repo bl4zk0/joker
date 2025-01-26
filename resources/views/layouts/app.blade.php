@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="ka">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" style="background-color: #28a745">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Joker') }}</title>
     <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="16x16">
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -25,7 +25,7 @@
 
     @yield('style')
 </head>
-<body class="bg-success">
+<body class="bg-success" style="display: none">
     <div id="app">
         @yield('nav')
 

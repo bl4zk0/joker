@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Events\GetReadyEvent;
 use App\Events\UpdateLobbyEvent;
 use App\Game;
+use App\Score;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
@@ -112,17 +113,24 @@ class GamesTest extends TestCase
     /** @test */
     public function a_player_can_call()
     {
-        $game = factory('App\Game')->create(['state' => 'call']);
+        $game = factory('App\Game')->create(['state' => 'call', 'quarter' => 1]);
         $game->addPlayer($game->creator);
         $game->addPlayer(factory('App\User')->create());
         $game->addPlayer(factory('App\User')->create());
         $game->addPlayer(factory('App\User')->create());
 
-        $this->signIn($game->creator);
-        Event::fake();
-        $this->postJson('/call' . $game->path(), ['call' => 1])->assertStatus(200);
+        $game->players->each(function ($player) use ($game) {
+            $game->scores()->create([
+                'player_id' => $player->id,
+                'position' => $player->position
+            ]);
+        });
 
-        $this->assertDatabaseHas('scores', ['call' => 1]);
+        $this->signIn($game->creator);
+
+        $this->postJson('/call' . $game->path(), ['call' => 1])->assertStatus(200);
+        $this->assertEquals(1, $game->players[0]->scores[0]->getData('call', 1, 1));
+        //$this->assertEquals(1, Score::where('player_id', '1')->get()[0]['data']['q_1'][0]['call']);
     }
 
     /** @test */
@@ -164,44 +172,36 @@ class GamesTest extends TestCase
         $game->addPlayer(factory('App\User')->create());
         $game->refresh();
 
-        $game->players[0]->scores()->create([
-            'quarter' => 1,
-            'call' => 9,
-            'take' => 9
-        ]);
+        $game->players->each(function ($player) use ($game) {
+            $game->scores()->create([
+                'player_id' => $player->id,
+                'position' => $player->position
+            ]);
+        });
 
-        $game->players[1]->scores()->create([
-            'quarter' => 1,
-            'call' => 0,
-            'take' => 0
-        ]);
+        $game->scores[0]->createCall(1, 9);
+        $game->scores[1]->createCall(1, 0);
+        $game->scores[2]->createCall(1, 0);
+        $game->scores[3]->createCall(1, 2);
 
-        $game->players[2]->scores()->create([
-            'quarter' => 1,
-            'call' => 0,
-            'take' => 0
-        ]);
-
-        $game->players[3]->scores()->create([
-            'quarter' => 1,
-            'call' => 2,
-            'take' => 0
-        ]);
+        for ($i = 0; $i < 9; $i++) {
+            $game->scores[0]->incrementTake(1);
+        }
 
         $game->calcScoresAfterHand();
 
-        $this->assertEquals(900, $game->fresh()->players[0]->scores[0]->result);
-        $this->assertEquals(50, $game->fresh()->players[1]->scores[0]->result);
-        $this->assertEquals(50, $game->fresh()->players[2]->scores[0]->result);
-        $this->assertEquals(-200, $game->fresh()->players[3]->scores[0]->result);
+        $this->assertEquals(900, $game->fresh()->scores[0]->getData('result', 1, 1));
+        $this->assertEquals(50, $game->fresh()->scores[1]->getData('result', 1, 1));
+        $this->assertEquals(50, $game->fresh()->scores[2]->getData('result', 1, 1));
+        $this->assertEquals(-200, $game->fresh()->scores[3]->getData('result', 1, 1));
     }
 
     /** @test */
     public function admin_can_deal_specific_cards_for_next_deal()
     {
-        $admin = factory('App\User')->create(['email' => 'admin@mojokre.dev']);
+        $admin = factory('App\User')->create(['email' => 'admin@joker.local']);
 
-        $game = factory('App\Game')->create(['type' => 9]);
+        $game = factory('App\Game')->create(['type' => 9, 'state' => 'card']);
         $game->addPlayer($game->creator);
         $game->addPlayer(factory('App\User')->create());
         $game->addPlayer(factory('App\User')->create());

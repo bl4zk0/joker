@@ -15,7 +15,7 @@ class CardRule implements Rule
      */
     public function passes($attribute, $value)
     {
-        return in_array($value, auth()->user()->player->cards);
+        return in_array($value, auth()->user()->player->cards, true);
     }
 
     /**

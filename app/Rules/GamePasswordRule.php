@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Lang;
 
 class GamePasswordRule implements Rule
 {
@@ -37,6 +38,6 @@ class GamePasswordRule implements Rule
      */
     public function message()
     {
-        return 'პინ-კოდი არასწორია';
+        return Lang::get('Invalid pin code');
     }
 }

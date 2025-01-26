@@ -5,9 +5,9 @@
     <div class="row justify-content-center">
         <div class="col-md-4">
             <div class="card mt-3">
-                <div class="card-header"><i class="fas fa-lock"></i> {{ __('Confirm Password') }}</div>
+                <div class="card-header"><i class="fas fa-lock"></i> <b>{{ __('Confirm password') }}</b></div>
 
-                <div class="card-body">
+                <div class="card-body">                    
                     <form method="POST" action="{{ route('password.confirm') }}">
                         @csrf
 
@@ -25,12 +25,12 @@
 
                         <div class="form-group">
                                 <button type="submit" class="btn btn-block btn-success">
-                                    გაგრძელება
+                                {{ __('Confirm') }}
                                 </button>
                         </div>
                         <div class="text-center">
                             <a class="btn btn-link" href="{{ route('password.request') }}">
-                                <small>{{ __('Forgot Your Password?') }}</small>
+                                <small>{{ __('Forgot password?') }}</small>
                             </a>
                         </div>
                     </form>

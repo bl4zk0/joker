@@ -25,7 +25,7 @@
                 </button>
             </div>
             <div id="trump-wrapper" v-show="game.trump !== null">
-                <div><strong>კოზირი</strong></div>
+                <div><strong>{{ lang('Trump') }}</strong></div>
                 <div id="trump" :class="this.game.trump ? game.trump.suit + game.trump.strength : ''"></div>
             </div>
 
@@ -45,9 +45,10 @@
             </div>
 
             <!-- last played cards -->
+            <!-- some errors pop in console from here. adding a check -->
             <div id="last-cards" class="border rounded bg-success shadow" v-show="showLastCards">
                 <div class="last-cards-wrapper">
-                    <div v-if="lastCards.length ===4"
+                    <div v-if="lastCards.length === 4 && checkLastCards(lastCards)"
                          v-for="(card, idx) in lastCards"
                          :id="`player${idx}-last-card`"
                          class="p-card"
@@ -130,7 +131,7 @@
                  data-toggle="popover"
                  :data-placement="n === 2 ? 'right' : 'top'"
                  data-trigger="manual">
-                <div class="kick" title="გაგდება" v-show="canKickUser(n)">
+                <div class="kick" :title="lang('Kick')" v-show="canKickUser(n)">
                     <i class="fas fa-times" @click="kick(n)"></i>
                 </div>
                 <img v-if="getAvatarUrl(n)"
@@ -148,7 +149,7 @@
                 <button class="btn btn-danger btn-block"
                         type="button"
                         @click="start">
-                    <small><strong>დაწყება</strong></small>
+                    <small><strong>{{ lang('Start') }}</strong></small>
                 </button>
             </div>
 
@@ -163,12 +164,12 @@
             </div>
 
             <div id="ready" class="bg-white border rounded p-1 text-center d-none">
-                <p id="ready-waiting" class="d-none ">დაელოდეთ მოთამაშეების თანხმობას</p>
+                <p id="ready-waiting" class="d-none ">{{ lang('Please wait for other players') }}</p>
                 <div id="ready-check" class="d-none mb-3">
-                    <p>მზად ხარ თამაშის დასაწყებად?</p>
+                    <p>{{ lang('Are you ready?') }}</p>
                     <div id="d-none ready-buttons">
-                        <button class="btn btn-success" data-ready="1" @click="actionReady">კი</button>
-                        <button class="btn btn-danger" data-ready="0" @click="actionReady">არა</button>
+                        <button class="btn btn-success" data-ready="1" @click="actionReady">{{ lang('Yes') }}</button>
+                        <button class="btn btn-danger" data-ready="0" @click="actionReady">{{ lang('No') }}</button>
                     </div>
                 </div>
                 <p v-text="timer"></p>
@@ -192,20 +193,20 @@
                 <button class="btn btn-dark btn-block mb-1" @click="cancelJok('#suits')"
                         v-show="game.state !== 'trump'"><i class="fas fa-times"></i></button>
                 <button class="btn btn-light text-dark btn-block mb-1" data-suit="bez" @click="actionSuit"
-                        v-show="game.state === 'trump'">ბეზი</button>
+                        v-show="game.state === 'trump'">{{ lang('None') }}</button>
             </div>
 
             <div id="jokhigh" class="d-none border bg-white rounded shadow p-1">
-                <button class="btn btn-light" data-action="magali" @click="actionJoker">მაღალი</button>
-                <button class="btn btn-warning" data-action="caigos" @click="actionJoker">წაიღოს</button>
+                <button class="btn btn-light" data-action="magali" @click="actionJoker">{{ lang('High') }}</button>
+                <button class="btn btn-warning" data-action="caigos" @click="actionJoker">{{ lang('Give to') }}</button>
                 <button type="button" class="btn btn-dark float-right" @click="cancelJok('#jokhigh')">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
             <div id="jokjoker" class="d-none border bg-white rounded shadow p-1">
-                <button class="btn btn-light" data-action="mojokra" @click="actionJoker">მოჯოკრა</button>
-                <button class="btn btn-warning" data-action="kvevidan" @click="actionJoker">ქვევიდან</button>
+                <button class="btn btn-light" data-action="mojokra" @click="actionJoker">{{ lang('Take') }}</button>
+                <button class="btn btn-warning" data-action="kvevidan" @click="actionJoker">{{ lang('Give') }}</button>
                 <button type="button" class="btn btn-dark float-right" @click="cancelJok('#jokjoker')">
                     <i class="fas fa-times"></i>
                 </button>
@@ -213,7 +214,7 @@
 
             <div id="password-card" class="border bg-white rounded shadow p-1" v-show="passwordProtected">
                 <div class="p-1 mb-2">
-                    პინ-კოდი: <span class="text-success">{{ game.password }}</span>
+                    {{ lang('Pin code') }}: <span class="text-success">{{ game.password }}</span>
                     <button type="button" class="btn btn-sm btn-secondary" style="float:right" @click="copyLink">copy</button>
                 </div>
 
@@ -240,7 +241,7 @@
                 <div class="d-flex justify-content-center">
                     <div class="card mt-5">
                         <div class="card-body text-center">
-                            <h5 class="alert alert-warning">თამაში დასრულდა!</h5>
+                            <h5 class="alert alert-warning">{{ lang('Game Over') }}</h5>
                             <div v-for="n in [0,1,2,3]" :id="`place-${n}`" class="game-over-card">
                                 <h5 :class="n > 1 ? 'text-danger' : 'text-success'">{{ n+1 }} <i class="fas fa-trophy"></i></h5>
                                 <img src="#" class="avatar border rounded-circle" alt="avatar">
@@ -260,7 +261,7 @@
             <div class="modal-dialog">
                 <div class="modal-content bg-danger">
                     <div class="modal-body text-white">
-                        <i class="fas fa-exclamation-triangle"></i> თქვენ გამოგაგდეს მაგიდიდან!
+                        <i class="fas fa-exclamation-triangle"></i> @lang('You have been kicked')
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-light" data-dismiss="modal" @click="goToLobby">OK!</button>
@@ -293,12 +294,13 @@
     import scoreboard9 from './Scoreboard9';
     import chat from './Chat';
     import helpers from '../mixins/helpers';
+    import translate from '../mixins/translate';
     import gamechannel from '../mixins/gamechannel';
     import playerchannel from '../mixins/playerchannel';
 
     export default {
         components: { scoreboard1, scoreboard9, chat },
-        mixins: [helpers, gamechannel, playerchannel],
+        mixins: [helpers, gamechannel, playerchannel, translate],
         props: ['initialGame', 'initialCards'],
 
         data() {
@@ -312,9 +314,9 @@
                     {cards: [], takenCards: []},
                 ],
                 card: {},
-                actions: {"magali": "მაღალი", "caigos": "წაიღოს", "mojokra": "მოჯოკრა", "kvevidan": "ქვევიდან"},
+                actions: {"magali": this.lang('High'), "caigos": this.lang("Give To"), "mojokra": this.lang('Take'), "kvevidan": this.lang('Give')},
                 actionsuits: {"hearts": "♥", "clubs": "♣", "diamonds": "♦", "spades": "♠"},
-                messages: [{username: '[system]', message: 'ჩათის გასასუფთავებლად დაწერეთ "clear"'}],
+                messages: [{username: '[system]', message: this.lang('To clear the chat type "clear"')}],
                 showLastCards: false,
                 botTimer: App.bot_timer / 1000,
                 showBotTimer: false,
@@ -391,14 +393,14 @@
                 // checking state if player can play a card
                 this.playState = false;
 
-                let strength = event.target.getAttribute('data-strength');
+                let strength = Number(event.target.getAttribute('data-strength'));
                 let suit = event.target.getAttribute('data-suit');
                 let card = { strength, suit };
 
                 this.cardId = event.target.id;
                 this.card.card = card;
 
-                if (strength === '16') {
+                if (strength === 16) {
                     if (this.game.cards.length === 0) {
                         $('#jokhigh').removeClass('d-none');
                     } else {
@@ -514,7 +516,7 @@
                 this.game.cards.push(card);
                 this.game.players[this.ppm[0]].card = card;
                 this.players[this.ppm[0]].cards.splice(this.cardId, 1);
-                this.lastCardsStorage[0] = Object.create(card);
+                this.lastCardsStorage[0] = structuredClone(card);
                 this.lastCardsStorage[0].z = this.game.cards.length;
 
                 this.clearBotTimer();
@@ -591,6 +593,13 @@
                 this.playState = true;
                 this.card = {};
                 this.jokerCardCancelled = true;
+            },
+
+            checkLastCards(lastCards) {
+                for (let card of lastCards) {
+                    if (card.suit === undefined) return false;
+                }
+                return true;
             }
         }
     }

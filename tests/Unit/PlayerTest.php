@@ -107,7 +107,7 @@ class PlayerTest extends TestCase
 
         $player->removeCard(['strength' => 13, 'suit' => 'hearts']);
 
-        $this->assertFalse(in_array(['strength' => 13, 'suit' => 'hearts'], $player->cards));
+        $this->assertFalse(in_array(['strength' => 13, 'suit' => 'hearts'], $player->cards, true));
 
         $player->removeCard(['strength' => 6, 'suit' => 'hearts']);
 

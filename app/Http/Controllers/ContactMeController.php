@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\ContactMe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Lang;
 
 class ContactMeController extends Controller
 {
@@ -21,9 +22,9 @@ class ContactMeController extends Controller
             'message' => 'required|min:10'
         ]);
 
-        Mail::to('admin@mojokre.ge')
+        Mail::to('admin@joker.local')
             ->send(new ContactMe($request->name, $request->email, $request->message));
 
-        return redirect('/contact')->with('status', 'წერილი გაიგზავნა');
+        return redirect('/contact')->with('status', Lang::get('Message sent'));
     }
 }

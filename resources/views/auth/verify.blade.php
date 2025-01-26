@@ -5,7 +5,9 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card mt-3">
-                <div class="card-header"><i class="fas fa-lock"></i> {{ __('Verify Your Email Address') }}</div>
+                <div class="card-header"><i class="fas fa-lock"></i> 
+                <b>{{ __('Verify your email address') }}</b>
+            </div>
 
                 <div class="card-body">
                     @if (session('resent'))

@@ -30,7 +30,7 @@ class DeckTest extends TestCase
 
         $lastPlayer = $deck->lastPlayer();
 
-        $this->assertTrue(in_array($lastPlayer['pos'], [0, 1, 2, 3]));
+        $this->assertTrue(in_array($lastPlayer['pos'], [0, 1, 2, 3], true));
         $this->assertIsArray($lastPlayer['cards']);
     }
 }

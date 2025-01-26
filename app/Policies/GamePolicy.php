@@ -32,7 +32,7 @@ class GamePolicy
     public function ready(User $user, Game $game)
     {
         return $game->players->contains($user->player) && $user->isNot($game->creator) &&
-            $game->state == 'ready' && (! in_array($user->id, $game->ready['players']));
+            $game->state == 'ready' && (! in_array($user->id, $game->ready['players'], true));
     }
 
     /**
@@ -117,7 +117,7 @@ class GamePolicy
     public function bot(User $user, Game $game)
     {
         $states = ['trump', 'call', 'card'];
-        return $game->players->contains($user->player) && $user->player->position === $game->turn && in_array($game->state, $states);
+        return $game->players->contains($user->player) && $user->player->position === $game->turn && in_array($game->state, $states, true);
     }
 
     /**

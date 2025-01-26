@@ -26,17 +26,21 @@
                                         </div>
                                     </form>
 
-                                    <a href="/email/change" class="btn btn-secondary btn-block my-2">ელ-ფოსტის შეცვლა</a>
-                                    <a href="/password/change" class="btn btn-secondary btn-block my-2">პაროლის შეცვლა</a>
+                                    <a href="/email/change" class="btn btn-secondary btn-block my-2">
+                                        @lang('Change email')
+                                    </a>
+                                    <a href="/password/change" class="btn btn-secondary btn-block my-2">
+                                        @lang('Change password')
+                                    </a>
 
-                                    <small class="mt-2">ავატარს უზრუნველყოფს <a href="https://gravatar.com" target="_blank">gravatar.com</a></small>
+                                    <small class="mt-2">@lang('Avatar powered by') <a href="https://gravatar.com" target="_blank">gravatar.com</a></small>
                                 @endcan
                             </div>
                             <div class="mt-2">
-                                <i class="fas fa-gamepad text-warning"></i> თამაშები: <strong>{{ $user->player->games_played }}</strong>
+                                <i class="fas fa-gamepad text-warning"></i> @lang('Games played'): <strong>{{ $user->player->games_played }}</strong>
                             </div>
                             <div>
-                                <i class="fas fa-trophy text-success"></i> მოგებული: <strong>{{ $user->player->games_won }}</strong>
+                                <i class="fas fa-trophy text-success"></i> @lang('Games won'): <strong>{{ $user->player->games_won }}</strong>
                             </div>
 
                         </div>
@@ -49,4 +53,3 @@
         <flash :message="{{ json_encode(session('status')) }}"></flash>
     @endif
 @endsection
-

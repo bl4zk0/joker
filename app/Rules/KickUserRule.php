@@ -37,6 +37,6 @@ class KickUserRule implements Rule
      */
     public function message()
     {
-        return 'დაფიქსირდა შეცდომა!';
+        return 'Error';
     }
 }

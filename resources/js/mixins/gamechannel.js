@@ -67,12 +67,12 @@ export default {
                 console.log('CardPlayEvent');
                 this.game.cards.push(event.card);
 
-                //es check aris tu karti itamasha botma da movida serveridan timeout is shemdeg
+                //this checks if botplay was triggered and card was player by bot from server
                 if (event.position === this.ppm[0]) {
                     let id = 0;
                     let cards = this.players[event.position].cards;
                     for (let idx in cards) {
-                        if (Number(event.card.strength) > 14 || Number(event.card.strength) == 1) {
+                        if (Number(event.card.strength) > 14 || Number(event.card.strength) === 1) {
                             if (event.card.suit == cards[idx].suit) {
                                 id = idx;
                             }
@@ -91,7 +91,7 @@ export default {
                 this.game.players[event.position].card = event.card;
                 this.playSound('card-play');
 
-                this.lastCardsStorage[this.ppm.indexOf(event.position)] = Object.create(event.card);
+                this.lastCardsStorage[this.ppm.indexOf(event.position)] = structuredClone(event.card);
                 this.lastCardsStorage[this.ppm.indexOf(event.position)].z = this.game.cards.length;
 
                 this.hideCards(event.take);

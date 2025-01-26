@@ -1908,6 +1908,7 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _mixins_translate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/translate */ "./resources/js/mixins/translate.js");
 function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -1952,8 +1953,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['gameId'],
+  mixins: [_mixins_translate__WEBPACK_IMPORTED_MODULE_0__["default"]],
   data: function data() {
     return {
       id: this.gameId,
@@ -2036,6 +2039,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _mixins_translate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/translate */ "./resources/js/mixins/translate.js");
 //
 //
 //
@@ -2072,8 +2076,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['messages', 'gameId'],
+  mixins: [_mixins_translate__WEBPACK_IMPORTED_MODULE_0__["default"]],
   data: function data() {
     return {
       message: '',
@@ -2103,7 +2109,7 @@ __webpack_require__.r(__webpack_exports__);
         axios.post('/message/games/' + this.gameId, {
           message: this.message
         })["catch"](function (error) {
-          console.log('თქვენ ძალიან ბევრს წერთ, ჯობია ითამაშოთ!');
+          console.log(error.message);
         });
         this.message = '';
         this.dEmojis = false;
@@ -2177,8 +2183,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Scoreboard9__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Scoreboard9 */ "./resources/js/components/Scoreboard9.vue");
 /* harmony import */ var _Chat__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Chat */ "./resources/js/components/Chat.vue");
 /* harmony import */ var _mixins_helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../mixins/helpers */ "./resources/js/mixins/helpers.js");
-/* harmony import */ var _mixins_gamechannel__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../mixins/gamechannel */ "./resources/js/mixins/gamechannel.js");
-/* harmony import */ var _mixins_playerchannel__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../mixins/playerchannel */ "./resources/js/mixins/playerchannel.js");
+/* harmony import */ var _mixins_translate__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../mixins/translate */ "./resources/js/mixins/translate.js");
+/* harmony import */ var _mixins_gamechannel__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../mixins/gamechannel */ "./resources/js/mixins/gamechannel.js");
+/* harmony import */ var _mixins_playerchannel__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../mixins/playerchannel */ "./resources/js/mixins/playerchannel.js");
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 //
 //
 //
@@ -2469,6 +2482,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+
 
 
 
@@ -2481,7 +2496,7 @@ __webpack_require__.r(__webpack_exports__);
     scoreboard9: _Scoreboard9__WEBPACK_IMPORTED_MODULE_1__["default"],
     chat: _Chat__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
-  mixins: [_mixins_helpers__WEBPACK_IMPORTED_MODULE_3__["default"], _mixins_gamechannel__WEBPACK_IMPORTED_MODULE_4__["default"], _mixins_playerchannel__WEBPACK_IMPORTED_MODULE_5__["default"]],
+  mixins: [_mixins_helpers__WEBPACK_IMPORTED_MODULE_3__["default"], _mixins_gamechannel__WEBPACK_IMPORTED_MODULE_5__["default"], _mixins_playerchannel__WEBPACK_IMPORTED_MODULE_6__["default"], _mixins_translate__WEBPACK_IMPORTED_MODULE_4__["default"]],
   props: ['initialGame', 'initialCards'],
   data: function data() {
     return {
@@ -2502,10 +2517,10 @@ __webpack_require__.r(__webpack_exports__);
       }],
       card: {},
       actions: {
-        "magali": "მაღალი",
-        "caigos": "წაიღოს",
-        "mojokra": "მოჯოკრა",
-        "kvevidan": "ქვევიდან"
+        "magali": this.lang('High'),
+        "caigos": this.lang("Give To"),
+        "mojokra": this.lang('Take'),
+        "kvevidan": this.lang('Give')
       },
       actionsuits: {
         "hearts": "♥",
@@ -2515,7 +2530,7 @@ __webpack_require__.r(__webpack_exports__);
       },
       messages: [{
         username: '[system]',
-        message: 'ჩათის გასასუფთავებლად დაწერეთ "clear"'
+        message: this.lang('To clear the chat type "clear"')
       }],
       showLastCards: false,
       botTimer: App.bot_timer / 1000,
@@ -2586,7 +2601,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
       this.playState = false;
-      var strength = event.target.getAttribute('data-strength');
+      var strength = Number(event.target.getAttribute('data-strength'));
       var suit = event.target.getAttribute('data-suit');
       var card = {
         strength: strength,
@@ -2595,7 +2610,7 @@ __webpack_require__.r(__webpack_exports__);
       this.cardId = event.target.id;
       this.card.card = card;
 
-      if (strength === '16') {
+      if (strength === 16) {
         if (this.game.cards.length === 0) {
           $('#jokhigh').removeClass('d-none');
         } else {
@@ -2706,7 +2721,7 @@ __webpack_require__.r(__webpack_exports__);
       this.game.cards.push(card);
       this.game.players[this.ppm[0]].card = card;
       this.players[this.ppm[0]].cards.splice(this.cardId, 1);
-      this.lastCardsStorage[0] = Object.create(card);
+      this.lastCardsStorage[0] = structuredClone(card);
       this.lastCardsStorage[0].z = this.game.cards.length;
       this.clearBotTimer();
       this.playSound('card-play');
@@ -2779,6 +2794,23 @@ __webpack_require__.r(__webpack_exports__);
       this.playState = true;
       this.card = {};
       this.jokerCardCancelled = true;
+    },
+    checkLastCards: function checkLastCards(lastCards) {
+      var _iterator = _createForOfIteratorHelper(lastCards),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var card = _step.value;
+          if (card.suit === undefined) return false;
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      return true;
     }
   }
 });
@@ -2794,7 +2826,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Game */ "./resources/js/components/Game.vue");
+/* harmony import */ var _mixins_translate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/translate */ "./resources/js/mixins/translate.js");
+/* harmony import */ var _Game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Game */ "./resources/js/components/Game.vue");
 //
 //
 //
@@ -2835,11 +2868,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
-    game: _Game__WEBPACK_IMPORTED_MODULE_0__["default"]
+    game: _Game__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   props: ['gameId', 'hasPassword', 'pinCode'],
+  mixins: [_mixins_translate__WEBPACK_IMPORTED_MODULE_0__["default"]],
   mounted: function mounted() {
     if (this.hasPassword === false) {
       this.join();
@@ -2869,7 +2904,7 @@ __webpack_require__.r(__webpack_exports__);
         this.showLoading = true;
       } else {
         if (!this.passwordInput) {
-          this.errorMessage = 'შეიყვანეთ პინ-კოდი';
+          this.errorMessage = this.lang('Enter pin code');
           return;
         } else {
           this.errorMessage = '';
@@ -2889,7 +2924,7 @@ __webpack_require__.r(__webpack_exports__);
         if (error.response.data.errors) {
           _this.passwordInput = '';
           _this.showLoadingBtn = false;
-          _this.errorMessage = 'პინ-კოდი არასწორია';
+          _this.errorMessage = _this.lang('Invalid pin code');
         } else {
           window.location = '/lobby';
         }
@@ -2914,6 +2949,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _mixins_translate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/translate */ "./resources/js/mixins/translate.js");
 //
 //
 //
@@ -2947,8 +2983,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['initialGames'],
+  mixins: [_mixins_translate__WEBPACK_IMPORTED_MODULE_0__["default"]],
   data: function data() {
     return {
       games: this.initialGames
@@ -7603,7 +7641,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.panel-wrapper[data-v-8a230bc0] {\n    position: fixed;\n    bottom: 8px;\n    left: 8px;\n    width: 250px;\n    z-index: 1000;\n}\n", ""]);
+exports.push([module.i, "\n.panel-wrapper[data-v-8a230bc0] {\n    position: fixed;\n    bottom: 8px;\n    left: 8px;\n    width: 250px;\n}\n", ""]);
 
 // exports
 
@@ -27438,7 +27476,7 @@ var render = function() {
       },
       [
         _c("i", { staticClass: "fas fa-user-cog" }),
-        _vm._v(" Admin-panel\n    ")
+        _vm._v(" Admin panel\n    ")
       ]
     ),
     _vm._v(" "),
@@ -27463,7 +27501,7 @@ var render = function() {
             attrs: { type: "button" },
             on: { click: _vm.start }
           },
-          [_vm._v("თამაშის დაწყება")]
+          [_vm._v(_vm._s(_vm.lang("Start Game")))]
         ),
         _vm._v(" "),
         _c(
@@ -27502,7 +27540,9 @@ var render = function() {
           },
           [
             _c("div", { staticClass: "form-group" }, [
-              _c("label", { attrs: { for: "position" } }, [_vm._v("პოზიცია")]),
+              _c("label", { attrs: { for: "position" } }, [
+                _vm._v(_vm._s(_vm.lang("Position")))
+              ]),
               _vm._v(" "),
               _c(
                 "select",
@@ -27546,7 +27586,9 @@ var render = function() {
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group" }, [
-              _c("label", { attrs: { for: "cards" } }, [_vm._v("კარტები")]),
+              _c("label", { attrs: { for: "cards" } }, [
+                _vm._v(_vm._s(_vm.lang("Cards")))
+              ]),
               _vm._v(" "),
               _c(
                 "select",
@@ -27611,7 +27653,7 @@ var render = function() {
             ]),
             _vm._v(" "),
             _c("button", { staticClass: "btn btn-success" }, [
-              _vm._v("ჩაწყობა")
+              _vm._v(_vm._s(_vm.lang("Cheat")))
             ])
           ]
         )
@@ -27655,9 +27697,13 @@ var render = function() {
                 msg.notification
                   ? _c("span", [
                       _c("strong", { staticClass: "text-warning" }, [
-                        _vm._v("[შეტყობინება]:")
+                        _vm._v("[" + _vm._s(_vm.lang("Notification")) + "]:")
                       ]),
-                      _vm._v("\n                        მოთამაშე "),
+                      _vm._v(
+                        "\n                        " +
+                          _vm._s(_vm.lang("Player")) +
+                          " "
+                      ),
                       _c("strong", {
                         domProps: { textContent: _vm._s(msg.username) }
                       }),
@@ -27918,7 +27964,7 @@ var render = function() {
               attrs: { id: "trump-wrapper" }
             },
             [
-              _vm._m(1),
+              _c("div", [_c("strong", [_vm._v(_vm._s(_vm.lang("Trump")))])]),
               _vm._v(" "),
               _c("div", {
                 class: this.game.trump
@@ -27990,7 +28036,8 @@ var render = function() {
                 "div",
                 { staticClass: "last-cards-wrapper" },
                 _vm._l(_vm.lastCards, function(card, idx) {
-                  return _vm.lastCards.length === 4
+                  return _vm.lastCards.length === 4 &&
+                    _vm.checkLastCards(_vm.lastCards)
                     ? _c(
                         "div",
                         {
@@ -28179,7 +28226,7 @@ var render = function() {
                       }
                     ],
                     staticClass: "kick",
-                    attrs: { title: "გაგდება" }
+                    attrs: { title: _vm.lang("Kick") }
                   },
                   [
                     _c("i", {
@@ -28234,7 +28281,11 @@ var render = function() {
                   attrs: { type: "button" },
                   on: { click: _vm.start }
                 },
-                [_vm._m(2)]
+                [
+                  _c("small", [
+                    _c("strong", [_vm._v(_vm._s(_vm.lang("Start")))])
+                  ])
+                ]
               )
             ]
           ),
@@ -28270,14 +28321,14 @@ var render = function() {
               _c(
                 "p",
                 { staticClass: "d-none ", attrs: { id: "ready-waiting" } },
-                [_vm._v("დაელოდეთ მოთამაშეების თანხმობას")]
+                [_vm._v(_vm._s(_vm.lang("Please wait for other players")))]
               ),
               _vm._v(" "),
               _c(
                 "div",
                 { staticClass: "d-none mb-3", attrs: { id: "ready-check" } },
                 [
-                  _c("p", [_vm._v("მზად ხარ თამაშის დასაწყებად?")]),
+                  _c("p", [_vm._v(_vm._s(_vm.lang("Are you ready?")))]),
                   _vm._v(" "),
                   _c("div", { attrs: { id: "d-none ready-buttons" } }, [
                     _c(
@@ -28287,7 +28338,7 @@ var render = function() {
                         attrs: { "data-ready": "1" },
                         on: { click: _vm.actionReady }
                       },
-                      [_vm._v("კი")]
+                      [_vm._v(_vm._s(_vm.lang("Yes")))]
                     ),
                     _vm._v(" "),
                     _c(
@@ -28297,7 +28348,7 @@ var render = function() {
                         attrs: { "data-ready": "0" },
                         on: { click: _vm.actionReady }
                       },
-                      [_vm._v("არა")]
+                      [_vm._v(_vm._s(_vm.lang("No")))]
                     )
                   ])
                 ]
@@ -28443,7 +28494,7 @@ var render = function() {
                   attrs: { "data-suit": "bez" },
                   on: { click: _vm.actionSuit }
                 },
-                [_vm._v("ბეზი")]
+                [_vm._v(_vm._s(_vm.lang("None")))]
               )
             ]
           ),
@@ -28462,7 +28513,7 @@ var render = function() {
                   attrs: { "data-action": "magali" },
                   on: { click: _vm.actionJoker }
                 },
-                [_vm._v("მაღალი")]
+                [_vm._v(_vm._s(_vm.lang("High")))]
               ),
               _vm._v(" "),
               _c(
@@ -28472,7 +28523,7 @@ var render = function() {
                   attrs: { "data-action": "caigos" },
                   on: { click: _vm.actionJoker }
                 },
-                [_vm._v("წაიღოს")]
+                [_vm._v(_vm._s(_vm.lang("Give to")))]
               ),
               _vm._v(" "),
               _c(
@@ -28505,7 +28556,7 @@ var render = function() {
                   attrs: { "data-action": "mojokra" },
                   on: { click: _vm.actionJoker }
                 },
-                [_vm._v("მოჯოკრა")]
+                [_vm._v(_vm._s(_vm.lang("Take")))]
               ),
               _vm._v(" "),
               _c(
@@ -28515,7 +28566,7 @@ var render = function() {
                   attrs: { "data-action": "kvevidan" },
                   on: { click: _vm.actionJoker }
                 },
-                [_vm._v("ქვევიდან")]
+                [_vm._v(_vm._s(_vm.lang("Give")))]
               ),
               _vm._v(" "),
               _c(
@@ -28550,7 +28601,9 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "p-1 mb-2" }, [
-                _vm._v("\n                პინ-კოდი: "),
+                _vm._v(
+                  "\n                " + _vm._s(_vm.lang("Pin code")) + ": "
+                ),
                 _c("span", { staticClass: "text-success" }, [
                   _vm._v(_vm._s(_vm.game.password))
                 ]),
@@ -28633,7 +28686,7 @@ var render = function() {
             "div",
             { staticClass: "bg-success d-none", attrs: { id: "game-over" } },
             [
-              _vm._m(3),
+              _vm._m(1),
               _vm._v(" "),
               _c("div", { staticClass: "d-flex justify-content-center" }, [
                 _c("div", { staticClass: "card mt-5" }, [
@@ -28642,7 +28695,7 @@ var render = function() {
                     { staticClass: "card-body text-center" },
                     [
                       _c("h5", { staticClass: "alert alert-warning" }, [
-                        _vm._v("თამაში დასრულდა!")
+                        _vm._v(_vm._s(_vm.lang("Game Over")))
                       ]),
                       _vm._v(" "),
                       _vm._l([0, 1, 2, 3], function(n) {
@@ -28667,7 +28720,7 @@ var render = function() {
                               attrs: { src: "#", alt: "avatar" }
                             }),
                             _vm._v(" "),
-                            _vm._m(4, true)
+                            _vm._m(2, true)
                           ]
                         )
                       })
@@ -28705,7 +28758,7 @@ var render = function() {
         [
           _c("div", { staticClass: "modal-dialog" }, [
             _c("div", { staticClass: "modal-content bg-danger" }, [
-              _vm._m(5),
+              _vm._m(3),
               _vm._v(" "),
               _c("div", { staticClass: "modal-footer" }, [
                 _c(
@@ -28735,11 +28788,11 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _vm._m(6),
+      _vm._m(4),
       _vm._v(" "),
-      _vm._m(7),
+      _vm._m(5),
       _vm._v(" "),
-      _vm._m(8)
+      _vm._m(6)
     ],
     1
   )
@@ -28754,18 +28807,6 @@ var staticRenderFns = [
       { staticClass: "btn btn-outline-light", attrs: { href: "/lobby" } },
       [_c("i", { staticClass: "fas fa-arrow-circle-left" })]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", [_c("strong", [_vm._v("კოზირი")])])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("small", [_c("strong", [_vm._v("დაწყება")])])
   },
   function() {
     var _vm = this
@@ -28796,7 +28837,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "modal-body text-white" }, [
       _c("i", { staticClass: "fas fa-exclamation-triangle" }),
-      _vm._v(" თქვენ გამოგაგდეს მაგიდიდან!\n                ")
+      _vm._v(" @lang('You have been kicked')\n                ")
     ])
   },
   function() {
@@ -28893,7 +28934,7 @@ var render = function() {
                           attrs: {
                             type: "text",
                             maxlength: "4",
-                            placeholder: "პინ-კოდი",
+                            placeholder: _vm.lang("Pin code"),
                             name: "password",
                             disabled: _vm.showLoadingBtn
                           },
@@ -28960,7 +29001,9 @@ var render = function() {
                               staticClass: "spinner-border spinner-border-sm"
                             }),
                             _vm._v(
-                              "\n                            შესვლა\n                        "
+                              "\n                            " +
+                                _vm._s(_vm.lang("Join")) +
+                                "\n                        "
                             )
                           ]
                         )
@@ -28988,7 +29031,7 @@ var render = function() {
                     staticClass: "spinner-border spinner-border-sm",
                     attrs: { role: "status" }
                   }),
-                  _vm._v(" მიმდინარეობს ჩატვირთვა...\n        ")
+                  _vm._v(" " + _vm._s(_vm.lang("Loading")) + "...\n        ")
                 ]
               )
             ]
@@ -29028,7 +29071,7 @@ var render = function() {
     [
       _vm.games.length === 0
         ? _c("div", { staticClass: "alert alert-info" }, [
-            _vm._v("\n        მაგიდები არ მოიძებნა.\n    ")
+            _vm._v("\n        " + _vm._s(_vm.lang("No table found")) + "\n    ")
           ])
         : _vm._l(_vm.games, function(game) {
             return _c(
@@ -29038,7 +29081,11 @@ var render = function() {
                 _c("div", { staticClass: "card-header text-center" }, [
                   _c("strong", [
                     _vm._v(
-                      _vm._s(game.type === 1 ? "სტანდარტული" : "9-იანები") +
+                      _vm._s(
+                        game.type === 1
+                          ? _vm.lang("Standard")
+                          : _vm.lang("Only 9")
+                      ) +
                         " | " +
                         _vm._s(game.penalty)
                     )
@@ -29094,7 +29141,7 @@ var render = function() {
                           ),
                           attrs: { href: _vm.path(game.id) }
                         },
-                        [_vm._v("შესვლა")]
+                        [_vm._v(_vm._s(_vm.lang("Join")))]
                       )
                     ])
                   ],
@@ -41599,7 +41646,9 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   // wssPort: 6001,
   enabledTransports: ['ws'],
   disableStats: true
-});
+}); // fix flashing on refresh. happens because of vuejs script defer??
+
+document.body.style.display = 'block';
 
 /***/ }),
 
@@ -42279,7 +42328,7 @@ __webpack_require__.r(__webpack_exports__);
     }).listen('CardPlayEvent', function (event) {
       console.log('CardPlayEvent');
 
-      _this.game.cards.push(event.card); //es check aris tu karti itamasha botma da movida serveridan timeout is shemdeg
+      _this.game.cards.push(event.card); //this checks if botplay was triggered and card was player by bot from server
 
 
       if (event.position === _this.ppm[0]) {
@@ -42287,7 +42336,7 @@ __webpack_require__.r(__webpack_exports__);
         var cards = _this.players[event.position].cards;
 
         for (var idx in cards) {
-          if (Number(event.card.strength) > 14 || Number(event.card.strength) == 1) {
+          if (Number(event.card.strength) > 14 || Number(event.card.strength) === 1) {
             if (event.card.suit == cards[idx].suit) {
               id = idx;
             }
@@ -42307,7 +42356,7 @@ __webpack_require__.r(__webpack_exports__);
 
       _this.playSound('card-play');
 
-      _this.lastCardsStorage[_this.ppm.indexOf(event.position)] = Object.create(event.card);
+      _this.lastCardsStorage[_this.ppm.indexOf(event.position)] = structuredClone(event.card);
       _this.lastCardsStorage[_this.ppm.indexOf(event.position)].z = _this.game.cards.length;
 
       _this.hideCards(event.take);
@@ -42866,7 +42915,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
           _this3.game.cards = [];
           _this3.playState = true;
-        }, 1000);
+        }, 500);
       } else {
         this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
         this.playState = true;
@@ -42943,6 +42992,67 @@ __webpack_require__.r(__webpack_exports__);
         return "<strong>".concat(result, "</strong>");
       } else {
         return '';
+      }
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/mixins/translate.js":
+/*!******************************************!*\
+  !*** ./resources/js/mixins/translate.js ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      ka: {
+        "No table found": "მაგიდა არ მოიძებნა",
+        "Only 9": "9-იანები",
+        "Standard": "სტანდარტული",
+        "Join": "შესვლა",
+        "Trump": "კოზირი",
+        "Kick": "გაგდება",
+        "Start": "დაწყება",
+        "None": "ბეზი",
+        "Please wait for other players": "დაელოდე მოთამაშეების თანხმობას",
+        "Are you ready?": "მზად ხარ?",
+        "Yes": "დიახ",
+        "No": "არა",
+        "Take": "მოჯოკრა",
+        "Give": "ქვევიდან",
+        "High": "მაღალი",
+        "Give to": "წაიღოს",
+        "Pin code": "პინ კოდი",
+        "Game Over": "თამაში დასრულდა",
+        "You have been kicked": "თქვენ გამოგაგდეს მაგიდიდან",
+        "To clear the chat type \"clear\"": "ჩათის გასასუფთავებლად დაწერე \"clear\"",
+        "Start Game": "თამაშის დაწყება",
+        "Position": "პოზიცია",
+        "Cards": "კარტები",
+        "Cheat": "ჩაწყობა",
+        "Loading": "მიმდინარეობს ჩატვირთვა",
+        "Enter pin code": "შეიყვანეთ პინ კოდი",
+        "Invalid pin code": "პინ კოდი არასწორია",
+        "Notification": "შეტყობინება",
+        "Player": "მოთამაშე"
+      }
+    };
+  },
+  methods: {
+    lang: function lang(text) {
+      var locale = document.cookie.split(';').filter(function (val) {
+        return val.trim().startsWith('lang=');
+      })[0].slice(-2);
+      if (locale === 'en' || !locale) return text;
+
+      if (locale === 'ka') {
+        return this.ka[text];
       }
     }
   }

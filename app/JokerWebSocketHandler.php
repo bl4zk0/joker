@@ -18,6 +18,7 @@ use Ratchet\WebSocket\MessageComponentInterface;
 use App\Jobs\PlayerBotJob;
 use App\Events\PlayerJoinLeaveEvent;
 use App\Events\UpdateLobbyEvent;
+use Illuminate\Support\Facades\Lang;
 
 class JokerWebSocketHandler implements MessageComponentInterface
 {
@@ -62,6 +63,7 @@ class JokerWebSocketHandler implements MessageComponentInterface
                 if (array_key_exists($socket_id, $users)) {
                     $user_id = $users[$socket_id]->user_id;
 
+                    // move this to $game->playerLeft()??
                     $user = User::find((int) $user_id);
                     $player = $user->player;
                     $game = $player->game;
@@ -76,13 +78,13 @@ class JokerWebSocketHandler implements MessageComponentInterface
                         if ($user->is($game->creator) && $game->players->count() > 0) {
                             $game->update(['user_id' => $game->players[0]->user->id]);
                             $game->reposition();
-                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'გავიდა', $game->players, $game->user_id))->toOthers();
+                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left', $game->players, $game->user_id))->toOthers();
                         } elseif ($game->players->count() == 0) {
                             $game->delete();
                             break;
                         } else {
                             $game->reposition();
-                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'გავიდა', $game->players))->toOthers();
+                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left', $game->players))->toOthers();
                         }
                         broadcast(new UpdateLobbyEvent());
                     } else {
@@ -92,7 +94,7 @@ class JokerWebSocketHandler implements MessageComponentInterface
                         }
 
                         $player->update(['disconnected' => true]);
-                        broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'გავიდა'))->toOthers();
+                        broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left'))->toOthers();
 
                         if ($game->turn == $player->position) {
                             PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());

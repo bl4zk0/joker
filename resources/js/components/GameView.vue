@@ -7,7 +7,7 @@
                         <div>
                             <input type="text"
                                    maxlength="4"
-                                   placeholder="პინ-კოდი"
+                                   :placeholder="lang('Pin code')"
                                    class="form-control"
                                    :class="errorMessage ? 'is-invalid' : ''"
                                    v-model="passwordInput"
@@ -22,14 +22,14 @@
                         <div class="ml-2">
                             <button type="button" class="btn btn-success" @click="join(true)" :disabled="showLoadingBtn">
                                 <span class="spinner-border spinner-border-sm" v-show="showLoadingBtn"></span>
-                                შესვლა
+                                {{ lang('Join') }}
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
             <div v-show="showLoading" class="alert alert-success">
-                <div class="spinner-border spinner-border-sm" role="status"></div> მიმდინარეობს ჩატვირთვა...
+                <div class="spinner-border spinner-border-sm" role="status"></div> {{ lang('Loading') }}...
             </div>
         </div>
 
@@ -38,11 +38,13 @@
 </template>
 
 <script>
+    import translate from '../mixins/translate';
     import game from './Game';
 
     export default {
         components: { game },
         props: ['gameId', 'hasPassword', 'pinCode'],
+        mixins: [translate],
 
         mounted() {
             if (this.hasPassword === false) {
@@ -72,7 +74,7 @@
                     this.showLoading = true;
                 } else {
                     if (! this.passwordInput) {
-                        this.errorMessage = 'შეიყვანეთ პინ-კოდი';
+                        this.errorMessage = this.lang('Enter pin code');
                         return;
                     } else {
                         this.errorMessage = '';
@@ -91,7 +93,7 @@
                         if (error.response.data.errors) {
                             this.passwordInput = '';
                             this.showLoadingBtn = false;
-                            this.errorMessage = 'პინ-კოდი არასწორია';
+                            this.errorMessage = this.lang('Invalid pin code');
                         } else {
                             window.location = '/lobby';
                         }

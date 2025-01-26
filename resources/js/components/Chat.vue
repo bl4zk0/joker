@@ -5,8 +5,8 @@
                 <div id="messages">
                     <p v-for="msg in this.messages">
                         <span v-if="msg.notification">
-                            <strong class="text-warning">[შეტყობინება]:</strong>
-                            მოთამაშე <strong v-text="msg.username"></strong> {{ msg.message }}
+                            <strong class="text-warning">[{{ lang('Notification') }}]:</strong>
+                            {{ lang('Player') }} <strong v-text="msg.username"></strong> {{ msg.message }}
                         </span>
                         <span v-else>
                             <strong v-text="`${msg.username}: `"></strong>
@@ -35,8 +35,10 @@
 </template>
 
 <script>
+    import translate from '../mixins/translate';
     export default {
         props: ['messages', 'gameId'],
+        mixins: [translate],
 
         data() {
             return {
@@ -76,7 +78,7 @@
 
                     axios.post('/message/games/' + this.gameId, {message: this.message})
                         .catch(error => {
-                            console.log('თქვენ ძალიან ბევრს წერთ, ჯობია ითამაშოთ!');
+                            console.log(error.message);
                         });
 
                     this.message = '';

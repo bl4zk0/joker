@@ -1,17 +1,17 @@
 <template>
     <div class="panel-wrapper">
         <button type="button" class="btn btn-danger" v-show="! showPanel" @click="showPanel = !showPanel">
-            <i class="fas fa-user-cog"></i> Admin-panel
+            <i class="fas fa-user-cog"></i> Admin panel
         </button>
         <div class="border rounded p-2 bg-white" v-show="showPanel">
-            <button type="button" class="btn btn-danger mb-2" @click="start">თამაშის დაწყება</button>
+            <button type="button" class="btn btn-danger mb-2" @click="start">{{ lang('Start Game') }}</button>
             <button type="button" class="btn btn-dark float-right mb-2" @click="showPanel = !showPanel">
                 <i class="fas fa-times"></i>
             </button>
             <button type="button" class="btn btn-warning mb-2" @click="addBot">bot++</button>
             <form @submit.prevent="sendCards">
                 <div class="form-group">
-                    <label for="position">პოზიცია</label>
+                    <label for="position">{{ lang('Position') }}</label>
                     <select id="position" class="custom-select" v-model="selectedPosition">
                         <option value="0">1</option>
                         <option value="1">2</option>
@@ -20,7 +20,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="cards">კარტები</label>
+                    <label for="cards">{{ lang('Cards') }}</label>
                     <select multiple class="form-control" id="cards" v-model="selectedCards">
                         <option value="0" class="text-danger" selected>color_joker</option>
                         <option value="1">black_joker</option>
@@ -30,15 +30,18 @@
                         <option value="5">A &spades;</option>
                     </select>
                 </div>
-                <button class="btn btn-success">ჩაწყობა</button>
+                <button class="btn btn-success">{{ lang('Cheat') }}</button>
             </form>
         </div>
     </div>
 </template>
 
 <script>
+import translate from '../mixins/translate';
+
 export default {
     props: ['gameId'],
+    mixins: [translate],
 
     data() {
         return {
@@ -102,6 +105,5 @@ export default {
     bottom: 8px;
     left: 8px;
     width: 250px;
-    z-index: 1000;
 }
 </style>

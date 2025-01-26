@@ -10,6 +10,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Lang;
 
 class UsersController extends Controller
 {
@@ -61,13 +62,13 @@ class UsersController extends Controller
                         if ($user->is($game->creator) && $game->players->count() > 0) {
                             $game->update(['user_id' => $game->players[0]->user->id]);
                             $game->reposition();
-                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'გავიდა', $game->players, $game->user_id))->toOthers();
+                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left', $game->players, $game->user_id))->toOthers();
                         } elseif ($game->players->count() == 0) {
                             $game->delete();
                             return response('', 200);
                         } else {
                             $game->reposition();
-                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'გავიდა', $game->players))->toOthers();
+                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left', $game->players))->toOthers();
                         }
                         broadcast(new UpdateLobbyEvent());
                     } else {
@@ -77,7 +78,7 @@ class UsersController extends Controller
                         }
 
                         $player->update(['disconnected' => true]);
-                        broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'გავიდა'))->toOthers();
+                        broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left'))->toOthers();
 
                         if ($game->turn == $player->position) {
                             PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());
@@ -135,7 +136,7 @@ class UsersController extends Controller
             'avatar_url' => Gravatar::url($request->email)
         ]);
 
-        return redirect("/user/$user->id")->with('status', 'ელ-ფოსტა შეიცვალა');
+        return redirect("/user/$user->id")->with('status', Lang::get('Email changed'));
     }
 
     /**
@@ -151,7 +152,7 @@ class UsersController extends Controller
 
         $user->update(['password' => Hash::make($request->password)]);
 
-        return redirect("/user/$user->id")->with('status', 'პაროლი შეიცვალა');
+        return redirect("/user/$user->id")->with('status', Lang::get('Password changed'));
     }
 
 }

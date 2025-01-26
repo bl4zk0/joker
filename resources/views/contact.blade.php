@@ -9,14 +9,14 @@
 
             <main>
                 <div class="card text-dark">
-                    <div class="card-header"><i class="fas fa-envelope"></i> მოგვწერეთ</div>
+                    <div class="card-header"><i class="fas fa-envelope"></i> @lang('Contact us')</div>
 
                     <div class="card-body">
                         <form method="POST" action="/contact">
                             @csrf
                             <div class="form-row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="name">სახელი</label>
+                                    <label for="name">@lang('Name')</label>
                                     <input type="text"
                                            class="form-control @error('name') is-invalid @enderror"
                                            id="name"
@@ -30,7 +30,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="email">ელ-ფოსტა</label>
+                                    <label for="email">@lang('Email')</label>
                                     <input type="email"
                                            class="form-control @error('email') is-invalid @enderror"
                                            id="email"
@@ -44,7 +44,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="message">წერილი</label>
+                                <label for="message">@lang('Message')</label>
                                 <textarea class="form-control @error('message') is-invalid @enderror"
                                           id="message"
                                           rows="5"
@@ -57,7 +57,7 @@
                                 @enderror
                             </div>
 
-                            <button class="btn btn-success" type="submit">გაგზავნა</button>
+                            <button class="btn btn-success float-right" type="submit">@lang('Send')</button>
 
                         </form>
                     </div>

@@ -38,7 +38,7 @@ class AdminsController extends Controller
 
             $game->refresh();
 
-            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'შემოვიდა', $game->players));
+            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Joined', $game->players));
             broadcast(new UpdateLobbyEvent());
 
             return response('', 200);
@@ -49,7 +49,7 @@ class AdminsController extends Controller
 
     public function cards(Request $request, Game $game)
     {
-        if (! auth()->user()->isAdmin || ! in_array($game->state, ['trump', 'call', 'card'])) {
+        if (! auth()->user()->isAdmin || ! in_array($game->state, ['trump', 'call', 'card'], true)) {
             abort(400, '');
         }
 
@@ -76,7 +76,7 @@ class AdminsController extends Controller
                         ];
 
                         foreach($value as $card) {
-                            if (! in_array($card, $cards)) {
+                            if (! in_array($card, $cards, true)) {
                                 $fail("Invalid $attribute");
                             }
                         }

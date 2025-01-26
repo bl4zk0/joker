@@ -5,14 +5,14 @@
         <div class="row justify-content-center">
             <div class="col-md-4">
                 <div class="card mt-3">
-                    <div class="card-header"><i class="fas fa-at"></i> ელ-ფოსტის შეცვლა</div>
+                    <div class="card-header"><i class="fas fa-at"></i> <b>@lang('Change email')</b></div>
 
                     <div class="card-body">
                         <form method="POST" action="/email/change">
                             @csrf
 
                             <div class="form-group">
-                                <label for="email">ახალი ელ-ფოსტა</label>
+                                <label for="email">@lang('Email')</label>
 
                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
                                        name="email" value="{{ old('email') }}" required autocomplete="email">
@@ -26,7 +26,7 @@
 
                             <div class="form-group">
                                 <button type="submit" class="btn btn-block btn-success">
-                                    შეცვლა
+                                    @lang('Confirm')
                                 </button>
                             </div>
                         </form>
