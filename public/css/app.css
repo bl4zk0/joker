@@ -17118,12 +17118,13 @@ readers do not read off random characters that represent icons */
 }
 
 #suits {
-  width: 111px;
+  width: 131px;
   margin-left: -55.5px;
 }
 
 #suits button:not(.btn-block) {
   font-size: 32px;
+  width: 58px;
 }
 
 #suits .btn-block {
@@ -17165,12 +17166,12 @@ readers do not read off random characters that represent icons */
 }
 
 #jokhigh {
-  width: 179px;
+  width: 206px;
   margin-left: -89.5px;
 }
 
 #jokjoker {
-  width: 202px;
+  width: 226px;
   margin-left: -101px;
 }
 

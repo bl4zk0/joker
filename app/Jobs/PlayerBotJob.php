@@ -33,8 +33,14 @@ class PlayerBotJob implements ShouldQueue
      */
     public function handle()
     {
+        $this->player->refresh();
+        if ($this->player->has_bot_kicked || !$this->player->disconnected) return;
+        $this->player->update(['has_bot_kicked' => true]);
         $bot = new PlayerBot($this->player, $this->game);
         $method = $this->game->state;
-        $bot->$method();
+        if (method_exists($bot, $method)) {
+            $bot->$method();
+        }
+        $this->player->update(['has_bot_kicked' => false]);
     }
 }

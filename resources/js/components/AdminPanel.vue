@@ -4,11 +4,11 @@
             <i class="fas fa-user-cog"></i> Admin panel
         </button>
         <div class="border rounded p-2 bg-white" v-show="showPanel">
-            <button type="button" class="btn btn-danger mb-2" @click="start">{{ lang('Start Game') }}</button>
-            <button type="button" class="btn btn-dark float-right mb-2" @click="showPanel = !showPanel">
+            <button type="button" class="btn btn-dark mb-2" @click="showPanel = !showPanel">
                 <i class="fas fa-times"></i>
             </button>
             <button type="button" class="btn btn-warning mb-2" @click="addBot">bot++</button>
+            <button type="button" class="btn btn-danger mb-2" @click="start">{{ lang('Start Game') }}</button>
             <form @submit.prevent="sendCards">
                 <div class="form-group">
                     <label for="position">{{ lang('Position') }}</label>

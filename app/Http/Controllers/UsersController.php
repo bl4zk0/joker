@@ -62,13 +62,13 @@ class UsersController extends Controller
                         if ($user->is($game->creator) && $game->players->count() > 0) {
                             $game->update(['user_id' => $game->players[0]->user->id]);
                             $game->reposition();
-                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left', $game->players, $game->user_id))->toOthers();
+                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left', $game->players, $game->user_id));
                         } elseif ($game->players->count() == 0) {
                             $game->delete();
                             return response('', 200);
                         } else {
                             $game->reposition();
-                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left', $game->players))->toOthers();
+                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left', $game->players));
                         }
                         broadcast(new UpdateLobbyEvent());
                     } else {
@@ -78,7 +78,7 @@ class UsersController extends Controller
                         }
 
                         $player->update(['disconnected' => true]);
-                        broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left'))->toOthers();
+                        broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left'));
 
                         if ($game->turn == $player->position) {
                             PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());

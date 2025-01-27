@@ -2,12 +2,33 @@ export default {
     created() {
         Echo.private('game.' + this.game.id)
             .listen('UpdateGameEvent', event => {
-                console.log('UpdateGameEvent');
                 this.game = event.game;
-                this.nextTurn = event.game.turn;
+                this.nextTurn = Number(event.game.turn);
+            })
+            .listen('SyncGameStateEvent', event => {
+                if (event.turn === this.ppm[0] && this.botTimerActive === false) {
+                    console.log(event);
+                    console.log('Desync detected');
+                    this.playState = false;
+                    this.clearBotTimer();
+
+                    let password = null;
+                    if (this.game.password !== null) {
+                        password = { pin: this.game.password }
+                    }
+                    axios.post('/join/games/' + this.game.id, password)
+                        .then(response => {
+                            this.playState = true;
+                            this.cards = response.data.cards;
+                            this.game = response.data.game;
+                            console.log('Synced');
+                        })
+                        .catch(error => {
+                            console.log(error.message);
+                    });
+                }
             })
             .listen('PlayerKickedEvent', event => {
-                console.log('PlayerKickedEvent');
                 if (App.user.username === event.username) {
                     $('#kicked').modal({show: true});
                     Echo.leaveChannel('game.' + this.game.id);
@@ -20,15 +41,13 @@ export default {
 
                 let message = {
                     username: event.username,
-                    message: 'გავიდა',
+                    message: this.lang('Left'),
                     notification: true
                 };
                 this.messages.push(message);
                 this.playSound('notification');
             })
             .listen('PlayerJoinLeaveEvent', event => {
-                console.log('PlayerJoinLeaveEvent');
-
                 if (event.players !== false) {
                     this.game.players = event.players;
                     this.playerPositionsMap();
@@ -37,14 +56,13 @@ export default {
 
                 let message = {
                     username: event.username,
-                    message: event.eventName,
+                    message: this.lang(event.eventName),
                     notification: true
                 };
                 this.messages.push(message);
                 this.playSound('notification');
             })
             .listen('PlayerCallEvent', event => {
-                console.log('PlayerCallEvent');
                 let p = this.ppm.indexOf(event.position);
                 let content = event.score.call === 0 ? '-' : event.score.call;
 
@@ -64,10 +82,9 @@ export default {
                 this.showCallboard();
             })
             .listen('CardPlayEvent', event => {
-                console.log('CardPlayEvent');
                 this.game.cards.push(event.card);
 
-                //this checks if botplay was triggered and card was player by bot from server
+                //this checks if botplay was triggered and card was played by bot from server
                 if (event.position === this.ppm[0]) {
                     let id = 0;
                     let cards = this.players[event.position].cards;
@@ -91,7 +108,7 @@ export default {
                 this.game.players[event.position].card = event.card;
                 this.playSound('card-play');
 
-                this.lastCardsStorage[this.ppm.indexOf(event.position)] = structuredClone(event.card);
+                this.lastCardsStorage[this.ppm.indexOf(event.position)] = Object.create(event.card);
                 this.lastCardsStorage[this.ppm.indexOf(event.position)].z = this.game.cards.length;
 
                 this.hideCards(event.take);

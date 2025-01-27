@@ -47,7 +47,6 @@
         created() {
             Echo.private('lobby')
                 .listen('UpdateLobbyEvent', event => {
-                    console.log('UpdateLobbyEvent', event);
                     this.games = event.games;
                 });
         },

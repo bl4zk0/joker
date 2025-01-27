@@ -21,7 +21,7 @@ class AdminsController extends Controller
         }
 
         $game->start();
-        return response('', 200);
+        return response(['status' => 'OK'], 200);
     }
 
     public function addbot(Game $game)
@@ -41,7 +41,7 @@ class AdminsController extends Controller
             broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Joined', $game->players));
             broadcast(new UpdateLobbyEvent());
 
-            return response('', 200);
+            return response(['status' => 'OK'], 200);
         } else {
             abort(400, '');
         }

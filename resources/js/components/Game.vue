@@ -198,15 +198,15 @@
 
             <div id="jokhigh" class="d-none border bg-white rounded shadow p-1">
                 <button class="btn btn-light" data-action="magali" @click="actionJoker">{{ lang('High') }}</button>
-                <button class="btn btn-warning" data-action="caigos" @click="actionJoker">{{ lang('Give to') }}</button>
+                <button class="btn btn-warning" data-action="caigos" @click="actionJoker">{{ lang('Takero') }}</button>
                 <button type="button" class="btn btn-dark float-right" @click="cancelJok('#jokhigh')">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
             <div id="jokjoker" class="d-none border bg-white rounded shadow p-1">
-                <button class="btn btn-light" data-action="mojokra" @click="actionJoker">{{ lang('Take') }}</button>
-                <button class="btn btn-warning" data-action="kvevidan" @click="actionJoker">{{ lang('Give') }}</button>
+                <button class="btn btn-light" data-action="mojokra" @click="actionJoker">{{ lang('Jokero') }}</button>
+                <button class="btn btn-warning" data-action="kvevidan" @click="actionJoker">{{ lang('Fold') }}</button>
                 <button type="button" class="btn btn-dark float-right" @click="cancelJok('#jokjoker')">
                     <i class="fas fa-times"></i>
                 </button>
@@ -241,7 +241,7 @@
                 <div class="d-flex justify-content-center">
                     <div class="card mt-5">
                         <div class="card-body text-center">
-                            <h5 class="alert alert-warning">{{ lang('Game Over') }}</h5>
+                            <h5 class="alert alert-success"><b>{{ lang('GAME OVER') }}</b></h5>
                             <div v-for="n in [0,1,2,3]" :id="`place-${n}`" class="game-over-card">
                                 <h5 :class="n > 1 ? 'text-danger' : 'text-success'">{{ n+1 }} <i class="fas fa-trophy"></i></h5>
                                 <img src="#" class="avatar border rounded-circle" alt="avatar">
@@ -294,14 +294,13 @@
     import scoreboard9 from './Scoreboard9';
     import chat from './Chat';
     import helpers from '../mixins/helpers';
-    import translate from '../mixins/translate';
     import gamechannel from '../mixins/gamechannel';
     import playerchannel from '../mixins/playerchannel';
 
     export default {
         components: { scoreboard1, scoreboard9, chat },
-        mixins: [helpers, gamechannel, playerchannel, translate],
-        props: ['initialGame', 'initialCards'],
+        mixins: [helpers, gamechannel, playerchannel],
+        props: ['initialGame', 'initialCards', 'ka', 'is_bot_disable', 'init_bot_timer'],
 
         data() {
             return {
@@ -314,11 +313,11 @@
                     {cards: [], takenCards: []},
                 ],
                 card: {},
-                actions: {"magali": this.lang('High'), "caigos": this.lang("Give To"), "mojokra": this.lang('Take'), "kvevidan": this.lang('Give')},
+                actions: {"magali": this.lang('High'), "caigos": this.lang("Takero"), "mojokra": this.lang('Jokero'), "kvevidan": this.lang('Fold')},
                 actionsuits: {"hearts": "♥", "clubs": "♣", "diamonds": "♦", "spades": "♠"},
                 messages: [{username: '[system]', message: this.lang('To clear the chat type "clear"')}],
                 showLastCards: false,
-                botTimer: App.bot_timer / 1000,
+                botTimer: this.init_bot_timer / 1000,
                 showBotTimer: false,
                 jokerCardCancelled: false,
                 muted: true
@@ -516,7 +515,7 @@
                 this.game.cards.push(card);
                 this.game.players[this.ppm[0]].card = card;
                 this.players[this.ppm[0]].cards.splice(this.cardId, 1);
-                this.lastCardsStorage[0] = structuredClone(card);
+                this.lastCardsStorage[0] = Object.create(card);
                 this.lastCardsStorage[0].z = this.game.cards.length;
 
                 this.clearBotTimer();
@@ -527,14 +526,13 @@
             },
 
             setBotTimer(ms = false) {
-                if (App.bot_disabled) return;
+                if (this.is_bot_disabled) return;
                 if (! ms) {
-                    ms = App.bot_timer;
+                    ms = this.init_bot_timer;
                 } else {
                     this.botTimer = ms / 1000;
                 }
 
-                console.log('bot timer activated');
                 this.showBotTimer = true;
                 this.botInterval = setInterval(() => {
                     this.botTimer--;
@@ -554,10 +552,13 @@
                     }
 
                     clearInterval(this.botInterval);
-                    this.botTimer = App.bot_timer / 1000;
+                    this.botTimer = this.init_bot_timer / 1000;
                     this.showBotTimer = false;
 
                     axios.post('/bot/games/' + this.game.id)
+                        .then(response => {
+                            this.clearBotTimer();
+                        })
                         .catch(error => {
                             console.log(error.message);
                         });
@@ -566,13 +567,12 @@
             },
 
             clearBotTimer() {
-                console.log('bot timer cleared');
                 clearTimeout(this.botTimeout);
                 clearInterval(this.botInterval);
                 if (this.botTimer <= 5) {
                     document.getElementById('timer').pause();
                 }
-                this.botTimer = App.bot_timer / 1000;
+                this.botTimer = this.init_bot_timer / 1000;
                 this.showBotTimer = false;
                 this.jokerCardCancelled = false;
             },
@@ -597,9 +597,20 @@
 
             checkLastCards(lastCards) {
                 for (let card of lastCards) {
-                    if (card.suit === undefined) return false;
+                    if (card === undefined) return false;
                 }
                 return true;
+            },
+
+            lang(text) {
+                //let locale = document.cookie.split(';')
+                    //.filter((val) => {return val.trim().startsWith('lang=')})[0].slice(-2);
+                let locale = App.locale;    
+                if (locale === 'en' || !locale) return text;
+                
+                if (locale === 'ka') {
+                    return this.ka[text];
+                }
             }
         }
     }

@@ -15,8 +15,7 @@
         window.App = {!! json_encode([
             'user' => Auth::user(),
             'url' => env('APP_URL'),
-            'bot_timer' => env('BOT_TIMER'),
-            'bot_disabled' => env('BOT_DISABLED')
+            'locale' => App::getLocale()
         ]) !!};
     </script>
 

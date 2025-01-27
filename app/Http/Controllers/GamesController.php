@@ -15,6 +15,7 @@ use App\Events\UpdateReadyEvent;
 use App\Events\UpdateTrumpEvent;
 use App\Game;
 use App\Jobs\PlayerBotJob;
+use App\Jobs\WShelperJob;
 use App\Jobs\ResetGameStartJob;
 use App\PlayerBot;
 use App\Rules\CardRule;
@@ -228,7 +229,7 @@ class GamesController extends Controller
      */
     public function show(Request $request, Game $game)
     {
-        if ($game->state == 'finished') abort(404);
+        if ($game->state === 'finished') abort(404);
 
         $pin = null;
 
@@ -240,11 +241,20 @@ class GamesController extends Controller
             }
         }
 
-        return view('game', ['id' => $game->id, 'password' => (bool) $game->password, 'pin' => $pin]);
+        return view('game', [
+            'id' => $game->id,
+            'password' => (bool) $game->password,
+            'pin' => $pin,
+            'bot_timer' => env('BOT_TIMER'),
+            'bot_disabled' => env('BOT_DISABLED')
+        ]);
     }
 
     public function join(Request $request, Game $game)
     {
+        // account for refreshs, delay joining for 2 seconds
+        sleep(2);
+        $game->refresh();
         $this->authorize('join', $game);
 
         $game->makeVisible('password');
@@ -255,10 +265,15 @@ class GamesController extends Controller
 
         if ($game->players->contains($player)) {
             if ($player->disconnected) {
-                $player->update(['disconnected' => false]);;
+                $player->update(['disconnected' => false]);
             }
 
             broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'Joined', $game->players))->toOthers();
+            // WShelperJob::dispatch(
+            //     false, $game->id,
+            //     auth()->user()->username,
+            //     'Joined', $game->players)
+            //     ->delay(now()->addSecond());
             return compact('game', 'cards');
         }
 
@@ -296,7 +311,8 @@ class GamesController extends Controller
         $game->kick($request->position);
 
         broadcast(new PlayerKickedEvent($game->id, $username, $game->players));
-
+        broadcast(new UpdateLobbyEvent());
+        
         return response(["status" => "OK"], 200);
     }
 

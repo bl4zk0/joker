@@ -2183,9 +2183,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Scoreboard9__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Scoreboard9 */ "./resources/js/components/Scoreboard9.vue");
 /* harmony import */ var _Chat__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Chat */ "./resources/js/components/Chat.vue");
 /* harmony import */ var _mixins_helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../mixins/helpers */ "./resources/js/mixins/helpers.js");
-/* harmony import */ var _mixins_translate__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../mixins/translate */ "./resources/js/mixins/translate.js");
-/* harmony import */ var _mixins_gamechannel__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../mixins/gamechannel */ "./resources/js/mixins/gamechannel.js");
-/* harmony import */ var _mixins_playerchannel__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../mixins/playerchannel */ "./resources/js/mixins/playerchannel.js");
+/* harmony import */ var _mixins_gamechannel__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../mixins/gamechannel */ "./resources/js/mixins/gamechannel.js");
+/* harmony import */ var _mixins_playerchannel__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../mixins/playerchannel */ "./resources/js/mixins/playerchannel.js");
 function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -2489,15 +2488,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 
 
-
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     scoreboard1: _Scoreboard1__WEBPACK_IMPORTED_MODULE_0__["default"],
     scoreboard9: _Scoreboard9__WEBPACK_IMPORTED_MODULE_1__["default"],
     chat: _Chat__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
-  mixins: [_mixins_helpers__WEBPACK_IMPORTED_MODULE_3__["default"], _mixins_gamechannel__WEBPACK_IMPORTED_MODULE_5__["default"], _mixins_playerchannel__WEBPACK_IMPORTED_MODULE_6__["default"], _mixins_translate__WEBPACK_IMPORTED_MODULE_4__["default"]],
-  props: ['initialGame', 'initialCards'],
+  mixins: [_mixins_helpers__WEBPACK_IMPORTED_MODULE_3__["default"], _mixins_gamechannel__WEBPACK_IMPORTED_MODULE_4__["default"], _mixins_playerchannel__WEBPACK_IMPORTED_MODULE_5__["default"]],
+  props: ['initialGame', 'initialCards', 'ka', 'is_bot_disable', 'init_bot_timer'],
   data: function data() {
     return {
       game: this.initialGame,
@@ -2518,9 +2516,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       card: {},
       actions: {
         "magali": this.lang('High'),
-        "caigos": this.lang("Give To"),
-        "mojokra": this.lang('Take'),
-        "kvevidan": this.lang('Give')
+        "caigos": this.lang("Takero"),
+        "mojokra": this.lang('Jokero'),
+        "kvevidan": this.lang('Fold')
       },
       actionsuits: {
         "hearts": "♥",
@@ -2533,7 +2531,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         message: this.lang('To clear the chat type "clear"')
       }],
       showLastCards: false,
-      botTimer: App.bot_timer / 1000,
+      botTimer: this.init_bot_timer / 1000,
       showBotTimer: false,
       jokerCardCancelled: false,
       muted: true
@@ -2721,7 +2719,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.game.cards.push(card);
       this.game.players[this.ppm[0]].card = card;
       this.players[this.ppm[0]].cards.splice(this.cardId, 1);
-      this.lastCardsStorage[0] = structuredClone(card);
+      this.lastCardsStorage[0] = Object.create(card);
       this.lastCardsStorage[0].z = this.game.cards.length;
       this.clearBotTimer();
       this.playSound('card-play');
@@ -2732,15 +2730,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var _this3 = this;
 
       var ms = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-      if (App.bot_disabled) return;
+      if (this.is_bot_disabled) return;
 
       if (!ms) {
-        ms = App.bot_timer;
+        ms = this.init_bot_timer;
       } else {
         this.botTimer = ms / 1000;
       }
 
-      console.log('bot timer activated');
       this.showBotTimer = true;
       this.botInterval = setInterval(function () {
         _this3.botTimer--;
@@ -2758,15 +2755,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         }
 
         clearInterval(_this3.botInterval);
-        _this3.botTimer = App.bot_timer / 1000;
+        _this3.botTimer = _this3.init_bot_timer / 1000;
         _this3.showBotTimer = false;
-        axios.post('/bot/games/' + _this3.game.id)["catch"](function (error) {
+        axios.post('/bot/games/' + _this3.game.id).then(function (response) {
+          _this3.clearBotTimer();
+        })["catch"](function (error) {
           console.log(error.message);
         });
       }, Number(ms));
     },
     clearBotTimer: function clearBotTimer() {
-      console.log('bot timer cleared');
       clearTimeout(this.botTimeout);
       clearInterval(this.botInterval);
 
@@ -2774,7 +2772,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         document.getElementById('timer').pause();
       }
 
-      this.botTimer = App.bot_timer / 1000;
+      this.botTimer = this.init_bot_timer / 1000;
       this.showBotTimer = false;
       this.jokerCardCancelled = false;
     },
@@ -2802,7 +2800,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var card = _step.value;
-          if (card.suit === undefined) return false;
+          if (card === undefined) return false;
         }
       } catch (err) {
         _iterator.e(err);
@@ -2811,6 +2809,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
 
       return true;
+    },
+    lang: function lang(text) {
+      //let locale = document.cookie.split(';')
+      //.filter((val) => {return val.trim().startsWith('lang=')})[0].slice(-2);
+      var locale = App.locale;
+      if (locale === 'en' || !locale) return text;
+
+      if (locale === 'ka') {
+        return this.ka[text];
+      }
     }
   }
 });
@@ -2867,13 +2875,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     game: _Game__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
-  props: ['gameId', 'hasPassword', 'pinCode'],
+  props: ['gameId', 'hasPassword', 'pinCode', 'is_bot_disabled', 'init_bot_timer'],
   mixins: [_mixins_translate__WEBPACK_IMPORTED_MODULE_0__["default"]],
   mounted: function mounted() {
     if (this.hasPassword === false) {
@@ -2918,6 +2931,7 @@ __webpack_require__.r(__webpack_exports__);
       axios.post('/join/games/' + this.gameId, password).then(function (response) {
         _this.game = response.data.game;
         _this.cards = response.data.cards;
+        _this.showLoading = false;
       })["catch"](function (error) {
         console.log(error);
 
@@ -2996,7 +3010,6 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     Echo["private"]('lobby').listen('UpdateLobbyEvent', function (event) {
-      console.log('UpdateLobbyEvent', event);
       _this.games = event.games;
     });
   },
@@ -27497,17 +27510,7 @@ var render = function() {
         _c(
           "button",
           {
-            staticClass: "btn btn-danger mb-2",
-            attrs: { type: "button" },
-            on: { click: _vm.start }
-          },
-          [_vm._v(_vm._s(_vm.lang("Start Game")))]
-        ),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-dark float-right mb-2",
+            staticClass: "btn btn-dark mb-2",
             attrs: { type: "button" },
             on: {
               click: function($event) {
@@ -27526,6 +27529,16 @@ var render = function() {
             on: { click: _vm.addBot }
           },
           [_vm._v("bot++")]
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-danger mb-2",
+            attrs: { type: "button" },
+            on: { click: _vm.start }
+          },
+          [_vm._v(_vm._s(_vm.lang("Start Game")))]
         ),
         _vm._v(" "),
         _c(
@@ -28523,7 +28536,7 @@ var render = function() {
                   attrs: { "data-action": "caigos" },
                   on: { click: _vm.actionJoker }
                 },
-                [_vm._v(_vm._s(_vm.lang("Give to")))]
+                [_vm._v(_vm._s(_vm.lang("Takero")))]
               ),
               _vm._v(" "),
               _c(
@@ -28556,7 +28569,7 @@ var render = function() {
                   attrs: { "data-action": "mojokra" },
                   on: { click: _vm.actionJoker }
                 },
-                [_vm._v(_vm._s(_vm.lang("Take")))]
+                [_vm._v(_vm._s(_vm.lang("Jokero")))]
               ),
               _vm._v(" "),
               _c(
@@ -28566,7 +28579,7 @@ var render = function() {
                   attrs: { "data-action": "kvevidan" },
                   on: { click: _vm.actionJoker }
                 },
-                [_vm._v(_vm._s(_vm.lang("Give")))]
+                [_vm._v(_vm._s(_vm.lang("Fold")))]
               ),
               _vm._v(" "),
               _c(
@@ -28694,8 +28707,8 @@ var render = function() {
                     "div",
                     { staticClass: "card-body text-center" },
                     [
-                      _c("h5", { staticClass: "alert alert-warning" }, [
-                        _vm._v(_vm._s(_vm.lang("Game Over")))
+                      _c("h5", { staticClass: "alert alert-success" }, [
+                        _c("b", [_vm._v(_vm._s(_vm.lang("GAME OVER")))])
                       ]),
                       _vm._v(" "),
                       _vm._l([0, 1, 2, 3], function(n) {
@@ -29037,7 +29050,13 @@ var render = function() {
             ]
           )
         : _c("game", {
-            attrs: { "initial-game": _vm.game, "initial-cards": _vm.cards }
+            attrs: {
+              "initial-game": _vm.game,
+              "initial-cards": _vm.cards,
+              is_bot_disabled: _vm.is_bot_disabled,
+              init_bot_timer: _vm.init_bot_timer,
+              ka: _vm.ka
+            }
           })
     ],
     1
@@ -41638,15 +41657,14 @@ window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/d
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
   key: "jokerkey101010",
-  //cluster: process.env.MIX_PUSHER_APP_CLUSTER,
   forceTLS: false,
-  // for laravel-websockets
   wsHost: window.location.hostname,
-  wsPort: 6001,
-  // wssPort: 6001,
-  enabledTransports: ['ws'],
+  wsPort: 80,
+  wssPort: 443,
+  wsPath: '/ws',
+  enabledTransports: ['ws', 'wss'],
   disableStats: true
-}); // fix flashing on refresh. happens because of vuejs script defer??
+}); // fix flashing on refresh. happens because of vuejs??
 
 document.body.style.display = 'block';
 
@@ -42254,12 +42272,34 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     Echo["private"]('game.' + this.game.id).listen('UpdateGameEvent', function (event) {
-      console.log('UpdateGameEvent');
       _this.game = event.game;
-      _this.nextTurn = event.game.turn;
-    }).listen('PlayerKickedEvent', function (event) {
-      console.log('PlayerKickedEvent');
+      _this.nextTurn = Number(event.game.turn);
+    }).listen('SyncGameStateEvent', function (event) {
+      if (event.turn === _this.ppm[0] && _this.botTimerActive === false) {
+        console.log(event);
+        console.log('Desync detected');
+        _this.playState = false;
 
+        _this.clearBotTimer();
+
+        var password = null;
+
+        if (_this.game.password !== null) {
+          password = {
+            pin: _this.game.password
+          };
+        }
+
+        axios.post('/join/games/' + _this.game.id, password).then(function (response) {
+          _this.playState = true;
+          _this.cards = response.data.cards;
+          _this.game = response.data.game;
+          console.log('Synced');
+        })["catch"](function (error) {
+          console.log(error.message);
+        });
+      }
+    }).listen('PlayerKickedEvent', function (event) {
       if (App.user.username === event.username) {
         $('#kicked').modal({
           show: true
@@ -42275,7 +42315,7 @@ __webpack_require__.r(__webpack_exports__);
 
       var message = {
         username: event.username,
-        message: 'გავიდა',
+        message: _this.lang('Left'),
         notification: true
       };
 
@@ -42283,8 +42323,6 @@ __webpack_require__.r(__webpack_exports__);
 
       _this.playSound('notification');
     }).listen('PlayerJoinLeaveEvent', function (event) {
-      console.log('PlayerJoinLeaveEvent');
-
       if (event.players !== false) {
         _this.game.players = event.players;
 
@@ -42295,7 +42333,7 @@ __webpack_require__.r(__webpack_exports__);
 
       var message = {
         username: event.username,
-        message: event.eventName,
+        message: _this.lang(event.eventName),
         notification: true
       };
 
@@ -42303,8 +42341,6 @@ __webpack_require__.r(__webpack_exports__);
 
       _this.playSound('notification');
     }).listen('PlayerCallEvent', function (event) {
-      console.log('PlayerCallEvent');
-
       var p = _this.ppm.indexOf(event.position);
 
       var content = event.score.call === 0 ? '-' : event.score.call;
@@ -42326,9 +42362,7 @@ __webpack_require__.r(__webpack_exports__);
 
       _this.showCallboard();
     }).listen('CardPlayEvent', function (event) {
-      console.log('CardPlayEvent');
-
-      _this.game.cards.push(event.card); //this checks if botplay was triggered and card was player by bot from server
+      _this.game.cards.push(event.card); //this checks if botplay was triggered and card was played by bot from server
 
 
       if (event.position === _this.ppm[0]) {
@@ -42356,7 +42390,7 @@ __webpack_require__.r(__webpack_exports__);
 
       _this.playSound('card-play');
 
-      _this.lastCardsStorage[_this.ppm.indexOf(event.position)] = structuredClone(event.card);
+      _this.lastCardsStorage[_this.ppm.indexOf(event.position)] = Object.create(event.card);
       _this.lastCardsStorage[_this.ppm.indexOf(event.position)].z = _this.game.cards.length;
 
       _this.hideCards(event.take);
@@ -42716,7 +42750,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     var _this = this;
 
     Echo.join('user.' + App.user.id).listen('CardDealEvent', function (event) {
-      console.log('CardDealEvent');
       _this.dealtCards = event.cards;
       _this.setTrump = event.trump;
       setTimeout(function () {
@@ -42890,7 +42923,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var _this3 = this;
 
       if (take !== false) {
-        this.nextTurn = take;
+        this.nextTurn = Number(take);
         setTimeout(function () {
           _this3.lastCards = _this3.lastCardsStorage;
           _this3.lastCardsStorage = [];
@@ -42915,7 +42948,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
           _this3.game.cards = [];
           _this3.playState = true;
-        }, 500);
+        }, 1000);
       } else {
         this.game.turn = this.game.turn === 3 ? 0 : this.game.turn + 1;
         this.playState = true;
@@ -43024,12 +43057,12 @@ __webpack_require__.r(__webpack_exports__);
         "Are you ready?": "მზად ხარ?",
         "Yes": "დიახ",
         "No": "არა",
-        "Take": "მოჯოკრა",
-        "Give": "ქვევიდან",
+        "Jokero": "მოჯოკრა",
+        "Fold": "ქვევიდან",
         "High": "მაღალი",
-        "Give to": "წაიღოს",
+        "Takero": "წაიღოს",
         "Pin code": "პინ კოდი",
-        "Game Over": "თამაში დასრულდა",
+        "GAME OVER": "თამაში დასრულდა",
         "You have been kicked": "თქვენ გამოგაგდეს მაგიდიდან",
         "To clear the chat type \"clear\"": "ჩათის გასასუფთავებლად დაწერე \"clear\"",
         "Start Game": "თამაშის დაწყება",
@@ -43040,15 +43073,17 @@ __webpack_require__.r(__webpack_exports__);
         "Enter pin code": "შეიყვანეთ პინ კოდი",
         "Invalid pin code": "პინ კოდი არასწორია",
         "Notification": "შეტყობინება",
-        "Player": "მოთამაშე"
+        "Player": "მოთამაშე",
+        "Joined": "შემოვიდა",
+        "Left": "გავიდა"
       }
     };
   },
   methods: {
     lang: function lang(text) {
-      var locale = document.cookie.split(';').filter(function (val) {
-        return val.trim().startsWith('lang=');
-      })[0].slice(-2);
+      //let locale = document.cookie.split(';')
+      //.filter((val) => {return val.trim().startsWith('lang=')})[0].slice(-2);
+      var locale = App.locale;
       if (locale === 'en' || !locale) return text;
 
       if (locale === 'ka') {

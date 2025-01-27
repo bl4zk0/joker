@@ -7,6 +7,7 @@ use App\Events\GameOverEvent;
 use App\Events\StartGameEvent;
 use App\Events\UpdateGameEvent;
 use App\Jobs\PlayerBotJob;
+use App\Jobs\SyncGameJob;
 use Illuminate\Database\Eloquent\Model;
 
 class Game extends Model
@@ -71,6 +72,7 @@ class Game extends Model
         $this->refresh();
 
         broadcast(new StartGameEvent($this, $cards));
+        SyncGameJob::dispatch($this->id)->delay(now()->addSeconds(30));
 
         if ($this->players[0]->disconnected) {
             PlayerBotJob::dispatch($this->players[0], $this)->delay(now()->addSeconds(count($cards) + 3));
@@ -121,7 +123,6 @@ class Game extends Model
             $position = -1;
             foreach ($this->players as $player) {
                 if ($player->card == $highestCard) {
-                    //$player->scores()->latest()->first()->increment('take');
                     $this->scores[$player->position]->incrementTake($this->quarter);
                     $this->update(['turn' => $player->position]);
                     $position = $player->position;

@@ -7,21 +7,23 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Game;
-class UpdateLobbyEvent implements ShouldBroadcastNow
+
+class SyncGameStateEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $games;
+    public $game_id;
+    public $turn;
 
     /**
      * Create a new event instance.
      *
-     * @return void
+     * @param $game
      */
-    public function __construct()
+    public function __construct($game)
     {
-        $this->games = Game::latest()->where('state', 'start')->get();
+        $this->game_id = $game->id;
+        $this->turn = $game->turn;
     }
 
     /**
@@ -31,6 +33,6 @@ class UpdateLobbyEvent implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('lobby');
+        return new PrivateChannel('game.' . $this->game_id);
     }
 }

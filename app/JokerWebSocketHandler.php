@@ -16,9 +16,8 @@ use Ratchet\ConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use Ratchet\WebSocket\MessageComponentInterface;
 use App\Jobs\PlayerBotJob;
-use App\Events\PlayerJoinLeaveEvent;
-use App\Events\UpdateLobbyEvent;
-use Illuminate\Support\Facades\Lang;
+use App\Jobs\WShelperJob;
+use Illuminate\Broadcasting\BroadcastException;
 
 class JokerWebSocketHandler implements MessageComponentInterface
 {
@@ -49,21 +48,22 @@ class JokerWebSocketHandler implements MessageComponentInterface
     }
 
     public function onClose(ConnectionInterface $connection)
-    {
+    {   
         // Resolve socket_id to user_id
         $socket_id = $connection->socketId;
         $app_id = $connection->app->id;
 
         // Get all channels
         $channels = $this->channelManager->getChannels($app_id);
-        // identify disconnected user
+
+        // identify disconnected user... this is very slow
         foreach ($channels as $channelName => $channel) {
             if (strpos($channelName, "presence-") === 0) {
                 $users = $channel->getUsers();
                 if (array_key_exists($socket_id, $users)) {
                     $user_id = $users[$socket_id]->user_id;
-
-                    // move this to $game->playerLeft()??
+                  
+                    //move this to $game->playerLeft() move to a job??
                     $user = User::find((int) $user_id);
                     $player = $user->player;
                     $game = $player->game;
@@ -78,15 +78,16 @@ class JokerWebSocketHandler implements MessageComponentInterface
                         if ($user->is($game->creator) && $game->players->count() > 0) {
                             $game->update(['user_id' => $game->players[0]->user->id]);
                             $game->reposition();
-                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left', $game->players, $game->user_id))->toOthers();
+
+                            WShelperJob::dispatch(false, $game->id, $user->username, 'Left', $game->players, $game->user_id);
                         } elseif ($game->players->count() == 0) {
                             $game->delete();
                             break;
                         } else {
                             $game->reposition();
-                            broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left', $game->players))->toOthers();
+                            WShelperJob::dispatch(false, $game->id, $user->username, 'Left', $game->players);
                         }
-                        broadcast(new UpdateLobbyEvent());
+                        WShelperJob::dispatch(true);
                     } else {
                         if ($game->players()->where('disconnected', true)->count() == 3) {
                             $game->delete();
@@ -94,22 +95,21 @@ class JokerWebSocketHandler implements MessageComponentInterface
                         }
 
                         $player->update(['disconnected' => true]);
-                        broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left'))->toOthers();
+                        WShelperJob::dispatch(false, $game->id, $user->username, 'Left');
 
                         if ($game->turn == $player->position) {
                             PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());
                         }
-
-            break;
                     }
+                    break;
                 }
             }
         }
 
         $this->channelManager->removeFromAllChannels($connection);
-
+        
         DashboardLogger::disconnection($connection);
-
+        
         StatisticsLogger::disconnection($connection);
     }
 

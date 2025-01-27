@@ -23,6 +23,7 @@ class CreatePlayersTable extends Migration
             $table->unsignedInteger('games_played')->default(0);
             $table->unsignedInteger('games_won')->default(0);
             $table->boolean('disconnected')->default(false);
+            $table->boolean('has_bot_kicked')->default(false);
             $table->timestamps();
         });
     }

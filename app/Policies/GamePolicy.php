@@ -31,8 +31,10 @@ class GamePolicy
      */
     public function ready(User $user, Game $game)
     {
-        return $game->players->contains($user->player) && $user->isNot($game->creator) &&
-            $game->state == 'ready' && (! in_array($user->id, $game->ready['players'], true));
+        return $game->players->contains($user->player)
+            && $user->isNot($game->creator)
+            && $game->state == 'ready'
+            && (! in_array($user->id, $game->ready['players'], true));
     }
 
     /**
@@ -44,7 +46,7 @@ class GamePolicy
      */
     public function trump(User $user, Game $game)
     {
-        return $game->players->contains($user->player) && $user->player->position === $game->turn && $game->state === 'trump';
+        return $game->players->contains($user->player) && $user->player->position === $game->turn && $game->state === 'trump' && !$user->disconnected;
     }
 
     /**
@@ -56,7 +58,7 @@ class GamePolicy
      */
     public function card(User $user, Game $game)
     {
-        return $game->players->contains($user->player) && $user->player->position === $game->turn && $game->state === 'card';
+        return $game->players->contains($user->player) && $user->player->position === $game->turn && $game->state === 'card' && !$user->disconnected;
     }
 
     /**
@@ -68,7 +70,7 @@ class GamePolicy
      */
     public function call(User $user, Game $game)
     {
-        return $game->players->contains($user->player) && $user->player->position === $game->turn && $game->state === 'call';
+        return $game->players->contains($user->player) && $user->player->position === $game->turn && $game->state === 'call' && !$user->disconnected;
     }
 
     /**
@@ -117,7 +119,11 @@ class GamePolicy
     public function bot(User $user, Game $game)
     {
         $states = ['trump', 'call', 'card'];
-        return $game->players->contains($user->player) && $user->player->position === $game->turn && in_array($game->state, $states, true);
+        return !$user->player->has_bot_kicked
+            && !$user->disconnected
+            && $game->players->contains($user->player)
+            && $user->player->position === $game->turn 
+            && in_array($game->state, $states, true);
     }
 
     /**

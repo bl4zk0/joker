@@ -33,7 +33,12 @@
             </div>
         </div>
 
-        <game v-else :initial-game="game" :initial-cards="cards"></game>
+        <game v-else :initial-game="game"
+            :initial-cards="cards" 
+            :is_bot_disabled="is_bot_disabled"
+            :init_bot_timer="init_bot_timer"
+            :ka="ka">
+        </game>
     </div>
 </template>
 
@@ -43,7 +48,7 @@
 
     export default {
         components: { game },
-        props: ['gameId', 'hasPassword', 'pinCode'],
+        props: ['gameId', 'hasPassword', 'pinCode', 'is_bot_disabled', 'init_bot_timer'],
         mixins: [translate],
 
         mounted() {
@@ -87,6 +92,7 @@
                     .then(response => {
                         this.game = response.data.game;
                         this.cards = response.data.cards;
+                        this.showLoading = false;
                     })
                     .catch(error => {
                         console.log(error)

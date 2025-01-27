@@ -14,12 +14,12 @@ export default {
                 "Are you ready?": "მზად ხარ?",
                 "Yes": "დიახ",
                 "No": "არა",
-                "Take": "მოჯოკრა",
-                "Give": "ქვევიდან",
+                "Jokero": "მოჯოკრა",
+                "Fold": "ქვევიდან",
                 "High": "მაღალი",
-                "Give to": "წაიღოს",
+                "Takero": "წაიღოს",
                 "Pin code": "პინ კოდი",
-                "Game Over": "თამაში დასრულდა",
+                "GAME OVER": "თამაში დასრულდა",
                 "You have been kicked": "თქვენ გამოგაგდეს მაგიდიდან",
                 "To clear the chat type \"clear\"": "ჩათის გასასუფთავებლად დაწერე \"clear\"",
                 "Start Game": "თამაშის დაწყება",
@@ -30,16 +30,18 @@ export default {
                 "Enter pin code": "შეიყვანეთ პინ კოდი",
                 "Invalid pin code": "პინ კოდი არასწორია",
                 "Notification": "შეტყობინება",
-                "Player": "მოთამაშე"
+                "Player": "მოთამაშე",
+                "Joined": "შემოვიდა",
+                "Left": "გავიდა"
             }
         }
     },
 
     methods: {
         lang(text) {
-            let locale = document.cookie.split(';')
-                .filter((val) => {return val.trim().startsWith('lang=')})[0].slice(-2);
-                        
+            //let locale = document.cookie.split(';')
+                //.filter((val) => {return val.trim().startsWith('lang=')})[0].slice(-2);
+            let locale = App.locale;    
             if (locale === 'en' || !locale) return text;
             
             if (locale === 'ka') {
