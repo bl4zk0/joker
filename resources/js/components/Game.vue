@@ -7,20 +7,20 @@
 
         <div id="play-table">
             <div id="mute" class="btn-table">
-                <button type="button" class="btn btn-outline-light" @click="muted = ! muted">
+                <button type="button" class="btn btn-outline-secondary" @click="muted = ! muted">
                     <i class="fas" :class="muted ? 'fa-volume-mute' : 'fa-volume-up'"></i>
                 </button>
             </div>
             <div class="btn-table" v-show="game.state === 'start'">
-                <a href="/lobby" class="btn btn-outline-light"><i class="fas fa-arrow-circle-left"></i></a>
+                <a href="/lobby" class="btn btn-outline-secondary"><i class="fas fa-arrow-circle-left"></i></a>
             </div>
             <div id="btn-chat" class="btn-table d-xl-none">
-                <button type="button" class="btn btn-outline-light" @click="showChat">
+                <button type="button" class="btn btn-outline-secondary" @click="showChat">
                     <i class="fas fa-comment"></i>
                 </button>
             </div>
             <div id="btn-scoreboard" class="btn-table d-md-none">
-                <button type="button" class="btn btn-outline-light" @click="showScoreboard">
+                <button type="button" class="btn btn-outline-secondary" @click="showScoreboard">
                     <i class="fas fa-table"></i>
                 </button>
             </div>
@@ -43,10 +43,10 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- last played cards -->
             <!-- some errors pop in console from here. adding a check -->
-            <div id="last-cards" class="border rounded bg-success shadow" v-show="showLastCards">
+            <div id="last-cards" class="border rounded shadow" v-show="showLastCards">
                 <div class="last-cards-wrapper">
                     <div v-if="lastCards.length === 4 && checkLastCards(lastCards)"
                          v-for="(card, idx) in lastCards"
@@ -122,16 +122,15 @@
                      alt="avatar">
                 <div v-else class="avatar border rounded-circle"></div>
                 <div class="u-name">
-                    <a :href="getProfileLink(0)" v-text="getUsername(0)" class="text-white" target="_blank"></a>
+                    <a :href="getProfileLink(0)" v-text="getUsername(0)" class="link-body-emphasis" target="_blank"></a>
                 </div>
             </div>
             <div v-for="n in 3"
                  :id="`player${n}`"
-                 data-container="body"
-                 data-toggle="popover"
-                 :data-placement="n === 2 ? 'right' : 'top'"
-                 data-trigger="manual">
-                <div class="kick" :title="lang('Kick')" v-show="canKickUser(n)">
+                 data-bs-container="body"
+                 :data-bs-placement="n === 2 ? 'right' : 'top'"
+                 data-bs-trigger="manual">
+                <div class="kick text-secondary" :title="lang('Kick')" v-show="canKickUser(n)">
                     <i class="fas fa-times" @click="kick(n)"></i>
                 </div>
                 <img v-if="getAvatarUrl(n)"
@@ -141,7 +140,8 @@
                      alt="avatar">
                 <div v-else class="avatar border rounded-circle"></div>
                 <div class="u-name">
-                    <a :href="getProfileLink(n)" v-text="getUsername(n)" class="text-white" target="_blank"></a>
+                    <a v-if="getProfileLink(n) != '#'" :href="getProfileLink(n)" v-text="getUsername(n)" class="link-body-emphasis" target="_blank"></a>
+                    <span v-else>#{{ ppm[n]+1 }}</span>
                 </div>
             </div>
 
@@ -153,9 +153,9 @@
                 </button>
             </div>
 
-            <div id="callboard" class="bg-white border rounded shadow pt-1 pl-1 d-none">
-                <button class="btn mb-1 mr-1"
-                        :class="idx === Number(game.to_fill) ? 'btn-success': 'btn-light'"
+            <div id="callboard" class="border rounded shadow pt-1 ps-1 d-none">
+                <button class="btn mb-1 me-1"
+                        :class="idx === Number(game.to_fill) ? 'btn-success': 'btn-secondary'"
                         v-for="idx in callboard"
                         v-text="idx === 0 ? '-' : idx"
                         :data-value="idx"
@@ -163,7 +163,7 @@
                         @click="call"></button>
             </div>
 
-            <div id="ready" class="bg-white border rounded p-1 text-center d-none">
+            <div id="ready" class="border rounded p-1 text-center d-none">
                 <p id="ready-waiting" class="d-none ">{{ lang('Please wait for other players') }}</p>
                 <div id="ready-check" class="d-none mb-3">
                     <p>{{ lang('Are you ready?') }}</p>
@@ -176,43 +176,45 @@
                 <table class="table table-bordered mt-3 mb-0" style="max-width: 310px;">
                     <thead>
                         <tr class="bg-primary text-white">
-                            <th scope="col">{{ this.game.players[0] ? this.game.players[0].username : '...'}}</th>
-                            <th scope="col">{{ this.game.players[1] ? this.game.players[1].username : '...'}}</th>
-                            <th scope="col">{{ this.game.players[2] ? this.game.players[2].username : '...'}}</th>
-                            <th scope="col">{{ this.game.players[3] ? this.game.players[3].username : '...'}}</th>
+                            <th scope="col">{{ this.game.players[0] ? this.game.players[0].username : '#1'}}</th>
+                            <th scope="col">{{ this.game.players[1] ? this.game.players[1].username : '#2'}}</th>
+                            <th scope="col">{{ this.game.players[2] ? this.game.players[2].username : '#3'}}</th>
+                            <th scope="col">{{ this.game.players[3] ? this.game.players[3].username : '#4'}}</th>
                         </tr>
                     </thead>
                 </table>
             </div>
 
-            <div id="suits" class="d-none border bg-white rounded pt-1 px-1">
+            <div id="suits" class="d-none border rounded pt-1 px-1">
                 <button class="btn btn-light text-danger mb-1" data-suit="hearts" @click="actionSuit">&hearts;</button>
                 <button class="btn btn-light text-dark mb-1" data-suit="clubs" @click="actionSuit">&clubs;</button>
                 <button class="btn btn-light text-danger mb-1" data-suit="diamonds" @click="actionSuit">&diams;</button>
                 <button class="btn btn-light text-dark mb-1" data-suit="spades" @click="actionSuit">&spades;</button>
-                <button class="btn btn-dark btn-block mb-1" @click="cancelJok('#suits')"
+                <div class="d-grid">
+                    <button class="btn btn-light btn-block mb-1" @click="cancelJok('#suits')"
                         v-show="game.state !== 'trump'"><i class="fas fa-times"></i></button>
-                <button class="btn btn-light text-dark btn-block mb-1" data-suit="bez" @click="actionSuit"
+                    <button class="btn btn-light text-dark btn-block mb-1" data-suit="bez" @click="actionSuit"
                         v-show="game.state === 'trump'">{{ lang('None') }}</button>
+                </div>
             </div>
 
-            <div id="jokhigh" class="d-none border bg-white rounded shadow p-1">
+            <div id="jokhigh" class="d-none border rounded shadow p-1">
                 <button class="btn btn-light" data-action="magali" @click="actionJoker">{{ lang('High') }}</button>
                 <button class="btn btn-warning" data-action="caigos" @click="actionJoker">{{ lang('Takero') }}</button>
-                <button type="button" class="btn btn-dark float-right" @click="cancelJok('#jokhigh')">
+                <button type="button" class="btn btn-danger" @click="cancelJok('#jokhigh')">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
-            <div id="jokjoker" class="d-none border bg-white rounded shadow p-1">
+            <div id="jokjoker" class="d-none border rounded shadow p-1">
                 <button class="btn btn-light" data-action="mojokra" @click="actionJoker">{{ lang('Jokero') }}</button>
                 <button class="btn btn-warning" data-action="kvevidan" @click="actionJoker">{{ lang('Fold') }}</button>
-                <button type="button" class="btn btn-dark float-right" @click="cancelJok('#jokjoker')">
+                <button type="button" class="btn btn-danger" @click="cancelJok('#jokjoker')">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
-            <div id="password-card" class="border bg-white rounded shadow p-1" v-show="passwordProtected">
+            <div id="password-card" class="border rounded shadow p-1" v-show="passwordProtected">
                 <div class="p-1 mb-2">
                     {{ lang('Pin code') }}: <span class="text-success">{{ game.password }}</span>
                     <button type="button" class="btn btn-sm btn-secondary" style="float:right" @click="copyLink">copy</button>
@@ -226,7 +228,7 @@
                  @mouseover="showLastCards = true"
                  @mouseleave="showLastCards = false"
                  v-show="game.state === 'card'">
-                <i class="fas fa-history text-white"></i>
+                <i class="fas fa-history"></i>
             </div>
 
             <div id="bot-timer" v-show="showBotTimer">
@@ -234,9 +236,9 @@
                 <span v-text="botTimer" :class="botTimer > 5 ? 'text-warning' : 'text-danger'"></span>
             </div>
 
-            <div id="game-over" class="bg-success d-none">
+            <div id="game-over" class="d-none">
                 <div class="btn-table">
-                    <a href="/lobby" class="btn btn-outline-light"><i class="fas fa-arrow-circle-left"></i></a>
+                    <a href="/lobby" class="btn btn-outline-secondary"><i class="fas fa-arrow-circle-left"></i></a>
                 </div>
                 <div class="d-flex justify-content-center">
                     <div class="card mt-5">
@@ -256,22 +258,22 @@
         </div>
 
         <chat :messages="messages" :game-id="game.id" @clear-chat="messages = []"></chat>
-
-        <div class="modal fade" id="kicked" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <button id="show_kicked" type="button" data-bs-toggle="modal" data-bs-target="#kicked" class="d-none">show_kicked</button>
+        <div class="modal fade" id="kicked" data-bs-backdrop="static" data-keyboard="false" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content bg-danger">
-                    <div class="modal-body text-white">
-                        <i class="fas fa-exclamation-triangle"></i> @lang('You have been kicked')
+                    <div class="modal-body">
+                        <i class="fas fa-exclamation-triangle"></i> {{ lang('You have been kicked') }}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-light" data-dismiss="modal" @click="goToLobby">OK!</button>
+                        <button type="button" class="btn btn-warning" data-bs-dismiss="modal" @click="goToLobby">OK!</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="close-w d-none">
-            <button type="button" class="btn btn-outline-light" @click="closeW">
+            <button type="button" class="btn btn-outline-secondary" @click="closeW">
                 <i class="fas fa-times"></i>
             </button>
         </div>

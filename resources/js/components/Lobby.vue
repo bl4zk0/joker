@@ -13,18 +13,20 @@
                 <li class="list-group-item" v-for="n in [0,1,2,3]">
                     <a v-if="game.players[n]"
                        :href="'/user/' + game.players[n].user_id"
-                       class="text-dark u-link"
+                       class="u-link link-body-emphasis link-underline-opacity-0"
                        target="_blank">
                         <img :src="game.players[n].avatar_url"
                              class="avatar border rounded-circle"
                              alt="avatar">
                         <span v-text="game.players[n].username"></span>
                     </a>
-                    <span v-else>...</span>
+                    <span v-else>#{{ n+1 }}</span>
                 </li>
 
                 <li class="list-group-item">
-                    <a :href="path(game.id)" class="btn btn-block btn-success" :class="klas(game.players.length, game.kicked_users)">{{ lang('Join') }}</a>
+                    <div class="d-grid">
+                        <a :href="path(game.id)" class="btn btn-success" :class="klas(game.players.length, game.kicked_users)">{{ lang('Join') }}</a>
+                    </div>
                 </li>
             </ul>
         </div>

@@ -1,5 +1,5 @@
 <template>
-    <div id="chat-wrapper" class="d-none d-xl-block px-2">
+    <div id="chat-wrapper" class="d-none d-xl-block px-2 border">
         <div id="chat">
             <div id="messages-wrapper">
                 <div id="messages">
@@ -16,18 +16,16 @@
                 </div>
             </div>
             <div id="chat-input-wrapper">
-                <div id="emojis" class="border border-white bg-white rounded pl-2 py-2" v-show="dEmojis">
+                <div id="emojis" class="border border-white bg-white rounded ps-2 py-2" v-show="dEmojis">
                     <span v-for="emoji in emojis" v-text="emoji" @click="smile"></span>
                 </div>
                 <div class="input-group">
                     <input id="msgInput" type="text" class="form-control" v-model="message" @keypress="sendMsgWithEnter">
-                    <div class="input-group-prepend">
-                        <button class="btn btn-light"
-                                type="button" @click="toggleEmojis"><i class="far fa-smile"></i></button>
-                        <button class="btn btn-primary"
-                                type="button"
-                                @click="sendMessage"><i class="far fa-paper-plane"></i></button>
-                    </div>
+                    <button class="btn btn-light"
+                        type="button" @click="toggleEmojis"><i class="far fa-smile"></i></button>
+                    <button class="btn btn-primary"
+                        type="button"
+                        @click="sendMessage"><i class="far fa-paper-plane"></i></button>
                 </div>
             </div>
         </div>

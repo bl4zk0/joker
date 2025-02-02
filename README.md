@@ -19,7 +19,7 @@ Multiplayer online card game powered by Laravel and Bootstrap. Cheater admin and
 or use docker:
 ```
 $ docker build --tag=joker .
-$ docker run -it -p 80:80 -p 443:443 -p 33060:3306 --restart always --name=joker joker
+$ docker run -it -v $(pwd):/var/www/joker -p 80:80 -p 443:443 -p 33060:3306 --restart always --name=joker joker
 ```
 ## Credits
 

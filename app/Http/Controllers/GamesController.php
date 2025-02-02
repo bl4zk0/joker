@@ -252,8 +252,8 @@ class GamesController extends Controller
 
     public function join(Request $request, Game $game)
     {
-        // account for refreshs, delay joining for 2 seconds
-        sleep(2);
+        // account for refreshs, delay joining for 1.5 seconds
+        sleep(1.5);
         $game->refresh();
         $this->authorize('join', $game);
 

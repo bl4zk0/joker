@@ -1,19 +1,23 @@
 @extends('layouts.app')
 
+@section('nav')
+@include('layouts.nav')
+@endsection
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card mt-3">
-                <div class="card-header"><i class="fas fa-lock"></i> 
-                <b>{{ __('Verify your email address') }}</b>
-            </div>
+        <div class="col-auto">
+            <div class="card">
+                <div class="card-header fw-bold"><i class="fa-solid fa-circle-check"></i>
+                    {{ __('Verify your email address') }}
+                </div>
 
                 <div class="card-body">
                     @if (session('resent'))
-                        <div class="alert alert-success" role="alert">
-                            {{ __('A fresh verification link has been sent to your email address.') }}
-                        </div>
+                    <div class="alert alert-success" role="alert">
+                        {{ __('A fresh verification link has been sent to your email address.') }}
+                    </div>
                     @endif
 
                     {{ __('Before proceeding, please check your email for a verification link.') }}

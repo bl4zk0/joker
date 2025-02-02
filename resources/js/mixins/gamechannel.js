@@ -30,9 +30,9 @@ export default {
             })
             .listen('PlayerKickedEvent', event => {
                 if (App.user.username === event.username) {
-                    $('#kicked').modal({show: true});
                     Echo.leaveChannel('game.' + this.game.id);
                     Echo.leaveChannel('user.' + App.user.id);
+                    $('#show_kicked').trigger('click');
                     return;
                 }
 
@@ -64,10 +64,10 @@ export default {
             })
             .listen('PlayerCallEvent', event => {
                 let p = this.ppm.indexOf(event.position);
-                let content = event.score.call === 0 ? '-' : event.score.call;
+                let content = event.score.call == 0 ? '-' : event.score.call;
 
                 if (p !== 0) {
-                    $('#player' + p).attr('data-content', content).popover('show');
+                    $('#player' + p).attr('data-bs-content', content).popover('show');
                     setTimeout(() => {
                         $('#player' + p).popover('hide');
                     }, 3000);

@@ -23,6 +23,7 @@ Vue.component('lobby', require('./components/Lobby.vue').default);
 Vue.component('game-view', require('./components/GameView.vue').default);
 Vue.component('admin-panel', require('./components/AdminPanel.vue').default);
 Vue.component('flash', require('./components/Flash.vue').default);
+Vue.component('theme-changer', require('./components/ThemeChanger.vue').default);
 
 
 /**

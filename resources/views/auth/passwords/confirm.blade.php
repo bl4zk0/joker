@@ -1,33 +1,40 @@
 @extends('layouts.app')
 
+@section('nav')
+@include('layouts.nav')
+@endsection
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-4">
-            <div class="card mt-3">
-                <div class="card-header"><i class="fas fa-lock"></i> <b>{{ __('Confirm password') }}</b></div>
+        <div class="col-auto">
+            <div class="card rounded-4">
 
-                <div class="card-body">                    
+                <div class="card-body p-5 pb-4">
+                    <div class="card-title">
+                        <h1 class="fw-bold mb-0 fs-4">
+                            <i class="fas fa-lock"></i> {{ __('Confirm password') }}
+                        </h1>
+                    </div>
+                </div>
+
+                <div class="card-body p-5 pt-0">
                     <form method="POST" action="{{ route('password.confirm') }}">
                         @csrf
 
-                        <div class="form-group">
+                        <div class="form-floating mb-3">
+                            <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="@lang('Password')" required>
                             <label for="password">{{ __('Password') }}</label>
 
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                            @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
-                        <div class="form-group">
-                                <button type="submit" class="btn btn-block btn-success">
-                                {{ __('Confirm') }}
-                                </button>
-                        </div>
+                        <button class="w-100 mb-2 btn btn-lg rounded-3 btn-success" type="submit">
+                            {{ __('Confirm') }}
+                        </button>
+
                         <div class="text-center">
                             <a class="btn btn-link" href="{{ route('password.request') }}">
                                 <small>{{ __('Forgot password?') }}</small>

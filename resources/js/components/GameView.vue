@@ -1,32 +1,30 @@
 <template>
     <div>
         <div v-if="game === null" class="d-flex justify-content-center align-items-center vh-100">
-            <div class="card" v-show="this.showPasswordForm">
-                <div class="card-body">
-                    <div class="form-row">
-                        <div>
+            <div v-show="this.showPasswordForm">
+                    <div class="row">
+                        <div class="col-8 position-relative">
                             <input type="text"
-                                   maxlength="4"
-                                   :placeholder="lang('Pin code')"
-                                   class="form-control"
-                                   :class="errorMessage ? 'is-invalid' : ''"
-                                   v-model="passwordInput"
-                                   name="password"
-                                   :disabled="showLoadingBtn"
-                                   @keypress="joinWithEnter">
-
-                            <span v-show="errorMessage" class="invalid-feedback">
+                                maxlength="4"
+                                :placeholder="lang('Pin code')"
+                                class="form-control"
+                                :class="errorMessage ? 'is-invalid' : ''"
+                                v-model="passwordInput"
+                                name="password"
+                                :disabled="showLoadingBtn"
+                                @keypress="joinWithEnter"
+                            >
+                            <span v-show="errorMessage" class="invalid-tooltip">
                                 <strong v-text="errorMessage"></strong>
                             </span>
                         </div>
-                        <div class="ml-2">
+                        <div class="col-4">
                             <button type="button" class="btn btn-success" @click="join(true)" :disabled="showLoadingBtn">
                                 <span class="spinner-border spinner-border-sm" v-show="showLoadingBtn"></span>
-                                {{ lang('Join') }}
+                                <span v-show="!showLoadingBtn">{{ lang('Join') }}</span>
                             </button>
                         </div>
-                    </div>
-                </div>
+                    </div>                    
             </div>
             <div v-show="showLoading" class="alert alert-success">
                 <div class="spinner-border spinner-border-sm" role="status"></div> {{ lang('Loading') }}...

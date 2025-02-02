@@ -1,26 +1,26 @@
 <template>
-    <div class="panel-wrapper">
-        <button type="button" class="btn btn-danger" v-show="! showPanel" @click="showPanel = !showPanel">
+    <div class="position-fixed bottom-0 mb-1" style="left: 65px;">
+        <button type="button" class="btn btn-success" v-show="! showPanel" @click="showPanel = !showPanel">
             <i class="fas fa-user-cog"></i> Admin panel
         </button>
-        <div class="border rounded p-2 bg-white" v-show="showPanel">
-            <button type="button" class="btn btn-dark mb-2" @click="showPanel = !showPanel">
+        <div class="border bg-dark rounded p-2" v-show="showPanel">
+            <button type="button" class="btn btn-secondary mb-2" @click="showPanel = !showPanel">
                 <i class="fas fa-times"></i>
             </button>
             <button type="button" class="btn btn-warning mb-2" @click="addBot">bot++</button>
             <button type="button" class="btn btn-danger mb-2" @click="start">{{ lang('Start Game') }}</button>
             <form @submit.prevent="sendCards">
-                <div class="form-group">
-                    <label for="position">{{ lang('Position') }}</label>
-                    <select id="position" class="custom-select" v-model="selectedPosition">
+                <div class="mb-2">
+                    <label for="position" class="form-label">{{ lang('Position') }}</label>
+                    <select id="position" class="form-select" v-model="selectedPosition">
                         <option value="0">1</option>
                         <option value="1">2</option>
                         <option value="2">3</option>
                         <option value="3">4</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="cards">{{ lang('Cards') }}</label>
+                <div class="mb-2">
+                    <label for="cards" class="form-label">{{ lang('Cards') }}</label>
                     <select multiple class="form-control" id="cards" v-model="selectedCards">
                         <option value="0" class="text-danger" selected>color_joker</option>
                         <option value="1">black_joker</option>
@@ -98,12 +98,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.panel-wrapper {
-    position: fixed;
-    bottom: 8px;
-    left: 8px;
-    width: 250px;
-}
-</style>

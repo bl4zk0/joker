@@ -1,38 +1,40 @@
 @extends('layouts.app')
 
+@section('nav')
+@include('layouts.nav')
+@endsection
+
 @section('content')
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-4">
-                <div class="card mt-3">
-                    <div class="card-header"><i class="fas fa-at"></i> <b>@lang('Change email')</b></div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            <div class="card">
+                <div class="card-header fw-bold"><i class="fas fa-at"></i> @lang('Change email')</div>
 
-                    <div class="card-body">
-                        <form method="POST" action="/email/change">
-                            @csrf
+                <div class="card-body">
+                    <form method="POST" action="/email/change">
+                        @csrf
 
-                            <div class="form-group">
-                                <label for="email">@lang('Email')</label>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">@lang('Email')</label>
 
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
-                                       name="email" value="{{ old('email') }}" required autocomplete="email">
+                            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
+                                name="email" value="{{ old('email') }}" required>
 
-                                @error('email')
-                                <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
+                            @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-block btn-success">
-                                    @lang('Confirm')
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+
+                        <button type="submit" class="btn btn-block btn-success float-end">
+                            @lang('Confirm')
+                        </button>
+
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 @endsection

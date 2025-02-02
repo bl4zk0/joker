@@ -12,14 +12,11 @@ RUN openssl req -nodes -new -x509 -keyout /etc/ssl/certs/joker.local.key -out \
 RUN go get github.com/mailhog/MailHog
 
 # copy files
-COPY . /var/www/joker
 COPY dockerconf/bashrc /root/.bashrc
 COPY dockerconf/supervisord.conf /etc/supervisor/supervisord.conf
 COPY --chown=root:root dockerconf/entrypoint.sh /entrypoint.sh
 
 WORKDIR /var/www/joker
-RUN cp .env.example .env && composer install && \
-    php /var/www/joker/artisan storage:link && npm install && npm run development
 
 EXPOSE 80
 EXPOSE 443
