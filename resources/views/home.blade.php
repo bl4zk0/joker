@@ -1,19 +1,26 @@
 @extends('layouts.app')
 
-@section('content')
-    <div class="wrapper">
-        <div class="cover-container p-3 mx-auto">
-            <header class="masthead">
-                @include('layouts.nav')
-            </header>
+@section('nav')
+@include('layouts.nav')
+@endsection
 
-            <main role="main" class="inner cover text-center">
-                <h1 class="cover-heading"><img src="{{ asset('storage/imgs/logo.png') }}" alt="logo"></h1>
-                <p class="lead">@lang('Welcome on Joker portal! Game on and GLHF!')</p>
-                <p class="lead">
-                    <a href="{{ route('lobby') }}" class="btn btn-lg btn-success btn-main">@lang('Play Now')</a>
-                </p>
-            </main>
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+
+        <div class="col-md-8">
+            <div class="p-3">
+                <main class="text-center">
+                    <h1><img src="{{ asset('storage/imgs/logo.png') }}" alt="logo"></h1>
+                    <div class="fs-5 mb-3 fw-bold">@lang('Welcome on Joker portal! Game on and GLHF!')</div>
+                    <p>
+                        <a href="{{ route('lobby') }}" class="btn btn-lg btn-primary border">
+                            <i class="fa-solid fa-play"></i> @lang('Play Now')
+                        </a>
+                    </p>
+                </main>
+            </div>
         </div>
     </div>
+</div>
 @endsection

@@ -1,6 +1,5 @@
 <template>
-    <div class="alert alert-success alert-flash"
-         role="alert"
+    <div class="alert alert-success alert-flash position-fixed end-0 bottom-0 mb-2 me-2"
          v-show="show">
         <i class="fas fa-exclamation-circle"></i> <span v-text="this.message"></span>
     </div>
@@ -29,11 +28,3 @@
         },
     }
 </script>
-
-<style>
-    .alert-flash {
-        position: fixed;
-        right: 25px;
-        bottom: 25px;
-    }
-</style>

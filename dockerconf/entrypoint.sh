@@ -1,8 +1,14 @@
 #!/bin/bash
 chmod 700 /entrypoint.sh
 
+# install dependencies
+cp .env.example .env && composer install && \
+php artisan storage:link && npm install && npm run $(grep APP_ENV .env | cut -d '=' -f2)
+
+# permission to write logs
+chown -R www-data:www-data /var/www/joker/storage
+
 # configure nginx vhost
-chown -R www-data:www-data /var/www/joker
 cp /var/www/joker/dockerconf/nginx.conf /etc/nginx/sites-available/joker.local
 rm /etc/nginx/sites-enabled/default
 ln -s /etc/nginx/sites-available/joker.local /etc/nginx/sites-enabled/joker.local
@@ -27,8 +33,8 @@ nginx
 mysql -u root -e 'CREATE DATABASE joker;'
 mysql -u root -e "ALTER USER root@localhost IDENTIFIED BY '$DB_PASS';"
 mysql -u root -p"$DB_PASS" -e 'FLUSH PRIVILEGES;'
-php /var/www/joker/artisan key:generate
-php /var/www/joker/artisan migrate:fresh
-php /var/www/joker/artisan db:seed
+php /var/www/joker/artisan key:generate --force
+php /var/www/joker/artisan migrate:fresh --force
+php /var/www/joker/artisan db:seed --force
 
 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf

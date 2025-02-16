@@ -44,16 +44,17 @@ export default {
 
         this.$watch('botTimerActive', (active) => {
             if (active) {
+                this.clearBotTimer();
                 this.setBotTimer();
             }
         });
 
         if (this.botTimerActive) {
-            this.setBotTimer(6000);
+            this.setBotTimer(7000);
         }
     },
 
-    // es metodi acentrebs kartebs negativ marginebit viewportis mixedvit
+    // center cards with negative margins based on viewport
     methods: {
         getMargin(n) {
             let smallMargins = [
@@ -111,7 +112,7 @@ export default {
         },
 
         getUsername(p) {
-            return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].username : '...';
+            return this.game.players[this.ppm[p]] ? this.game.players[this.ppm[p]].username : `#${p}`;
         },
 
         getProfileLink(p) {
@@ -163,7 +164,11 @@ export default {
             if (suit === 'hearts' || suit === 'diamonds') {
                 return 'text-danger';
             } else {
-                return '';
+                if ($('html').attr('data-bs-theme') === 'dark') {
+                    return 'text-light'
+                } else {
+                    return 'text-dark';
+                }
             }
         },
 

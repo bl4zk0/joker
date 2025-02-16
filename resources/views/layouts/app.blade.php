@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="ka">
+<html lang="{{ App::getLocale() }}" data-bs-theme="green">
+
 <head>
-    <meta charset="utf-8" style="background-color: #28a745">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- CSRF Token -->
@@ -24,7 +25,9 @@
 
     @yield('style')
 </head>
-<body class="bg-success" style="display: none">
+<body>
+    @include('layouts.theme')
+
     <div id="app">
         @yield('nav')
 

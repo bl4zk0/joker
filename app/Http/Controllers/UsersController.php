@@ -65,6 +65,7 @@ class UsersController extends Controller
                             broadcast(new PlayerJoinLeaveEvent($game->id, $user->username, 'Left', $game->players, $game->user_id));
                         } elseif ($game->players->count() == 0) {
                             $game->delete();
+                            broadcast(new UpdateLobbyEvent());
                             return response('', 200);
                         } else {
                             $game->reposition();

@@ -82,7 +82,6 @@ class JokerWebSocketHandler implements MessageComponentInterface
                             WShelperJob::dispatch(false, $game->id, $user->username, 'Left', $game->players, $game->user_id);
                         } elseif ($game->players->count() == 0) {
                             $game->delete();
-                            break;
                         } else {
                             $game->reposition();
                             WShelperJob::dispatch(false, $game->id, $user->username, 'Left', $game->players);
@@ -93,12 +92,12 @@ class JokerWebSocketHandler implements MessageComponentInterface
                             $game->delete();
                             break;
                         }
-
+                        // this one is complicated because of timings
                         $player->update(['disconnected' => true]);
                         WShelperJob::dispatch(false, $game->id, $user->username, 'Left');
 
                         if ($game->turn == $player->position) {
-                            PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());
+                            PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSeconds(5));
                         }
                     }
                     break;

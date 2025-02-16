@@ -6,7 +6,7 @@
 
 require('./bootstrap');
 
-window.Vue = require('vue');
+import { createApp } from 'vue';
 
 /**
  * The following block of code may be used to automatically register your
@@ -19,10 +19,11 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('lobby', require('./components/Lobby.vue').default);
-Vue.component('game-view', require('./components/GameView.vue').default);
-Vue.component('admin-panel', require('./components/AdminPanel.vue').default);
-Vue.component('flash', require('./components/Flash.vue').default);
+import Lobby from './components/Lobby.vue';
+import GameView from './components/GameView.vue';
+import AdminPanel from './components/AdminPanel.vue';
+import Flash from './components/Flash.vue';
+import ThemeChanger from './components/ThemeChanger.vue';
 
 
 /**
@@ -31,6 +32,16 @@ Vue.component('flash', require('./components/Flash.vue').default);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const app = new Vue({
-    el: '#app'
-});
+
+// Create the Vue app instance
+const app = createApp({});
+
+// Register the component
+app.component('lobby', Lobby);
+app.component('game-view', GameView);
+app.component('admin-panel', AdminPanel);
+app.component('flash', Flash);
+app.component('theme-changer', ThemeChanger);
+
+// Mount the app to the DOM element with id="app"
+app.mount('#app');

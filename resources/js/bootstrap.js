@@ -7,7 +7,6 @@
  */
 
 try {
-    window.Popper = require('popper.js').default;
     window.$ = window.jQuery = require('jquery');
 
     require('bootstrap');
@@ -44,6 +43,3 @@ window.Echo = new Echo({
     enabledTransports: ['ws', 'wss'],
     disableStats: true
 });
-
-// fix flashing on refresh. happens because of vuejs??
-document.body.style.display = 'block';

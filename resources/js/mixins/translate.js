@@ -32,7 +32,20 @@ export default {
                 "Notification": "შეტყობინება",
                 "Player": "მოთამაშე",
                 "Joined": "შემოვიდა",
-                "Left": "გავიდა"
+                "Left": "გავიდა",
+                "Search": "ძებნა",
+                "No Emoji Found": "ემოჯი არ მოიძებნა",
+                "Search Results": "ძიების შედეგი",
+                "Frequently Used": "ხშირად გამოყენებული",
+                "Smileys & Emoticon": "სმაილები & ემოციები",
+                "People & Body": "ხალხი & სხეული",
+                "Animals & Nature": "ფლორა & ფაუნა",
+                "Food & Drink": "საკვები & სასმელი",
+                "Activity": "აქტივობები",
+                "Travel & Places": "მოგზაურობა & ადგილები",
+                "Objects": "ობიექტები",
+                "Symbols": "სიმბოლები",
+                "Flags": "დროშები"
             }
         }
     },
@@ -40,10 +53,10 @@ export default {
     methods: {
         lang(text) {
             //let locale = document.cookie.split(';')
-                //.filter((val) => {return val.trim().startsWith('lang=')})[0].slice(-2);
-            let locale = App.locale;    
+            //.filter((val) => {return val.trim().startsWith('lang=')})[0].slice(-2);
+            let locale = App.locale;
             if (locale === 'en' || !locale) return text;
-            
+
             if (locale === 'ka') {
                 return this.ka[text];
             }
