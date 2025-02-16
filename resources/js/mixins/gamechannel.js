@@ -64,13 +64,14 @@ export default {
             })
             .listen('PlayerCallEvent', event => {
                 let p = this.ppm.indexOf(event.position);
-                let content = event.score.call == 0 ? '-' : event.score.call;
+                let content = event.score.call === 0 ? '-' : event.score.call;
 
                 if (p !== 0) {
-                    $('#player' + p).attr('data-bs-content', content).popover('show');
+                    $('#player' + p).attr('data-bs-content', String(content));
+                    $('#player' + p).popover('show');
                     setTimeout(() => {
-                        $('#player' + p).popover('hide');
-                    }, 3000);
+                        $('#player' + p).popover('dispose');
+                    }, 2000);
                 }
 
                 this.game.scores[event.position].data[`q_${this.game.quarter}`].push(event.score);
@@ -178,13 +179,13 @@ export default {
                 this.playState = false;
                 this.game = event.game;
 
-                for (let i = 0; i < 4; i++) {
-                    $(`#place-${i} img`).attr('src', this.game.players[event.scores[i].position].avatar_url);
-                    $(`#place-${i} .u-name a`).attr('href', `/user/${this.game.players[event.scores[i].position].user_id}`)
-                        .text(this.game.players[event.scores[i].position].username);
-                }
-
                 setTimeout(() => {
+                    for (let i = 0; i < 4; i++) {
+                        $(`#place-${i} img`).attr('src', this.game.players[event.scores[i].position].avatar_url);
+                        $(`#place-${i} .u-name a`).attr('href', `/user/${this.game.players[event.scores[i].position].user_id}`)
+                            .text(this.game.players[event.scores[i].position].username);
+                    }
+
                     $('#game-over').removeClass('d-none');
                 }, 1000);
             })

@@ -116,7 +116,7 @@ class GamesController extends Controller
 
         $player = auth()->user()->player;
 
-        $score = $game->scores[$player->position]->createCall($game->quarter, $request->call);
+        $score = $game->scores[$player->position]->createCall($game->quarter, (int) $request->call);
 
         $game->updateTurn();
         $game->updateCallCount();
@@ -207,7 +207,7 @@ class GamesController extends Controller
             'password' => ['sometimes', 'accepted']
         ]);
 
-        $password = $request->has('password') ? sprintf("%04d", rand(0, 9999)) : null;
+        $password = $request->has('password') ? sprintf("%04d", rand(1000, 9999)) : null;
 
         $game = Game::create([
             'type' => $request->type,
@@ -252,8 +252,9 @@ class GamesController extends Controller
 
     public function join(Request $request, Game $game)
     {
-        // account for refreshs, delay joining for 1.5 seconds
-        sleep(1.5);
+        // account for refreshs, delay joining for 3 seconds
+        // related to disconnection logic in websockets handler
+        sleep(3);
         $game->refresh();
         $this->authorize('join', $game);
 
@@ -269,11 +270,7 @@ class GamesController extends Controller
             }
 
             broadcast(new PlayerJoinLeaveEvent($game->id, auth()->user()->username, 'Joined', $game->players))->toOthers();
-            // WShelperJob::dispatch(
-            //     false, $game->id,
-            //     auth()->user()->username,
-            //     'Joined', $game->players)
-            //     ->delay(now()->addSecond());
+
             return compact('game', 'cards');
         }
 

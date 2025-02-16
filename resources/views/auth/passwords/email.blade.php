@@ -8,36 +8,37 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-auto">
-            <div class="card rounded-4">
-
-                <div class="card-body p-5 pb-4">
-                    <div class="card-title">
-                        <h1 class="fw-bold mb-0 fs-4">
-                            <i class="fa-solid fa-unlock-keyhole"></i> @lang('Reset password')
+            <div class="card">
+                <div class="card-body p-4 pb-3">
+                    <div class="card-title text-center">
+                        <h1 class="fw-bold mb-0 fs-5">
+                            <i class="fa-solid fa-unlock-keyhole"></i>
+                            @lang('Reset password')
                         </h1>
                     </div>
                 </div>
 
-                <div class="card-body p-5 pt-0">
+                <div class="card-body p-4 pt-0">
                     @if (session('status'))
-                    <div class="alert alert-success" role="alert">
+                    <div class="alert alert-success">
                         {{ session('status') }}
                     </div>
                     @endif
 
                     <form method="POST" action="{{ route('password.email') }}">
                         @csrf
-                        <div class="form-floating mb-3">
-                            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
-                                name="email" value="{{ old('email') }}" placeholder="@lang('Email')" required>
-                            <label for="email">@lang('Email')</label>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">@lang('Email')</label>
+                            <input id="email" type="email" 
+                                class="form-control rounded-3 @error('email') is-invalid @enderror"
+                                name="email" value="{{ old('email') }}" required>
 
                             @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <button class="w-100 mb-2 btn btn-lg rounded-3 btn-success" type="submit">
+                        <button class="w-100 mb-2 btn rounded-3 btn-success" type="submit">
                             @lang('Send email')
                         </button>
                     </form>

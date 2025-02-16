@@ -8,14 +8,10 @@
 @import '~bootstrap/scss/bootstrap';
 
 // fontawesome
-// @import 'fontawesome/scss/fontawesome';
-// @import 'fontawesome/scss/regular';
-// @import 'fontawesome/scss/solid';
-// @import 'fontawesome/scss/brands';
-@import 'fontawesome-free-6.7.2-web/scss/fontawesome';
-@import 'fontawesome-free-6.7.2-web/scss/regular';
-@import 'fontawesome-free-6.7.2-web/scss/solid';
-@import 'fontawesome-free-6.7.2-web/scss/brands';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/brands';
 
 // main styles
 @import 'style';

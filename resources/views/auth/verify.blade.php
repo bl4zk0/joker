@@ -9,13 +9,14 @@
     <div class="row justify-content-center">
         <div class="col-auto">
             <div class="card">
-                <div class="card-header fw-bold"><i class="fa-solid fa-circle-check"></i>
+                <div class="card-header fw-bold text-center"><i class="fa-solid fa-circle-check"></i>
                     {{ __('Verify your email address') }}
                 </div>
 
                 <div class="card-body">
                     @if (session('resent'))
-                    <div class="alert alert-success" role="alert">
+                    <div class="alert alert-success text-center">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
                         {{ __('A fresh verification link has been sent to your email address.') }}
                     </div>
                     @endif

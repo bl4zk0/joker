@@ -28,7 +28,7 @@ class GamePasswordRule implements Rule
      */
     public function passes($attribute, $value)
     {
-        return $value == $this->gamePassword;
+        return $value === $this->gamePassword;
     }
 
     /**

@@ -25,7 +25,7 @@
                 @endauth
             </ul>
             <div class="text-end">
-                <a class="btn btn-outline-secondary me-2"
+                <a class="btn btn-outline-primary me-1 rounded-3"
                     href="/{{ Request::path() === '/' ? '' : Request::path() }}?lang={{ App::getLocale() == 'en' ? 'ka' : 'en' }}">
                     {{ App::getLocale() == 'en' ? '🇬🇪' : '🇺🇸' }}
                 </a>
@@ -35,8 +35,8 @@
             
             @guest
             <div class="text-end">
-                <a href="/login" class="btn btn-success me-1">@lang('Sign in')</a>
-                <a href="/register" class="btn btn-warning">@lang('Sign up')</a>
+                <a href="/login" class="btn btn-success me-1 rounded-3"><i class="fa-solid fa-right-to-bracket"></i></a>
+                <a href="/register" class="btn btn-warning rounded-3"><i class="fa-solid fa-user-plus"></i></a>
             </div>
             @endguest
             @auth

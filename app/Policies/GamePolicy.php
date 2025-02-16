@@ -135,6 +135,7 @@ class GamePolicy
      */
     public function message(User $user, Game $game)
     {
-        return $game->players->contains($user->player);
+        return $game->players->contains($user->player) ||
+            $game->scores->contains('player_id', $user->player->id);
     }
 }

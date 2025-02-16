@@ -49,7 +49,7 @@ class PlayerBot
         if ($except != $jokCount) {
             $call = $jokCount;
         } else {
-            $call = $except == 0 ? 1 : 0;
+            $call = $except === 0 ? 1 : 0;
         }
 
         $score = $this->game->scores[$this->player->position]->createCall($this->game->quarter, $call);

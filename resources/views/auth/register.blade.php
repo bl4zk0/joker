@@ -8,44 +8,47 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-auto">
-            <div class="card rounded-4">
-
-                <div class="card-body p-5 pb-4">
-                    <div class="card-title">
-                        <h1 class="fw-bold mb-0 fs-4">
-                            <i class="fa-solid fa-user-plus"></i> @lang('Sign up') @lang('to Joker')
+            <div class="card">
+                <div class="card-body p-4 pb-3">
+                    <div class="card-title text-center">
+                        <h1 class="fw-bold mb-0 fs-5">
+                            <i class="fa-solid fa-user-plus"></i>
+                            @lang('Sign up') @lang('to Joker')
                         </h1>
                     </div>
                 </div>
 
-                <div class="card-body p-5 pt-0">
+                <div class="card-body p-4 pt-0">
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
-                        <div class="form-floating mb-3">
-                            <input id="username" type="text" class="form-control rounded-3 @error('username') is-invalid 
-                                @enderror" name="username" placeholder="@lang('Username')" 
+                        <div class="mb-3">
+                            <label for="username" class="form-label">@lang('Username')</label>
+                            <input id="username" type="text" 
+                                class="form-control rounded-3 @error('username') is-invalid 
+                                @enderror" name="username" 
                                 value="{{ old('username') }}" required autofocus>
-                            <label for="username">@lang('Username')</label>
 
                             @error('username')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="form-floating mb-3">
-                            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
-                                name="email" value="{{ old('email') }}" placeholder="@lang('Email')" required>
-                            <label for="email">@lang('Email')</label>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">@lang('Email')</label>
+                            <input id="email" type="email" 
+                                class="form-control rounded-3 @error('email') is-invalid @enderror"
+                                name="email" value="{{ old('email') }}" required>
 
                             @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="form-floating mb-3">
-                            <input id="password" type="password" placeholder="@lang('Password')"
-                                class="form-control @error('password') is-invalid @enderror" name="password" required>
-                            <label for="password">@lang('Password')</label>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">@lang('Password')</label>
+                            <input id="password" type="password"
+                                class="form-control rounded-3 @error('password') is-invalid @enderror" 
+                                name="password" required>
                             <small class="form-text">@lang('Min 8 characters')</small>
 
                             @error('password')
@@ -53,13 +56,13 @@
                             @enderror
                         </div>
 
-                        <div class="form-floating mb-3">
-                            <input id="password-confirm" type="password" class="form-control"
-                                name="password_confirmation" placeholder="@lang('Confirm password')" required>
-                            <label for="password-confirm">@lang('Confirm password')</label>
+                        <div class="mb-3">
+                            <label for="password-confirm" class="form-label">@lang('Confirm password')</label>
+                            <input id="password-confirm" type="password" class="form-control rounded-3"
+                                name="password_confirmation"required>
                         </div>
 
-                        <button class="w-100 mb-2 btn btn-lg rounded-3 btn-success" type="submit">
+                        <button class="w-100 mb-2 btn rounded-3 btn-success" type="submit">
                             @lang('Sign up')
                         </button>
 

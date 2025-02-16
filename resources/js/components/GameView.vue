@@ -26,7 +26,7 @@
                         </div>
                     </div>                    
             </div>
-            <div v-show="showLoading" class="alert alert-success">
+            <div v-show="showLoading" class="alert alert-success rounded-3">
                 <div class="spinner-border spinner-border-sm" role="status"></div> {{ lang('Loading') }}...
             </div>
         </div>

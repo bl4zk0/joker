@@ -9,9 +9,16 @@
     <div class="row justify-content-center">
         <div class="col-auto">
             <div class="card">
-                <div class="card-header"><i class="fa-solid fa-unlock"></i> @lang('Reset password')</div>
+                <div class="card-body p-4 pb-3">
+                    <div class="card-title text-center">
+                        <h1 class="fw-bold mb-0 fs-5">
+                            <i class="fa-solid fa-unlock"></i>
+                            @lang('Reset password')
+                        </h1>
+                    </div>
+                </div>
 
-                <div class="card-body">
+                <div class="card-body p-4 pt-0">
                     <form method="POST" action="{{ route('password.update') }}">
                         @csrf
 
@@ -46,7 +53,7 @@
                                 name="password_confirmation" required>
                         </div>
 
-                        <button type="submit" class="btn btn-block btn-success float-end">
+                        <button type="submit" class="w-100 btn btn-block btn-success">
                             @lang('Reset')
                         </button>
                     </form>

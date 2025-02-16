@@ -8,42 +8,41 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-auto">
-            <div class="card rounded-4">
-
-                <div class="card-body p-5 pb-4">
-                    <div class="card-title">
-                        <h1 class="fw-bold mb-0 fs-4">
-                            <i class="fas fa-sign-in-alt"></i>
+            <div class="card">
+                <div class="card-body p-4 pb-3">
+                    <div class="card-title text-center">
+                        <h1 class="fw-bold mb-0 fs-5">
+                            <i class="fa-solid fa-right-to-bracket"></i>
                             @lang('Sign in') @lang('to Joker')
                         </h1>
                     </div>
                 </div>
 
-                <div class="card-body p-5 pt-0">
+                <div class="card-body p-4 pt-0">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
-                        <div class="form-floating mb-3">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">@lang('Username')</label>
                             <input id="username" type="text" class="form-control rounded-3 @error('username') is-invalid 
-                                @enderror" name="username" placeholder="@lang('Username')" 
+                                @enderror" name="username" 
                                 value="{{ old('username') }}" autofocus required>
-                            <label for="username">@lang('Username')</label>
 
                             @error('username')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="form-floating mb-3">
+                        <div class="mb-3">
+                            <label for="password" class="form-label">@lang('Password')</label>
                             <input id="password" type="password" class="form-control rounded-3 @error('password') is-invalid 
-                                @enderror" name="password" placeholder="@lang('Password')" required>
-                            <label for="password">@lang('Password')</label>
+                                @enderror" name="password" required>
 
                             @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="form-check my-3">
+                        <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" name="remember"
                                 id="remember" {{ old('remember') ? 'checked' : '' }}>
 
@@ -51,13 +50,13 @@
                                 @lang('Remember me')
                             </label>
                         </div>
-                        <button class="w-100 mb-2 btn btn-lg rounded-3 btn-success" type="submit">
+                        <button class="w-100 btn rounded-3 btn-success" type="submit">
                             @lang('Sign in')
                         </button>
                     </form>
                     <hr>
                     <div>
-                        <a href="/login/facebook" class="w-100 py-2 mb-2 btn btn-outline-primary rounded-3">
+                        <a id="btn-fb" href="/login/facebook" class="w-100 py-2 mb-2 btn btn-outline-primary rounded-3">
                             <i class="fab fa-facebook-f"></i> @lang('Sign in with Facebook')
                         </a>
                     </div>

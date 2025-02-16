@@ -12,4 +12,18 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css');
+    .sass('resources/sass/app.scss', 'public/css', {
+        sassOptions: {
+            quietDeps: true
+        }
+    })
+    .vue()
+    .webpackConfig({
+        plugins: [
+            new (require('webpack')).DefinePlugin({
+                __VUE_OPTIONS_API__: true,
+                __VUE_PROD_DEVTOOLS__: false,
+                __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
+            })
+        ]
+    });
