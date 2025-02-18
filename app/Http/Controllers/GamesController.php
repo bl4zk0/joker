@@ -124,7 +124,7 @@ class GamesController extends Controller
         broadcast(new PlayerCallEvent($game, $score, $player->position));
 
         if ($game->players[$game->turn]->disconnected) {
-            PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());
+            PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSeconds(2));
         }
 
         return response([], 200);
@@ -176,7 +176,7 @@ class GamesController extends Controller
         }
 
         if ($game->players[$game->turn]->disconnected) {
-            PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSecond());
+            PlayerBotJob::dispatch($game->players[$game->turn], $game)->delay(now()->addSeconds(2));
         }
 
         return response([], 200);

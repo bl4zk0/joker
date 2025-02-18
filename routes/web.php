@@ -13,7 +13,7 @@ use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 |
 */
 
-WebSocketsRouter::webSocket('/', \App\JokerWebSocketHandler::class);
+WebSocketsRouter::webSocket('/joker', \App\JokerWebSocketHandler::class);
 Auth::routes(['verify' => true]);
 
 Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider')->where('provider','facebook|google');

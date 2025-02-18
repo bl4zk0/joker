@@ -36,7 +36,7 @@ class PlayerBot
         });
 
         if ($this->game->players[$this->game->turn]->disconnected) {
-            PlayerBotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSecond());
+            PlayerBotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSeconds(2));
         }
     }
 
@@ -60,7 +60,7 @@ class PlayerBot
         broadcast(new PlayerCallEvent($this->game, $score, $this->player->position));
 
         if ($this->game->players[$this->game->turn]->disconnected) {
-            PlayerBotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSecond());
+            PlayerBotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSeconds(2));
         }
     }
 
@@ -96,7 +96,7 @@ class PlayerBot
         }
 
         if ($this->game->players[$this->game->turn]->disconnected) {
-            PlayerBotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSecond());
+            PlayerBotJob::dispatch($this->game->players[$this->game->turn], $this->game)->delay(now()->addSeconds(2));
         }
 
     }

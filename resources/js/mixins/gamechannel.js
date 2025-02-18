@@ -7,7 +7,6 @@ export default {
             })
             .listen('SyncGameStateEvent', event => {
                 if (event.turn === this.ppm[0] && this.botTimerActive === false) {
-                    console.log(event);
                     console.log('Desync detected');
                     this.playState = false;
                     this.clearBotTimer();

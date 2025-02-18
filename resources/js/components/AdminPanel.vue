@@ -50,12 +50,12 @@ export default {
             selectedCards: [],
             selectedPosition: 0,
             cards: [
-                {strength: 16, suit: 'color_joker'},
-                {strength: 16, suit: 'black_joker'},
-                {strength: 14, suit: 'hearts'},
-                {strength: 14, suit: 'clubs'},
-                {strength: 14, suit: 'diamonds'},
-                {strength: 14, suit: 'spades'}
+                Object.freeze({strength: 16, suit: 'color_joker'}),
+                Object.freeze({strength: 16, suit: 'black_joker'}),
+                Object.freeze({strength: 14, suit: 'hearts'}),
+                Object.freeze({strength: 14, suit: 'clubs'}),
+                Object.freeze({strength: 14, suit: 'diamonds'}),
+                Object.freeze({strength: 14, suit: 'spades'})
             ]
         }
     },

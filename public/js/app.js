@@ -26701,25 +26701,25 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       showPanel: false,
       selectedCards: [],
       selectedPosition: 0,
-      cards: [{
+      cards: [Object.freeze({
         strength: 16,
         suit: 'color_joker'
-      }, {
+      }), Object.freeze({
         strength: 16,
         suit: 'black_joker'
-      }, {
+      }), Object.freeze({
         strength: 14,
         suit: 'hearts'
-      }, {
+      }), Object.freeze({
         strength: 14,
         suit: 'clubs'
-      }, {
+      }), Object.freeze({
         strength: 14,
         suit: 'diamonds'
-      }, {
+      }), Object.freeze({
         strength: 14,
         suit: 'spades'
-      }]
+      })]
     };
   },
   methods: {
@@ -26979,18 +26979,18 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         takenCards: []
       }],
       card: {},
-      actions: {
+      actions: Object.freeze({
         "magali": this.lang('High'),
         "caigos": this.lang("Takero"),
         "mojokra": this.lang('Jokero'),
         "kvevidan": this.lang('Fold')
-      },
-      actionsuits: {
+      }),
+      actionsuits: Object.freeze({
         "hearts": "♥",
         "clubs": "♣",
         "diamonds": "♦",
         "spades": "♠"
-      },
+      }),
       messages: [{
         username: '[system]',
         message: this.lang('To clear the chat type "clear"')
@@ -27197,6 +27197,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         clearInterval(_this3.botInterval);
         _this3.botTimer = _this3.init_bot_timer / 1000;
         _this3.showBotTimer = false;
+        _this3.jokerCardCancelled = false;
         axios.post('/bot/games/' + _this3.game.id)["catch"](function (error) {
           console.log(error.message);
         });
@@ -27674,158 +27675,152 @@ var _hoisted_6 = {
 var _hoisted_7 = {
   id: "trump-wrapper"
 };
-var _hoisted_8 = ["id"];
+var _hoisted_8 = ["id", "data-bs-placement", "show_action"];
 var _hoisted_9 = {
-  key: 0,
-  "class": "card-action position-relative"
-};
-var _hoisted_10 = ["textContent"];
-var _hoisted_11 = ["textContent"];
-var _hoisted_12 = {
   id: "last-cards",
   "class": "border rounded shadow"
 };
-var _hoisted_13 = {
+var _hoisted_10 = {
   "class": "last-cards-wrapper"
 };
-var _hoisted_14 = ["id"];
-var _hoisted_15 = ["id", "data-suit", "data-strength"];
-var _hoisted_16 = {
+var _hoisted_11 = ["id"];
+var _hoisted_12 = ["id", "data-suit", "data-strength"];
+var _hoisted_13 = {
   id: "player0"
 };
-var _hoisted_17 = ["src"];
-var _hoisted_18 = {
+var _hoisted_14 = ["src"];
+var _hoisted_15 = {
   key: 1,
   "class": "avatar border rounded-circle"
 };
-var _hoisted_19 = {
+var _hoisted_16 = {
   "class": "u-name"
 };
-var _hoisted_20 = ["href", "textContent"];
-var _hoisted_21 = ["id", "data-bs-placement"];
-var _hoisted_22 = ["title"];
-var _hoisted_23 = ["onClick"];
-var _hoisted_24 = ["src"];
+var _hoisted_17 = ["href", "textContent"];
+var _hoisted_18 = ["id", "data-bs-placement"];
+var _hoisted_19 = ["title"];
+var _hoisted_20 = ["onClick"];
+var _hoisted_21 = ["src"];
+var _hoisted_22 = {
+  key: 1,
+  "class": "avatar border rounded-circle"
+};
+var _hoisted_23 = {
+  "class": "u-name"
+};
+var _hoisted_24 = ["href", "textContent"];
 var _hoisted_25 = {
-  key: 1,
-  "class": "avatar border rounded-circle"
-};
-var _hoisted_26 = {
-  "class": "u-name"
-};
-var _hoisted_27 = ["href", "textContent"];
-var _hoisted_28 = {
   key: 1
 };
-var _hoisted_29 = {
+var _hoisted_26 = {
   id: "start-btn",
   "class": "shadow"
 };
-var _hoisted_30 = {
+var _hoisted_27 = {
   id: "callboard",
   "class": "border rounded shadow pt-1 ps-1 d-none"
 };
-var _hoisted_31 = ["textContent", "data-value", "disabled"];
-var _hoisted_32 = {
+var _hoisted_28 = ["textContent", "data-value", "disabled"];
+var _hoisted_29 = {
   id: "ready",
   "class": "border rounded p-1 text-center d-none"
 };
-var _hoisted_33 = {
+var _hoisted_30 = {
   id: "ready-waiting",
   "class": "d-none"
 };
-var _hoisted_34 = {
+var _hoisted_31 = {
   id: "ready-check",
   "class": "d-none mb-3"
 };
-var _hoisted_35 = {
+var _hoisted_32 = {
   id: "d-none ready-buttons"
 };
-var _hoisted_36 = ["textContent"];
-var _hoisted_37 = {
+var _hoisted_33 = ["textContent"];
+var _hoisted_34 = {
   "class": "table table-bordered mt-3 mb-0",
   style: {
     "max-width": "310px"
   }
 };
-var _hoisted_38 = {
+var _hoisted_35 = {
   "class": "bg-primary text-white"
+};
+var _hoisted_36 = {
+  scope: "col"
+};
+var _hoisted_37 = {
+  scope: "col"
+};
+var _hoisted_38 = {
+  scope: "col"
 };
 var _hoisted_39 = {
   scope: "col"
 };
 var _hoisted_40 = {
-  scope: "col"
-};
-var _hoisted_41 = {
-  scope: "col"
-};
-var _hoisted_42 = {
-  scope: "col"
-};
-var _hoisted_43 = {
   id: "suits",
   "class": "d-none border rounded pt-1 px-1"
 };
-var _hoisted_44 = {
+var _hoisted_41 = {
   id: "jokhigh",
   "class": "d-none border rounded shadow p-1"
 };
-var _hoisted_45 = {
+var _hoisted_42 = {
   id: "jokjoker",
   "class": "d-none border rounded shadow p-1"
 };
-var _hoisted_46 = {
+var _hoisted_43 = {
   id: "password-card",
   "class": "border rounded shadow p-3"
 };
-var _hoisted_47 = {
+var _hoisted_44 = {
   "class": "mb-2"
 };
-var _hoisted_48 = ["value"];
-var _hoisted_49 = {
+var _hoisted_45 = ["value"];
+var _hoisted_46 = {
   id: "bot-timer"
 };
-var _hoisted_50 = ["textContent"];
-var _hoisted_51 = {
+var _hoisted_47 = ["textContent"];
+var _hoisted_48 = {
   key: 0,
   id: "game-over",
   "class": "d-none"
 };
-var _hoisted_52 = {
+var _hoisted_49 = {
   "class": "card mt-5"
 };
-var _hoisted_53 = {
+var _hoisted_50 = {
   "class": "card-body text-center"
 };
-var _hoisted_54 = {
+var _hoisted_51 = {
   "class": "alert alert-success"
 };
-var _hoisted_55 = ["id"];
-var _hoisted_56 = {
+var _hoisted_52 = ["id"];
+var _hoisted_53 = {
   href: "/lobby",
   "class": "btn btn-lg btn-primary mt-3 w-100"
 };
-var _hoisted_57 = {
+var _hoisted_54 = {
   "class": "modal fade",
   id: "kicked",
   "data-bs-backdrop": "static",
   "data-keyboard": "false",
   tabindex: "-1"
 };
-var _hoisted_58 = {
+var _hoisted_55 = {
   "class": "modal-dialog"
 };
-var _hoisted_59 = {
+var _hoisted_56 = {
   "class": "modal-content bg-danger"
 };
-var _hoisted_60 = {
+var _hoisted_57 = {
   "class": "modal-body"
 };
-var _hoisted_61 = {
+var _hoisted_58 = {
   "class": "modal-footer"
 };
-var _hoisted_62 = {
+var _hoisted_59 = {
   "class": "close-w d-none"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -27870,26 +27865,20 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
       id: "player".concat(n, "card"),
       "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(_ctx.playedCard(n)),
+      "data-bs-trigger": "manual",
+      "data-bs-html": "true",
+      "data-bs-placement": _ctx.get_card_action_placement(n),
+      show_action: _ctx.playedCardAction(n),
       style: (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)('z-index:' + _ctx.cardsZIndex(n))
-    }, [_ctx.playedCardAction(n) ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-      "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["position-absolute border rounded-3 p-1", "card-popover".concat(n)])
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
-      textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.actions[$data.game.players[_ctx.ppm[n]].card['action']])
-    }, null, 8 /* PROPS */, _hoisted_10), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
-      textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.actionsuits[$data.game.players[_ctx.ppm[n]].card['actionsuit']]),
-      style: {
-        "font-size": "16px"
-      },
-      "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(_ctx.suitColor($data.game.players[_ctx.ppm[n]].card['actionsuit']))
-    }, null, 10 /* CLASS, PROPS */, _hoisted_11)], 2 /* CLASS */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 14 /* CLASS, STYLE, PROPS */, _hoisted_8);
-  }), 64 /* STABLE_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" last played cards "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" some errors pop in console from here. adding a check "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [_ctx.lastCards.length === 4 && $options.checkLastCards(_ctx.lastCards) ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+    }, null, 14 /* CLASS, STYLE, PROPS */, _hoisted_8);
+  }), 64 /* STABLE_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" last played cards "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" some errors pop in console from here. adding a check "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [_ctx.lastCards.length === 4 && $options.checkLastCards(_ctx.lastCards) ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
     key: 0
   }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.lastCards, function (card, idx) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
       id: "player".concat(idx, "-last-card"),
       "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["p-card", card.suit + card.strength]),
       style: (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)('z-index:' + card.z)
-    }, null, 14 /* CLASS, STYLE, PROPS */, _hoisted_14);
+    }, null, 14 /* CLASS, STYLE, PROPS */, _hoisted_11);
   }), 256 /* UNKEYED_FRAGMENT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.showLastCards]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" player0 cards "), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.players[_ctx.ppm[0]].cards, function (card, index) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
       "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)('p-card p0-card ' + card.suit + card.strength),
@@ -27901,7 +27890,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       onClick: _cache[3] || (_cache[3] = function () {
         return $options.actionCard && $options.actionCard.apply($options, arguments);
       })
-    }, null, 14 /* CLASS, STYLE, PROPS */, _hoisted_15);
+    }, null, 14 /* CLASS, STYLE, PROPS */, _hoisted_12);
   }), 128 /* KEYED_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" player1 cards "), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.players[_ctx.ppm[1]].cards, function (index) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
       "class": "p-card p1-card card_back card_back_size",
@@ -27937,17 +27926,17 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       "class": "p3-tc taken-card card_back",
       style: (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)('margin-bottom: ' + (35 + index * 10) + 'px')
     }, null, 4 /* STYLE */)), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.game.state === 'card']]);
-  }), 256 /* UNKEYED_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" players "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [_ctx.getAvatarUrl(0) ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
+  }), 256 /* UNKEYED_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" players "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [_ctx.getAvatarUrl(0) ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
     key: 0,
     src: _ctx.getAvatarUrl(0),
     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["avatar border rounded-circle", _ctx.active(0)]),
     alt: "avatar"
-  }, null, 10 /* CLASS, PROPS */, _hoisted_17)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_18)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+  }, null, 10 /* CLASS, PROPS */, _hoisted_14)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_15)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
     href: _ctx.getProfileLink(0),
     textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.getUsername(0)),
     "class": "link-body-emphasis",
     target: "_blank"
-  }, null, 8 /* PROPS */, _hoisted_20)])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.game.state !== 'finished']]), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(3, function (n) {
+  }, null, 8 /* PROPS */, _hoisted_17)])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.game.state !== 'finished']]), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(3, function (n) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
       id: "player".concat(n),
       "data-bs-placement": n === 2 ? 'right' : 'top',
@@ -27960,25 +27949,25 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       onClick: function onClick($event) {
         return _ctx.kick(n);
       }
-    }, null, 8 /* PROPS */, _hoisted_23)], 8 /* PROPS */, _hoisted_22), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.canKickUser(n)]]), _ctx.getAvatarUrl(n) ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
+    }, null, 8 /* PROPS */, _hoisted_20)], 8 /* PROPS */, _hoisted_19), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.canKickUser(n)]]), _ctx.getAvatarUrl(n) ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
       key: 0,
       src: _ctx.getAvatarUrl(n),
       "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["avatar border rounded-circle", _ctx.active(n)]),
       alt: "avatar"
-    }, null, 10 /* CLASS, PROPS */, _hoisted_24)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_25)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [_ctx.getProfileLink(n) != '#' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("a", {
+    }, null, 10 /* CLASS, PROPS */, _hoisted_21)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_22)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [_ctx.getProfileLink(n) != '#' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("a", {
       key: 0,
       href: _ctx.getProfileLink(n),
       textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.getUsername(n)),
       "class": "link-body-emphasis",
       target: "_blank"
-    }, null, 8 /* PROPS */, _hoisted_27)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_28, "#" + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.ppm[n] + 1), 1 /* TEXT */))])], 8 /* PROPS */, _hoisted_21), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.game.state !== 'finished']]);
-  }), 64 /* STABLE_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    }, null, 8 /* PROPS */, _hoisted_24)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_25, "#" + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.ppm[n] + 1), 1 /* TEXT */))])], 8 /* PROPS */, _hoisted_18), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.game.state !== 'finished']]);
+  }), 64 /* STABLE_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-danger btn-block",
     type: "button",
     onClick: _cache[4] || (_cache[4] = function () {
       return $options.start && $options.start.apply($options, arguments);
     })
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("small", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('Start')), 1 /* TEXT */)])])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, _ctx.showStart]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_30, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($options.callboard, function (idx) {
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("small", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('Start')), 1 /* TEXT */)])])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, _ctx.showStart]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($options.callboard, function (idx) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
       "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["btn mb-1 me-1", idx === Number($data.game.to_fill) ? 'btn-success' : 'btn-secondary']),
       textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(idx === 0 ? '-' : idx),
@@ -27987,8 +27976,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       onClick: _cache[5] || (_cache[5] = function () {
         return $options.call && $options.call.apply($options, arguments);
       })
-    }, null, 10 /* CLASS, PROPS */, _hoisted_31);
-  }), 256 /* UNKEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_33, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('Please wait for other players')), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('Are you ready?')), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_35, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    }, null, 10 /* CLASS, PROPS */, _hoisted_28);
+  }), 256 /* UNKEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('Please wait for other players')), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('Are you ready?')), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-success",
     "data-ready": "1",
     onClick: _cache[6] || (_cache[6] = function () {
@@ -28002,7 +27991,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('No')), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", {
     textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.timer)
-  }, null, 8 /* PROPS */, _hoisted_36), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_37, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", _hoisted_38, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", _hoisted_39, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(this.game.players[0] ? this.game.players[0].username : '#1'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", _hoisted_40, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(this.game.players[1] ? this.game.players[1].username : '#2'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", _hoisted_41, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(this.game.players[2] ? this.game.players[2].username : '#3'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", _hoisted_42, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(this.game.players[3] ? this.game.players[3].username : '#4'), 1 /* TEXT */)])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_43, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, null, 8 /* PROPS */, _hoisted_33), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_34, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", _hoisted_35, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", _hoisted_36, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(this.game.players[0] ? this.game.players[0].username : '#1'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", _hoisted_37, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(this.game.players[1] ? this.game.players[1].username : '#2'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", _hoisted_38, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(this.game.players[2] ? this.game.players[2].username : '#3'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", _hoisted_39, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(this.game.players[3] ? this.game.players[3].username : '#4'), 1 /* TEXT */)])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_40, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-light text-danger mb-1 me-1",
     "data-suit": "hearts",
     onClick: _cache[8] || (_cache[8] = function () {
@@ -28039,7 +28028,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[13] || (_cache[13] = function () {
       return $options.actionSuit && $options.actionSuit.apply($options, arguments);
     })
-  }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('None')), 513 /* TEXT, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.game.state === 'trump']])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_44, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('None')), 513 /* TEXT, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.game.state === 'trump']])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_41, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-light me-1",
     "data-action": "magali",
     onClick: _cache[14] || (_cache[14] = function () {
@@ -28059,7 +28048,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, _cache[30] || (_cache[30] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fas fa-times"
-  }, null, -1 /* HOISTED */)]))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, null, -1 /* HOISTED */)]))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_42, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-light me-1",
     "data-action": "mojokra",
     onClick: _cache[17] || (_cache[17] = function () {
@@ -28079,7 +28068,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, _cache[31] || (_cache[31] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fas fa-times"
-  }, null, -1 /* HOISTED */)]))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_46, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_47, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('Pin code')) + ": ", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  }, null, -1 /* HOISTED */)]))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_43, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_44, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('Pin code')) + ": ", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
     onClick: _cache[20] || (_cache[20] = function () {
       return _ctx.copyLink && _ctx.copyLink.apply(_ctx, arguments);
     }),
@@ -28091,7 +28080,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "table-link",
     readonly: "",
     value: _ctx.url + '/games/' + $data.game.id + '?pin=' + $data.game.password
-  }, null, 8 /* PROPS */, _hoisted_48)], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, _ctx.passwordProtected]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  }, null, 8 /* PROPS */, _hoisted_45)], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, _ctx.passwordProtected]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     id: "last-cards-icon",
     onMouseover: _cache[21] || (_cache[21] = function ($event) {
       return $data.showLastCards = true;
@@ -28101,12 +28090,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, _cache[33] || (_cache[33] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fas fa-history"
-  }, null, -1 /* HOISTED */)]), 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.game.state === 'card']]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_49, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, null, -1 /* HOISTED */)]), 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.game.state === 'card']]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_46, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fas fa-stopwatch"
   }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
     textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.botTimer),
     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)($data.botTimer > 5 ? 'text-warning' : 'text-danger')
-  }, null, 10 /* CLASS, PROPS */, _hoisted_50)], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.showBotTimer]]), $data.game.state === 'finished' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_51, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_52, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_53, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", _hoisted_54, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("b", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('GAME OVER')), 1 /* TEXT */)]), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)([0, 1, 2, 3], function (n) {
+  }, null, 10 /* CLASS, PROPS */, _hoisted_47)], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.showBotTimer]]), $data.game.state === 'finished' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_48, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_49, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_50, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", _hoisted_51, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("b", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('GAME OVER')), 1 /* TEXT */)]), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)([0, 1, 2, 3], function (n) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
       id: "place-".concat(n),
       "class": "game-over-card"
@@ -28124,8 +28113,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       href: "#",
       "class": "text-dark",
       target: "_blank"
-    })], -1 /* HOISTED */))], 8 /* PROPS */, _hoisted_55);
-  }), 64 /* STABLE_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", _hoisted_56, [_cache[38] || (_cache[38] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    })], -1 /* HOISTED */))], 8 /* PROPS */, _hoisted_52);
+  }), 64 /* STABLE_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", _hoisted_53, [_cache[38] || (_cache[38] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fas fa-arrow-circle-left"
   }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('Lobby')), 1 /* TEXT */)])])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_chat, {
     messages: $data.messages,
@@ -28139,16 +28128,16 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "data-bs-toggle": "modal",
     "data-bs-target": "#kicked",
     "class": "d-none"
-  }, "show_kicked", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_57, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_58, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_59, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_60, [_cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, "show_kicked", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_54, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_55, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_56, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_57, [_cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fas fa-exclamation-triangle"
-  }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('You have been kicked')), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_61, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang('You have been kicked')), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_58, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn btn-warning",
     "data-bs-dismiss": "modal",
     onClick: _cache[24] || (_cache[24] = function () {
       return _ctx.goToLobby && _ctx.goToLobby.apply(_ctx, arguments);
     })
-  }, "OK!")])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_62, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, "OK!")])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_59, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn btn-outline-secondary",
     onClick: _cache[25] || (_cache[25] = function () {
@@ -56286,7 +56275,7 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   wsHost: window.location.hostname,
   wsPort: 80,
   wssPort: 443,
-  wsPath: '/ws',
+  wsPath: "/joker",
   enabledTransports: ['ws', 'wss'],
   disableStats: true
 });
@@ -56834,7 +56823,6 @@ __webpack_require__.r(__webpack_exports__);
       _this.nextTurn = Number(event.game.turn);
     }).listen('SyncGameStateEvent', function (event) {
       if (event.turn === _this.ppm[0] && _this.botTimerActive === false) {
-        console.log(event);
         console.log('Desync detected');
         _this.playState = false;
         _this.clearBotTimer();
@@ -57036,9 +57024,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     var _this = this;
-    window.onresize = function () {
+    window.onresize = this.debounce(function () {
       _this.windowWidth = window.innerWidth;
-    };
+    }, 200);
     this.showCallboard();
     if (this.game.state === 'trump' && this.turn) {
       $('#suits').removeClass('d-none');
@@ -57053,8 +57041,24 @@ __webpack_require__.r(__webpack_exports__);
       this.setBotTimer(7000);
     }
   },
+  beforeDestroy: function beforeDestroy() {
+    this.clearBotTimer();
+  },
   // center cards with negative margins based on viewport
   methods: {
+    debounce: function debounce(func, wait) {
+      var timeout;
+      return function () {
+        var _this2 = this;
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+        clearTimeout(timeout);
+        timeout = setTimeout(function () {
+          return func.apply(_this2, args);
+        }, wait);
+      };
+    },
     getMargin: function getMargin(n) {
       var smallMargins = [{
         even: -47,
@@ -57155,8 +57159,32 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     playedCardAction: function playedCardAction(n) {
+      var _this3 = this;
       var player = this.game.players[this.ppm[n]];
-      return player && player.card != null && player.card['action'];
+      if (player && player.card != null && player.card['action']) {
+        this.$nextTick(function () {
+          var popoverElement = $("#player".concat(n, "card"));
+          var popoverId = popoverElement.attr('aria-describedby');
+          var isPopoverVisible = $("#".concat(popoverId)).length > 0 && $("#".concat(popoverId)).hasClass('show');
+          if (!isPopoverVisible) {
+            popoverElement.popover('dispose');
+            popoverElement.attr('data-bs-content', _this3.played_card_action_html(n));
+            popoverElement.popover('show');
+          }
+        });
+        return true;
+      } else {
+        $("#player".concat(n, "card")).popover('dispose');
+        return false;
+      }
+    },
+    played_card_action_html: function played_card_action_html(n) {
+      var _this$actionsuits$car;
+      var card = this.game.players[this.ppm[n]].card;
+      var action = this.actions[card['action']];
+      var actionSuit = (_this$actionsuits$car = this.actionsuits[card['actionsuit']]) !== null && _this$actionsuits$car !== void 0 ? _this$actionsuits$car : '';
+      var suitColor = this.suitColor(card['actionsuit']);
+      return "".concat(action, " <span class=\"").concat(suitColor, "\">").concat(actionSuit, "</span>");
     },
     suitColor: function suitColor(suit) {
       if (suit === 'hearts' || suit === 'diamonds') {
@@ -57168,6 +57196,10 @@ __webpack_require__.r(__webpack_exports__);
           return 'text-dark';
         }
       }
+    },
+    get_card_action_placement: function get_card_action_placement(n) {
+      var placements = ['bottom', 'left', 'top', 'right'];
+      return placements[n];
     },
     kick: function kick(n) {
       axios.post('/kick/games/' + this.game.id, {
@@ -57524,7 +57556,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      ka: {
+      ka: Object.freeze({
         "No table found": "მაგიდა არ მოიძებნა",
         "Only 9": "9-იანები",
         "Standard": "სტანდარტული",
@@ -57568,8 +57600,9 @@ __webpack_require__.r(__webpack_exports__);
         "Travel & Places": "მოგზაურობა & ადგილები",
         "Objects": "ობიექტები",
         "Symbols": "სიმბოლები",
-        "Flags": "დროშები"
-      }
+        "Flags": "დროშები",
+        "Lobby": "ოთახები"
+      })
     };
   },
   methods: {

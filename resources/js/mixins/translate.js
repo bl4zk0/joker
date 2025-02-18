@@ -1,7 +1,7 @@
 export default {
     data() {
         return {
-            ka: {
+            ka: Object.freeze({
                 "No table found": "მაგიდა არ მოიძებნა",
                 "Only 9": "9-იანები",
                 "Standard": "სტანდარტული",
@@ -45,8 +45,9 @@ export default {
                 "Travel & Places": "მოგზაურობა & ადგილები",
                 "Objects": "ობიექტები",
                 "Symbols": "სიმბოლები",
-                "Flags": "დროშები"
-            }
+                "Flags": "დროშები",
+                "Lobby": "ოთახები"
+            })
         }
     },
 

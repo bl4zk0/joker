@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class ScoresTest extends TestCase
@@ -11,7 +12,7 @@ class ScoresTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function when_game_started_empty_scores_are_created()
+    public function when_game_starts_empty_scores_are_created()
     {
         $game = factory('App\Game')->create();
         $game->addPlayer($game->creator);
@@ -20,7 +21,7 @@ class ScoresTest extends TestCase
         $game->addPlayer(factory('App\User')->create());
 
         Event::fake();
-
+        Queue::fake();
         $game->start();
 
         $this->assertDatabaseCount('scores', 4);
@@ -38,6 +39,8 @@ class ScoresTest extends TestCase
 
         $this->signIn($game->creator);
         Event::fake();
+        Queue::fake();
+
         $game->fresh()->start();
 
         $this->postJson('call' . $game->path(), ['call' => 1]);

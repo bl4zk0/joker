@@ -31,17 +31,13 @@
 
             <!-- played cards -->
             <div v-for="n in [0,1,2,3]"
-                 :id="`player${n}card`"
-                 :class="playedCard(n)"
-                 :style="'z-index:' + cardsZIndex(n)">
-                <div v-if="playedCardAction(n)" class="card-action position-relative">
-                    <div class="position-absolute border rounded-3 p-1" :class="`card-popover${n}`">
-                        <span v-text="actions[game.players[ppm[n]].card['action']]"></span>
-                        <span v-text="actionsuits[game.players[ppm[n]].card['actionsuit']]"
-                              style="font-size:16px"
-                              :class="suitColor(game.players[ppm[n]].card['actionsuit'])"></span>
-                    </div>
-                </div>
+                :id="`player${n}card`"
+                :class="playedCard(n)"
+                data-bs-trigger="manual"
+                data-bs-html="true"
+                :data-bs-placement="get_card_action_placement(n)"
+                :show_action="playedCardAction(n)"
+                :style="'z-index:' + cardsZIndex(n)">
             </div>
             
             <!-- last played cards -->
@@ -308,8 +304,8 @@
                     {cards: [], takenCards: []},
                 ],
                 card: {},
-                actions: {"magali": this.lang('High'), "caigos": this.lang("Takero"), "mojokra": this.lang('Jokero'), "kvevidan": this.lang('Fold')},
-                actionsuits: {"hearts": "♥", "clubs": "♣", "diamonds": "♦", "spades": "♠"},
+                actions: Object.freeze({"magali": this.lang('High'), "caigos": this.lang("Takero"), "mojokra": this.lang('Jokero'), "kvevidan": this.lang('Fold')}),
+                actionsuits: Object.freeze({"hearts": "♥", "clubs": "♣", "diamonds": "♦", "spades": "♠"}),
                 messages: [{username: '[system]', message: this.lang('To clear the chat type "clear"')}],
                 showLastCards: false,
                 botTimer: this.init_bot_timer / 1000,
@@ -545,6 +541,7 @@
                     clearInterval(this.botInterval);
                     this.botTimer = this.init_bot_timer / 1000;
                     this.showBotTimer = false;
+                    this.jokerCardCancelled = false;
 
                     axios.post('/bot/games/' + this.game.id)
                         .catch(error => {

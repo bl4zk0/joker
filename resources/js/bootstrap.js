@@ -39,7 +39,7 @@ window.Echo = new Echo({
     wsHost: window.location.hostname,
     wsPort: 80,
     wssPort: 443,
-    wsPath: '/ws',
+    wsPath: process.env.MIX_PUSHER_APP_PATH,
     enabledTransports: ['ws', 'wss'],
     disableStats: true
 });

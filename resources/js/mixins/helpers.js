@@ -32,9 +32,9 @@ export default {
     },
 
     mounted() {
-        window.onresize = () => {
-            this.windowWidth = window.innerWidth
-        };
+        window.onresize = this.debounce(() => {
+            this.windowWidth = window.innerWidth;
+        }, 200);
 
         this.showCallboard();
 
@@ -54,8 +54,20 @@ export default {
         }
     },
 
+    beforeDestroy() {
+        this.clearBotTimer();
+    },
+
     // center cards with negative margins based on viewport
     methods: {
+        debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        },
+        
         getMargin(n) {
             let smallMargins = [
                 {even: -47, odd: -34.5},
@@ -157,7 +169,33 @@ export default {
 
         playedCardAction(n) {
             let player = this.game.players[this.ppm[n]];
-            return player && player.card != null && player.card['action'];
+            if (player && player.card != null && player.card['action']) {
+                this.$nextTick(() => {
+                    const popoverElement = $(`#player${n}card`);
+                    const popoverId = popoverElement.attr('aria-describedby');
+                    const isPopoverVisible = $(`#${popoverId}`).length > 0 && 
+                        $(`#${popoverId}`).hasClass('show');
+        
+                    if (!isPopoverVisible) {
+                        popoverElement.popover('dispose');
+                        popoverElement.attr('data-bs-content', this.played_card_action_html(n));
+                        popoverElement.popover('show');
+                    }
+                });
+                return true;
+            } else {
+                $(`#player${n}card`).popover('dispose');
+                return false;
+            }
+        },
+
+        played_card_action_html(n) {
+            let card = this.game.players[this.ppm[n]].card;
+            let action = this.actions[card['action']];
+            let actionSuit = this.actionsuits[card['actionsuit']] ?? '';
+            let suitColor = this.suitColor(card['actionsuit']);
+
+            return `${action} <span class="${suitColor}">${actionSuit}</span>`;
         },
 
         suitColor(suit) {
@@ -170,6 +208,11 @@ export default {
                     return 'text-dark';
                 }
             }
+        },
+
+        get_card_action_placement(n) {
+            let placements = ['bottom', 'left', 'top', 'right'];
+            return placements[n];
         },
 
         kick(n) {
